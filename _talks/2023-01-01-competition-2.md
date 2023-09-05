@@ -1,5 +1,5 @@
 ---
-title: "the First Price of National Undergraduate Mathmatical Contest"
+title: "The First Price of National Undergraduate Mathmatical Contest"
 collection: talks
 type: "provincial level"
 permalink: /talks/2023-01-01-competition-2
