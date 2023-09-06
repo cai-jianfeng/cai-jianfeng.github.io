@@ -10,19 +10,7 @@ redirect_from:
 
 {% include base_path %}
 
-This is the front page of the cai-jianfeng academic personal websites.
-
-Studying
-======
-  <ul>{% for post in site.teaching %}
-    {% include archive-single-cv.html %}
-  {% endfor %}</ul>
-
-Skills
-======
-* Programming Capability
-* Innovation and Creativity
-* Team-Work Ability
+**This is the front page of the cai-jianfeng academic personal websites.**
 
 Publications
 ======
@@ -35,3 +23,15 @@ Competitions
   <ul>{% for post in site.talks %}
     {% include archive-single-cv.html %}
   {% endfor %}</ul>
+
+Studying
+======
+  <ul>{% for post in site.teaching %}
+    {% include archive-single-cv.html %}
+  {% endfor %}</ul>
+
+Skills
+======
+* Programming Capability
+* Innovation and Creativity
+* Team-Work Ability
