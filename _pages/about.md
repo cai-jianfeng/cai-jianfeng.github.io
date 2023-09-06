@@ -10,6 +10,8 @@ redirect_from:
 
 {% include base_path %}
 
+This is the front page of the cai-jianfeng academic personal websites.
+
 Studying
 ======
   <ul>{% for post in site.teaching %}
