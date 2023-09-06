@@ -82,7 +82,7 @@ analytics:
 author:
   name             : "Cai-Jianfeng"
   avatar           : "profile.png"
-  bio              : "Junior in Artificial Intelligence Turing Class, School of Artificial Intelligence, Xidian University"
+  bio              : <p style="text-align:justify; text-justify:inter-ideograph;"> Junior in Artificial Intelligence Turing Class, School of Artificial Intelligence, Xidian University </p>
   location         : "Location"
   employer         :
   pubmed           : "https://www.ncbi.nlm.nih.gov/pubmed/?term=john+snow"
