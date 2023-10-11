@@ -26,6 +26,12 @@ tags:
 
 竞赛成果：数模国二，数竞省一，CVPR竞赛第6(预计)
 
+入营/预推免情况：北航cs(夏令营)、南大cs(夏令营)、西电AI(夏令营)、科大6系(夏令营)、tbsi(预推免)
+
+offer情况：科大6系优营(lhq老师课题组offer)、tbsi预推免offer(hyx老师offer)、pkusz gw老师offer
+
+最终去向：科大6系(lhq老师课题组zwg老师)
+
 夏令营/预推免前期准备
 ===
 <p style="text-align:justify; text-justify:inter-ideograph;">夏令营前期准备和夏令营/预推免参加过程有点啰嗦，省流的同学可以直接跳到夏令营/预推免总结。</p>
