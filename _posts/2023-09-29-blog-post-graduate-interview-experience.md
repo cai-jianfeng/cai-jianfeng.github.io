@@ -22,13 +22,13 @@ tags:
 
 四六级：四级537；六级487
 
-科研成果：2篇在投论文，一篇第一作者(CCF B/SCI 二区)，一篇共同一作(排第2；CCF C/SCI 一区)，一份国家发明专利在审(发明人)
+<p style="text-align:justify; text-justify:inter-ideograph;">科研成果：2篇在投论文，一篇第一作者(CCF B/SCI 二区)，一篇共同一作(排第2；CCF C/SCI 一区)，一份国家发明专利在审(发明人) </p>
 
 竞赛成果：数模国二，数竞省一，CVPR竞赛第6(预计)
 
-入营/预推免情况：北航cs(夏令营)、南大cs(夏令营)、西电AI(夏令营)、科大6系(夏令营)、tbsi(预推免)
+<p style="text-align:justify; text-justify:inter-ideograph;">入营/预推免情况：北航cs(夏令营)、南大cs(夏令营)、西电AI(夏令营)、科大6系(夏令营)、tbsi(预推免) </p>
 
-offer情况：科大6系优营(lhq老师课题组offer)、tbsi预推免offer(hyx老师offer)、pkusz gw老师offer
+<p style="text-align:justify; text-justify:inter-ideograph;">offer情况：科大6系优营(lhq老师课题组offer)、tbsi预推免offer(hyx老师offer)、pkusz gw老师offer </p>
 
 最终去向：科大6系(lhq老师课题组zwg老师)
 
