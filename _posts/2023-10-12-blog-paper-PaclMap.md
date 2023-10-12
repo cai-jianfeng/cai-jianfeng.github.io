@@ -49,4 +49,4 @@ Method
 但是本文认为每类图像不止一个 visual pattern，需要在仅仅知道 category label 的情况下将它们都找出来。
 一般来说，visual pattern包含两个特点：discrimination 和 frequency。
 discrimination 表示其具有可判别性，而不是笼统的语义信息(例如 山 这个语义信息就具有笼统性)；frequency 表示其应该在该类图像中频繁出现。
-因此，针对 discrimination，本文提出了 Pacl 模块，其对于对比学习的整体框架没有改变，只是改变了相似度函数和正负样本的选择
+因此，针对 discrimination，本文提出了 Pacl 模块，其对于对比学习的整体框架没有改变，只是改变了损失函数和正负样本的选择。
