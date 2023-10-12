@@ -50,7 +50,7 @@ Method
 一般来说，visual pattern包含两个特点：discrimination 和 frequency。
 discrimination 表示其具有可判别性，而不是笼统的语义信息(例如 山 这个语义信息就具有笼统性)；frequency 表示其应该在该类图像中频繁出现。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">因此，针对 discrimination，本文提出了 Pacl 模块，其对于对比学习的整体框架没有改变，只是改变了损失函数和正负样本的选择。
+<p style="text-align:justify; text-justify:inter-ideograph;">因此，针对 frequency，本文提出了 Pacl 模块，其对于对比学习的整体框架没有改变，只是改变了损失函数和正负样本的选择。
 其中，对于负样本，由于我们需要减少错误的负样本对于模型学习的影响，而错误的负样本提出与原始样本（anchor)相似度较高，所以本文选择较大的 $\tau$。
 同时，对于相似度函数，本文采用 $cos^2(·|·)$，因为我们希望原始样本和负样本以及各个负样本之间不存在相关性。
 如果使用 $cos(·|·)$，则 $= 0$ 时，各个负样本的向量都与原始样本垂直，则各个负样本相互平行(即相关)；
