@@ -26,7 +26,11 @@ Preliminary
 虽然其相较 鼓、楼 这种实质性标签难以理解，但是好处是不需要确定其具体含义(这样就不需要费力进行 visual pattern 标签标记)，同时其也含有和实质性标签本质一样的语义信息。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> Contrastive Learning：对比学习是最近十分火热的无监督学习方法，它通过构造 self-supervision 来实现网络训练。
-大体上，对比学习采用两个网络(分别叫 online network 和 target network)进行训练，online network 输入原始图像，其输出一段 vector 作为特征 f1，
-而 target network 输入对应原始图像的正样本，其也输出一段 vector 作为 f1 的正样本特征 f2。
-对于f1 和 f2，我们希望它们两的特征应该相似，所以可以使得它们的相似度函数(最简单的是点乘，然后正则化：$\frac{f_1f_2^T}{\sqrt{f_1f_1^T}\sqrt{f_2}{f_2^T}}$)的值接近 1。
-然而这种方法有一定的弊端， </p>
+大体上，对比学习采用两个网络(分别叫 online network 和 target network)进行训练，online network 输入原始图像，其输出一段 vector 作为特征 $f_1$，
+而 target network 输入对应原始图像的正样本(它与原始图像互为正样本对，通常是原始图像通过数据增强得来，比如旋转)，其也输出一段 vector 作为 $f_1$ 的正样本特征 $f_2$。
+对于 $f_1$ 和 $f_2$，我们希望它们两的特征应该相似，所以可以使得它们的相似度函数 $sim(f_1, f_2)$(最简单的是点乘，然后正则化：$\frac{f_1f_2^T}{\sqrt{f_1f_1^T}\sqrt{f_2f_2^T}}$)的值接近 1。
+然而这种方法有一定的弊端， 那就是模型可能会找到一条”捷径“，online network 和 target network 对于每一个输入，都输出相同的 vector(比如全 0)，这样就可以保证每个正样本对之间的相似度为 1。
+因此，我们需要引入负样本(通常是和原始图像不同的任意其他图像，其通过 target network 的输出向量为 $f_3$)来限制模型的输出。
+我们希望 $f_1$ 和 $f_3$ 应该不相似，所以可以使得它们的相似度函数 $sim(f_1, f_3)$ 的值接近 0。
+通常而言每个原始图像的正样本就一个，而负样本可以很多个(一个直观的理解是对于负样本，模型可以很容易判断其和原始图像不相似，如果就只使用一个负样本，则会导致负样本基本上没贡献)。
+这就和传统的分类问题较为相似(把正确的类别看作正样本，其他类别均看作负样本)，因此可以使用 BCE loss 进行训练：$\frac{1}{N}\sum_{i}^{N}\frac{sim(f_i,f_+}{\sum_{j,f_j \neq f_i}^{N}{sim(f_i, f_j}$。</p>
