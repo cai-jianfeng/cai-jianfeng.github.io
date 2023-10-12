@@ -33,5 +33,14 @@ Preliminary
 因此，我们需要引入负样本(通常是和原始图像不同的任意其他图像，其通过 target network 的输出向量为 $f_3$)来限制模型的输出。
 我们希望 $f_1$ 和 $f_3$ 应该不相似，所以可以使得它们的相似度函数 $sim(f_1, f_3)$ 的值接近 0。
 通常而言每个原始图像的正样本就一个，而负样本可以很多个(一个直观的理解是对于负样本，模型可以很容易判断其和原始图像不相似，如果就只使用一个负样本，则会导致负样本基本上没贡献)。
-这就和传统的分类问题较为相似(把正确的类别看作正样本，其他类别均看作负样本)，因此可以使用 BCE loss 进行训练：$\frac{1}{N}\sum_{i}^{N}\frac{sim(f_i,f_+)}{\sum_{j,f_j \neq f_i}^{N}{sim(f_i, f_j)}}$。
+这就和传统的分类问题较为相似(把正确的类别看作正样本，其他类别均看作负样本)，因此可以使用 BCE loss 进行训练：$-log\frac{exp(sim(f_i,f_+)/\tau)}{\sum_{j,f_j \neq f_+}^{N}{exp(sim(f_i, f_j)\tau)}+exp(sim(f_i,f_+)/\tau}$。
 最终训练出来的 online network 具有很好的模型先验，可以送到下游任务进行微调使用。</p>
+
+Method
+===
+<p style="text-align:justify; text-justify:inter-ideograph;"> 在之前的方法中，它们都假设每类图像只存在一个 visual pattern，
+这样就可以通过构造 category label 到 visual pattern 之间的一一映射以获得 visual pattern。
+但是本文认为每类图像不止一个 visual pattern，需要在仅仅知道 category label 的情况下将它们都找出来。
+一般来说，visual pattern包含两个特点：discrimination 和 frequency。
+discrimination 表示其具有可判别性，而不是笼统的语义信息(例如 山 这个语义信息就具有笼统性)；frequency 表示其应该在该类图像中频繁出现。
+因此，针对 discrimination，本文提出了 Pacl 模块
