@@ -6,7 +6,7 @@ tags:
   - 论文阅读
 ---
 
-<p style="text-align:justify; text-justify:inter-ideograph;"> 论文题目：<a href="https://ieeexplore.ieee.org/abstract/document/9944792">Multipattern Mining Using Pattern-Level Contrastive Learning and Multipattern Activation Map</a></p>
+<p style="text-align:justify; text-justify:inter-ideograph;"> 论文题目：<a href="https://ieeexplore.ieee.org/abstract/document/9944792" target="_blank" title="PaclMap">Multipattern Mining Using Pattern-Level Contrastive Learning and Multipattern Activation Map</a></p>
 
 发表期刊：IEEE Transactions on Neural Networks and Learning Systems(TNNLS, 2023年 CCF B)
 
