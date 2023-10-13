@@ -8,7 +8,7 @@ tags:
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 论文题目：<a href="https://ieeexplore.ieee.org/abstract/document/9944792" target="_blank" title="PaclMap">Multipattern Mining Using Pattern-Level Contrastive Learning and Multipattern Activation Map</a></p>
 
-发表期刊：IEEE Transactions on Neural Networks and Learning Systems(TNNLS, 2023年 CCF B)
+发表期刊：IEEE Transactions on Neural Networks and Learning Systems(TNNLS 2022, 2023年 CCF B)
 
 第一作者：Xuefeng Liang(Professor with Xidian University)；h指数 18(2023)
 
