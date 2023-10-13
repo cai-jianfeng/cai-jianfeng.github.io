@@ -39,4 +39,7 @@ $\digamma(x + Z(c;\Theta_z1);\Theta_c) = \digamma(x;\Theta_c)$，则 $trainable\
 这样可以极大程度保持原始预训练模型的 capability。
 同时 $Z(\digamma(x + Z(c;\Theta_z1);\Theta_c); \Theta_{z2}) = 0$，
 所以 $y_c = \digamma(x;\Theta) + Z(\digamma(x + Z(c;\Theta_z1);\Theta_c); \Theta_{z2}) = \digamma(x;\Theta)$。
-这样，在训练刚开始时，有害噪声就不会影响 $trainable\ copy$ 中神经网络层的隐藏状态。</p>
+这样，在训练刚开始时，有害噪声就不会影响 $trainable\ copy$ 中神经网络层的隐藏状态。
+而训练损失函数则和普通的 Diffusion Model 类似：假设 time step 为 $t$(Diffusion 模型训练的时间步), 
+text prompts 为 $c_t$(文本条件), visual condition 为 $c_f$(即我们自己添加的额外条件)，训练模型为 $\epsilon_{theta}$，
+则损失函数为 $L = E_{z_0, t, c_t, c_f, \epsilon \sim N(0,1)}[||\epsilon - \epsilon_{theta}(z_t, t, c_t, c_f)||_2^2]$</p>
