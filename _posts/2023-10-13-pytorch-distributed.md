@@ -76,7 +76,7 @@ DataLoader中的pin_memory就是锁页内存(锁页内存存放的内容在任�
   # 注意：torch.distributed.launch 启动 和 dist.init_process_group 中的 world_size 设置不要和 --nproc_per_node 一起/或者不能不一致, 否则会卡住; 所以可以自己设置 world_size 而不传入参数 --nproc_per_node
   ```
 
-```torchrun```启动
+```torchrun``` 启动
 
 ```python
 torchrun --nnodes=$机器数$ --nproc_per_node=$每个机器的GPU数$ --rdzv_id=$$ --rdzv_backend=c10d --rdzv_endpoint=$MASTER_ADDR:MASTER_PORT$ yourfile.py
