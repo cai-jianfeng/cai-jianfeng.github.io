@@ -6,7 +6,7 @@ tags:
   - 代码讲解
 ---
 
-```torch.backends.cudnn.deterministic```: 固定 cuda 的随机种子，使得每次返回的卷积算法将是确定的，即默认算法
+```torch.backends.cudnn.deterministic```: 固定 cuda 的随机种子，使得每次返回的卷积算法都是确定的，即默认算法
 
 ```python
 torch.manual_seed(seed)  # sets the seed for generating random numbers.
