@@ -1,3 +1,11 @@
+---
+title: 'pytorch distributed'
+date: 23-10-13
+permalink: /posts/2023/10/blog-code-pytorch-distributed/
+tags:
+  - 代码讲解
+---
+
 ```torch.backends.cudnn.deterministic```: 固定 cuda 的随机种子，使得每次返回的卷积算法将是确定的，即默认算法
 
 ```python
@@ -10,7 +18,7 @@ torch.cuda.manual_seed_all(seed)  # Sets the seed for generating random numbers 
 
 DataLoader中的pin_memory就是锁页内存(锁页内存存放的内容在任何情况下都不会与主机的虚拟内存交换)，创建DataLoader时，设置pin_memory=True，则意味着生成的Tensor数据最开始是属于内存中的锁页内存，这样将内存的Tensor转移到GPU的显存就会更快一些
 
-```dist.init_process_group```
+```dist.init_process_group``` 中的参数
 
 - ```backend```：后端数据传输的模式，一般情况下 multi-CPU 使用 ```gloo```，multi-GPU 使用 ```nccl```；而 ```mpi```需要额外的下载配置
 
