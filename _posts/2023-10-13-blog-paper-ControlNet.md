@@ -18,6 +18,9 @@ Question
 
 Preliminary
 ===
+
+![Diffusion Model](/images/paper_ControlNet_Diffusion_Model.jpg)
+
 <p style="text-align:justify; text-justify:inter-ideograph;"> Diffusion Model：扩散模型是近年来最热的图像生成思想。
 将任意一张图像 $I_0$ 进行噪声添加，每次添加一个服从 $N(0,1)$ 分布的随机噪声 $\epsilon_t$，获得含有噪声的图像 $I_t$，则进行了无数次后，原本的图像就会变成一个各向同性的随机高斯噪声。
 按照这个理论，我们对一个各向同性的随机高斯噪声每次添加一个特定的服从 $N(0,1)$ 分布的噪声 $\epsilon_t‘$，获得噪声量减少的图像 $I_t'$，则经过足够多次后便可获得一张逼真的图像 $I_0'$。
