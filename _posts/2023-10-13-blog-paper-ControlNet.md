@@ -33,10 +33,10 @@ Method
 而 ControlNet 保持每个 $net_b$ 的参数不动(即 freeze parameter)，并复制出一个相同的 $net_b'$，称为 $trainable\ copy$，作为条件 $C_i$ 的处理模块。
 并在 $trainable\ copy$ 都添加了额外的模块 $zero\ convolution$：它是一个卷积层，其卷积核权重和偏置都初始化为 0。
 设 $net_b$ 的数学函数为 $\digamma(x;\Theta)$，$zero\ convolution$ 的数学函数为 $Z(·;·)$，
-则 ControlNet 的输入输出公式为 $y_c = \digamma(x;\Theta) + Z(\digamma(x + Z(c;\Theta_z1);\Theta_c); \Theta_{z2)$。
+则 ControlNet 的输入输出公式为 $y_c = \digamma(x;\Theta) + Z(\digamma(x + Z(c;\Theta_z1);\Theta_c); \Theta_{z2})$。
 由于 $zero\ convolution$ 的参数初始化为 0，所以 $Z(c;\Theta_z1) = 0$，
 $\digamma(x + Z(c;\Theta_z1);\Theta_c) = \digamma(x;\Theta_c)$，则 $trainable\ copy$ 在开始时依旧接收 $x$ 作为输入，和无条件训练的情况一致。
 这样可以极大程度保持原始预训练模型的 capability。
-同时 $Z(\digamma(x + Z(c;\Theta_z1);\Theta_c); \Theta_{z2) = 0$，
-所以 $y_c = \digamma(x;\Theta) + Z(\digamma(x + Z(c;\Theta_z1);\Theta_c); \Theta_{z2) = \digamma(x;\Theta)$。
+同时 $Z(\digamma(x + Z(c;\Theta_z1);\Theta_c); \Theta_{z2}) = 0$，
+所以 $y_c = \digamma(x;\Theta) + Z(\digamma(x + Z(c;\Theta_z1);\Theta_c); \Theta_{z2}) = \digamma(x;\Theta)$。
 这样，在训练刚开始时，有害噪声就不会影响 $trainable\ copy$ 中神经网络层的隐藏状态。</p>
