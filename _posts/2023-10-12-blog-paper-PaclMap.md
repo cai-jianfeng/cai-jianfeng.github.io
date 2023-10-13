@@ -8,7 +8,7 @@ tags:
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 论文题目：<a href="https://ieeexplore.ieee.org/abstract/document/9944792" target="_blank" title="PaclMap">Multipattern Mining Using Pattern-Level Contrastive Learning and Multipattern Activation Map</a></p>
 
-发表期刊：IEEE Transactions on Neural Networks and Learning Systems(TNNLS 2022, 2023年 CCF B)
+<p style="text-align:justify; text-justify:inter-ideograph;"> 发表期刊：IEEE Transactions on Neural Networks and Learning Systems(TNNLS 2022, 2023年 CCF B) </p>
 
 第一作者：Xuefeng Liang(Professor with Xidian University)；h指数 18(2023)
 
@@ -35,7 +35,7 @@ Preliminary
 通常而言每个原始图像的正样本就一个，而负样本可以很多个(一个直观的理解是对于负样本，模型可以很容易判断其和原始图像不相似，如果就只使用一个负样本，则会导致负样本基本上没贡献)。
 这就和传统的分类问题较为相似(把正确的类别看作正样本，其他类别均看作负样本)，
 因此可以使用 BCE loss 进行训练：$-log\frac{exp(sim(f_i,f_+)/\tau)}{\sum_{j,f_j \neq f_+}^{N}{exp(sim(f_i, f_j)\tau)}+exp(sim(f_i,f_+)/\tau}$。
-其中 $\tau$ 表示温度因子，其越小则使得不相似的负样本的影响越小(可以简单理解：exp函数在 $[0,1/\tau)$ 的区间内的趋势随着 $\tau$ 的增大越趋于平稳，
+其中 $\tau$ 表示温度因子，其越小则使得不相似的负样本的影响越大(可以简单理解：exp函数在 $[0,1/\tau)$ 的区间内的趋势随着 $\tau$ 的增大越趋于平稳，
 由于 $sim(·,·)$ 函数最大值为 1，若 $\tau$ 越大，则会使得 $sim(·,·)/\tau$ 的值域越趋于 0，则经过 $exp$ 函数后使得 $sim(·,·) = 1$ 和 $sim(·,·) = 0$ 的值越相似，
 就使得各个样本之间的相似度差值对模型的训练影响越小(无论是与原始样本 $f_o$ 相似度很大的负样本($sim(·,·) \approx 1$)，还是相似度很小的负样本($sim(·,·) \approx 0$)，其对模型训练的贡献都差不多)。
 最终训练出来的 online network 具有很好的模型先验，可以送到下游任务进行微调使用。</p>
@@ -70,8 +70,8 @@ Pacl之所以可以学习到 frequency，我的理解是对比学习本身的优
 由于本文讨论的是 multipattern，所以需要输出多个 pattern，它采用的方法和卷积有些相似，即通过不同的线性权重 $\omega_i^j$ 来获得不同的 pattern $P^j$。
 具体而言，对于最后一层卷积输出的 feature maps $V = \{V_1,...,V_K\}$，定义一个最大可能的 pattern 数量为 $R$，使用 $R$ 组权重(每组 $K$ 个)来获得每类图像的 $R$ 个 pattern(称为 Map，每个 pattern 称为 PAM)：$PAM^{c,r} = \sum_k{\omega_k^{c,r}V_k}$。
 这样一来，$K$ 个 feature maps 就生成了 $C * R$ 个 PAM。接下来便是如何将它们与一一映射的分类问题结合起来，以实现训练。
-因为 category label本身具有非常强的 discrimination 特性，以它为监督信号优化得到的 pattern 会比淡村对比学习的 pattern 的 discrimination 更强。
-因此，本文首先对每个 PAM 进行降维，即使用 global average pooling 将 PAM 降为 1 个实数($H * W \rightarrow 1$)：$z^{c,r} = avgpool\{PAM^{c,r}|r=1,...,R\}$。
+因为 category label本身具有非常强的 discrimination 特性，以它为监督信号优化得到的 pattern 会比单纯对比学习的 pattern 的 discrimination 更强。
+因此，本文首先对每个 PAM 进行降维，即使用 global average pooling 将每个 PAM 降为 1 个实数($H * W \rightarrow 1$)：$z^{c,r} = avgpool\{PAM^{c,r}|r=1,...,R\}$。
 接着再使用 max 函数将每类的 $R$ 个 PAM 减少至 1 个：$S^c = max\{z^{c,r}|r=1,...,R\}$，这样就可以把 $C$ 个 $S^c$ 和 $C$ 个类别对应起来。
 再经过 softmax 正则化后；$\widehat{y^c} = \frac{exp(S^c)}{\sum_c{exp(S^c)}}$。
 最后就可以使用 cross entropy 损失进行训练：$L_{CE} = \frac{1}{N}\sum_{n=1}^N{(\sum_{c=1}^C{(-y^clog\widehat{y^c})})}$。</p>
