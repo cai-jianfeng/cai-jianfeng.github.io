@@ -22,6 +22,10 @@ Preliminary
 
 Method
 ===
+
+![ControlNet Architecture](/images/paper_ControlNet.png)
+
 <p style="text-align:justify; text-justify:inter-ideograph;"> 这个问题最简单的方法是找到一个带有该条件(假设为 $C_i$)的数据集，再在别人已经预训练好的 Difussion 模型上进行微调。
 但是这么做有一个问题：因为预训练的 Diffusion Model 是在大量图像上训练而来，如果直接将整个模型直接进行有监督微调，可能会使得模型生成效果大打折扣(即文中说的 overfitting 和 catastrophic forgetting)。
-所以本文解决的是在加入了条件 $C_i$ 的情况下，既能输出符合条件 $C_i$ 的图像，又能保证其逼真度；同时，本文还解决了多个 $C_i$ 同时作用于一张图像的生成问题，并且训练的参数也较少。</p>
+所以本文解决的是在加入了条件 $C_i$ 的情况下，既能输出符合条件 $C_i$ 的图像，又能保证其逼真度；同时，本文还解决了多个 $C_i$ 同时作用于一张图像的生成问题，并且训练的参数也较少。
+本文的方法较为简单，可以看作是一个即插即用的插件模块 ControlNet。</p>
