@@ -72,3 +72,5 @@ discrimination 表示其具有可判别性，而不是笼统的语义信息(例�
 接着再使用 max 函数将每类的 $R$ 个 PAM 减少至 1 个：S^c = max\{z^{c,r}|r=1,...,R\}，这样就可以把 $C$ 个 $S^c$ 和 $C$ 个类别对应起来。
 再经过 softmax 正则化后；$\widehat{y^c} = \frac{exp(S^c)}{\sum_c{exp(S^c)}}$。
 最后就可以使用 cross entropy 损失进行训练：$L_{CE} = \frac{1}{N}\sum_{n=1}^N{(\sum_{c=1}^C{(-y^clog\widehat{y^c})})}$。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"> 因此，最后的损失函数为 $L = \lamda * L_{CE} + (1-\lamda) * L_{Pacl}。$
