@@ -60,7 +60,7 @@ discrimination 表示其具有可判别性，而不是笼统的语义信息(例�
 具体而言(如图1中 (a))，每个 batch 包含 $N$ 个原始图像的 $M$ 个数据增强。首先选择一个增强后的图像作为 anchor(黄色框)，
 然后使用其他 $M - 1$ 增强后的图像作为正样本(绿色框)，并使 $M - 1 > (N - 1)/C$ (其中 $C$ 是数据集中类别的数量)。
 负样本(红框)包含其他 $N - 1$ 个原始图像的增强。并且 batch 中的所有 $N × M$ 张图像依次被选为 anchor 进行训练。
-得到损失函数为 $L_{Pacl} = -\frac{1}{M-1}log\frac{\sum_{i=1}^{M-1}exp(sim(f_o,f_{i+})/\tau)}{\sum_{i=1}^{M-1}{exp(sim(f_o,f_{i+})/\tau)} + \sum_{j=1}^{N-1}{exp(sim(f_o,f_{j-})/\tau)}}$
+得到损失函数为 $L_{Pacl} = -\frac{1}{M-1}log\frac{\sum_{i=1}^{M-1}exp(sim(f_o,f_{i+})/\tau)}{\sum_{i=1}^{M-1}{exp(sim(f_o,f_{i+})/\tau)} + \sum_{j=1}^{N-1}{exp(sim(f_o,f_{j-})/\tau)}}。$
 Pacl之所以可以学习到 frequency，我的理解是对比学习本身的优势。
 举个简单的例子，经过对比学习之后，可能模型对 松 这个概念有了一个统一的理解(虽然模型并不知道它叫松)，对于每张出现 松 的图像它都可以辨别出来，
 但是这时它学到的 pattern 太笼统了(它仅仅只是对松有理解，而我们更希望它学习到 黄山迎客松 这种更具有 discriminative 的 pattern)，就需要进一步对其 discriminarion 进行学习。</p>
