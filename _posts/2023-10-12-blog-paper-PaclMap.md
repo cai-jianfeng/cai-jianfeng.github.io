@@ -72,7 +72,7 @@ Pacl之所以可以学习到 frequency，我的理解是对比学习本身的优
 这样一来，$K$ 个 feature maps 就生成了 $C * R$ 个 PAM。接下来便是如何将它们与一一映射的分类问题结合起来，以实现训练。
 因为 category label本身具有非常强的 discrimination 特性，以它为监督信号优化得到的 pattern 会比淡村对比学习的 pattern 的 discrimination 更强。
 因此，本文首先对每个 PAM 进行降维，即使用 global average pooling 将 PAM 降为 1 个实数($H * W \rightarrow 1$)：$z^{c,r} = avgpool\{PAM^{c,r}|r=1,...,R\}$。
-接着再使用 max 函数将每类的 $R$ 个 PAM 减少至 1 个：S^c = max\{z^{c,r}|r=1,...,R\}，这样就可以把 $C$ 个 $S^c$ 和 $C$ 个类别对应起来。
+接着再使用 max 函数将每类的 $R$ 个 PAM 减少至 1 个：$S^c = max\{z^{c,r}|r=1,...,R\}$，这样就可以把 $C$ 个 $S^c$ 和 $C$ 个类别对应起来。
 再经过 softmax 正则化后；$\widehat{y^c} = \frac{exp(S^c)}{\sum_c{exp(S^c)}}$。
 最后就可以使用 cross entropy 损失进行训练：$L_{CE} = \frac{1}{N}\sum_{n=1}^N{(\sum_{c=1}^C{(-y^clog\widehat{y^c})})}$。</p>
 
