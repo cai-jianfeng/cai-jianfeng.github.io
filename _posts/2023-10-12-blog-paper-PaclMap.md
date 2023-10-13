@@ -35,7 +35,7 @@ Preliminary
 通常而言每个原始图像的正样本就一个，而负样本可以很多个(一个直观的理解是对于负样本，模型可以很容易判断其和原始图像不相似，如果就只使用一个负样本，则会导致负样本基本上没贡献)。
 这就和传统的分类问题较为相似(把正确的类别看作正样本，其他类别均看作负样本)，
 因此可以使用 BCE loss 进行训练：$-log\frac{exp(sim(f_i,f_+)/\tau)}{\sum_{j,f_j \neq f_+}^{N}{exp(sim(f_i, f_j)\tau)}+exp(sim(f_i,f_+)/\tau}$。
-其中 $\tau$ 表示温度因子，其越小则使得不相似的负样本的影响越小(可以简单理解；exp函数在 $[0,1/\tau)$ 的区间内的趋势随着 $\tau$ 的增大越趋于平稳，
+其中 $\tau$ 表示温度因子，其越小则使得不相似的负样本的影响越小(可以简单理解：exp函数在 $[0,1/\tau)$ 的区间内的趋势随着 $\tau$ 的增大越趋于平稳，
 由于 $sim(·,·)$ 函数最大值为 1，若 $\tau$ 越大，则会使得 $sim(·,·)/\tau$ 的值域越趋于 0，则经过 $exp$ 函数后使得 $sim(·,·) = 1$ 和 $sim(·,·) = 0$ 的值越相似，
 就使得各个样本之间的相似度差值对模型的训练影响越小(无论是与原始样本 $f_o$ 相似度很大的负样本($sim(·,·) \approx 1$)，还是相似度很小的负样本($sim(·,·) \approx 0$)，其对模型训练的贡献都差不多)。
 最终训练出来的 online network 具有很好的模型先验，可以送到下游任务进行微调使用。</p>
@@ -50,7 +50,7 @@ Method
 一般来说，visual pattern包含两个特点：discrimination 和 frequency。
 discrimination 表示其具有可判别性，而不是笼统的语义信息(例如 山 这个语义信息就具有笼统性)；frequency 表示其应该在该类图像中频繁出现。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">因此，针对 frequency，本文提出了 Pacl 模块，其对于对比学习的整体框架没有改变，只是改变了损失函数和正负样本的选择。
+<p style="text-align:justify; text-justify:inter-ideograph;">因此，针对 frequency，本文提出了 Pacl 模块。其对于对比学习的整体框架没有改变，只是改变了损失函数和正负样本的选择。
 其中，对于负样本，由于我们需要减少错误的负样本对于模型学习的影响，而错误的负样本提出与原始样本（anchor)相似度较高，所以本文选择较大的 $\tau$。
 同时，对于相似度函数，本文采用 $cos^2(·|·)$，因为我们希望原始样本和负样本以及各个负样本之间不存在相关性。
 如果使用 $cos(·|·)$，则 $= 0$ 时，各个负样本的向量都与原始样本垂直，则各个负样本相互平行(即相关)；
@@ -61,3 +61,8 @@ discrimination 表示其具有可判别性，而不是笼统的语义信息(例�
 然后使用其他 $M - 1$ 增强后的图像作为正样本(绿色框)，并使 $M - 1 > (N - 1)/C$ (其中 $C$ 是数据集中类别的数量)。
 负样本(红框)包含其他 $N - 1$ 个原始图像的增强。并且 batch 中的所有 $N × M$ 张图像依次被选为 anchor 进行训练。
 得到损失函数为 $L_{Pacl} = -\frac{1}{M-1}log\frac{\sum_{i=1}^{M-1}exp(sim(f_o,f_{i+})/\tau)}{\sum_{i=1}^{M-1}{exp(sim(f_o,f_{i+})/\tau)} + \sum_{j=1}^{N-1}{exp(sim(f_o,f_{j-})/\tau)}}$</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"> 针对 discrimination，本文提出了 Map 模块。由于本文的是 multipattern，即多对一的映射，因此不能直接转化为一对一的分类问题。
+在 visual pattern 中讲过，目前的方法大都使用模型输出的 feature 作为 pattern，但是并不是简单地把 feature 直接等于 pattern，一般是将最后一层 conv 输出的 feature maps 进行线性结合形成一个 pattern。
+由于本文讨论的是 multipattern，所以需要输出多个 pattern，它采用的方法和卷积有些相似，即通过不同的线性权重 $\omiga_i^j$ 来获得不同的 pattern $\P^j$。
+具体而言，对于最后一层卷积输出的 feature maps $V = \{V_1,...,V_K\}$，</p>
