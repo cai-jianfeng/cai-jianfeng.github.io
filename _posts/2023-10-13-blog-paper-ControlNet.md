@@ -44,3 +44,6 @@ $\digamma(x + Z(c;\Theta_z1);\Theta_c) = \digamma(x;\Theta_c)$，则 $trainable\
 text prompts 为 $c_t$(文本条件), visual condition 为 $c_f$(即我们自己添加的额外条件)，训练模型为 $\epsilon_{theta}$，
 则损失函数为 $L = E_{z_0, t, c_t, c_f, \epsilon \sim N(0,1)}[||\epsilon - \epsilon_{theta}(z_t, t, c_t, c_f)||_2^2]$。
 其中 $z_0$ 是原始噪声(即一开始输入的图像)，而 $z_t$ 是第 $t$ 步输出的图像。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"> 对于多个条件 $c_1,...,c_n$，本文采用最直接的方式，直接将每个条件 $c_i$ 对应的 ControlNet 的输出相加，即 $y_c = \sum_{i=1}^n{y_{c_i}}}$。
+没有任何额外的权重或线性插值。</p>
