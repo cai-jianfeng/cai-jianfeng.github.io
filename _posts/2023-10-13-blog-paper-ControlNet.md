@@ -30,5 +30,8 @@ Method
 所以本文解决的是在加入了条件 $C_i$ 的情况下，既能输出符合条件 $C_i$ 的图像，又能保证其逼真度；同时，本文还解决了多个 $C_i$ 同时作用于一张图像的生成问题，并且训练的参数也较少。
 本文的方法较为简单，可以看作是一个即插即用的插件模块。如图 1，对于任意一个 Diffusion 模型，它通常是由每个基本单元块 $net_{b}$ 组成(如 resnet block, transformer block等)。
 原始的 Diffusion 模型输入上一次 $net_{b}$ 生成的 feature map $x$，输出更新的 feature map $y$。
-而 ControlNet保持每个 $ net_b$ 的参数不动(即 freeze parameter)，并复制出一个相同的 $net_b'$，称为 $trainable\ copy$，作为条件 $C_i$ 的处理模块。
+而 ControlNet 保持每个 $net_b$ 的参数不动(即 freeze parameter)，并复制出一个相同的 $net_b'$，称为 $trainable\ copy$，作为条件 $C_i$ 的处理模块。
+并在 $trainable\ copy$ 都添加了额外的模块 $zero\ convolution$：它是一个卷积层，其卷积核权重和偏置都初始化为 0。
+设 $net_b$ 的数学函数为 $\digamma(x;\Theta)$，$zero\ convolution$ 的数学函数为 $Z(·;·)$，
+则 ControlNet 的输入输出公式为 $y_c = \digamma(x;\Theta) + Z(\digamma(x + Z(c;\Theta_z1);\Theta_c); \Theta_{z2)$。
 </p>
