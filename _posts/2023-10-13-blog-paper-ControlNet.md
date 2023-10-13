@@ -28,8 +28,8 @@ Preliminary
 由于每次使用的是同一个图像生成模型 $M_G$，所以需要输入时间步信息 $t$ 来告诉模型现在是生成的第几步
 (一个直观的理解是在随机噪声恢复成原始图像的前期，模型更关注图像的整体恢复，而后期则更加关注图像的细节恢复，所以需要时间步信息告诉模型现在是偏前期还是后期)。
 同时通过 $I_{t-1}$ 直接生成 $I_t$ 较为困难，因为它需要生成正确其每个像素值，而每次添加的噪声 $\epsilon_t$ 较容易预测。
-因此可以更换为每次输入 $I_{t-1}$，模型预测第 $t$ 次所加的噪声 $\epsilon_t$。所以损失函数为 $L = E_{z_0, t, c_t, \epsilon \sim N(0,1)}[||\epsilon - \epsilon_{theta}(z_t, t, c_t)||_2^2]$。
-其中 $z_0$ 是原始噪声(即一开始输入的图像)，而 $z_t$ 是第 $t$ 步输出的图像, $\epsilon_{theta}(z_t, t, c_t)$ 为模型预测的第 $t$ 步所加的噪声。</p>
+因此可以更换为每次输入 $I_{t-1}$，模型预测第 $t$ 次所加的噪声 $\epsilon_t$。所以损失函数为 $L = E_{z_0, t, c_t, \epsilon \sim N(0,1)}[||\epsilon - \epsilon_{\theta}(z_t, t, c_t)||_2^2]$。
+其中 $z_0$ 是原始噪声(即一开始输入的图像)，而 $z_t$ 是第 $t$ 步输出的图像, $\epsilon_{\theta}(z_t, t, c_t)$ 为模型预测的第 $t$ 步所加的噪声。</p>
 
 Method
 ===
@@ -53,7 +53,7 @@ $\digamma(x + Z(c;\Theta_z1);\Theta_c) = \digamma(x;\Theta_c)$，则 $trainable\
 这样，在训练刚开始时，有害噪声就不会影响 $trainable\ copy$ 中神经网络层的隐藏状态。
 而训练损失函数则和普通的 Diffusion Model 类似：假设 time step 为 $t$(Diffusion 模型训练的时间步), 
 text prompts 为 $c_t$(文本条件), visual condition 为 $c_f$(即我们自己添加的额外条件)，训练模型为 $\epsilon_{theta}$，
-则损失函数为 $L = E_{z_0, t, c_t, c_f, \epsilon \sim N(0,1)}[||\epsilon - \epsilon_{theta}(z_t, t, c_t, c_f)||_2^2]$。
+则损失函数为 $L = E_{z_0, t, c_t, c_f, \epsilon \sim N(0,1)}[||\epsilon - \epsilon_{\theta}(z_t, t, c_t, c_f)||_2^2]$。
 其中 $z_0$ 是原始噪声(即一开始输入的图像)，而 $z_t$ 是第 $t$ 步输出的图像。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 对于多个条件 $c_1,...,c_n$，本文采用最直接的方式，直接将每个条件 $c_i$ 对应的 ControlNet 的输出相加，
