@@ -14,7 +14,7 @@ tags:
 
 Question
 ===
-文章主要解决的问题是如何在不知道 visual pattern 的 label 和 number 的情况下找出某一类图像的所有 visual patterns。
+<p style="text-align:justify; text-justify:inter-ideograph;"> 文章主要解决的问题是如何在不知道 visual pattern 的 label 和 number 的情况下找出某一类图像的所有 visual patterns。 </p>
 
 Preliminary
 ===
