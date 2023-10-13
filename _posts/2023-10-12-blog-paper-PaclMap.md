@@ -1,7 +1,7 @@
 ---
 title: 'PaclMap'
 date: 23-10-12
-permalink: /posts/2023/09/blog-paper-paclmap/
+permalink: /posts/2023/10/blog-paper-paclmap/
 tags:
   - 论文阅读
 ---

@@ -1,7 +1,7 @@
 ---
 title: 'ControlNet'
 date: 23-10-13
-permalink: /posts/2023/09/blog-paper-controlnet/
+permalink: /posts/2023/10/blog-paper-controlnet/
 tags:
   - 论文阅读
 ---
