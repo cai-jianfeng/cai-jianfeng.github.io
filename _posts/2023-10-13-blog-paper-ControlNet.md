@@ -14,3 +14,8 @@ tags:
 
 Question
 ===
+<p style="text-align:justify; text-justify:inter-ideograph;"> 如何在 Text-to-Image Diffusion 图像生成模型中添加条件控制其图像的生成(这里的条件主要包括 visual condition，如 mask, depth等，即输入的条件也是图像) </p>
+
+Preliminary
+===
+<p style="text-align:justify; text-justify:inter-ideograph;"> Diffusion Model：扩散模型 </p>
