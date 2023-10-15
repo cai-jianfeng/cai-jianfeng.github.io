@@ -50,11 +50,11 @@ autoencoder 由编码器 $E(·)$ 和解码器 $D(·)$ 组成，编码器 $E(·)$
 <p style="text-align:justify; text-justify:inter-ideograph;"> 随后，便在 latent 空间($z$ 所在空间)上使用 DM 模型 $\epsilon_{\theta}(·,·)$ 进行正常的扩散模型学习。
 具体而言，首先将原始噪声图像 $x$ 经过编码器 $E(x)$ 生成 latent representation $z$。
 随后经过 $T$ 步的扩散模型 $\epsilon(z,t)$ 去噪生成不含噪声的 latent representation $z_T$，最后再经过解码器 $D(z_T)$ 生成去噪后的图像 $x_T$。
-所以在这一步的损失函数为 $L_{LDM} := E_{E(x), \epsilon \sim N(0,1), t}[||\epsion - \epsilon_{\theta}(z_t,t)||_2^2]$。</p>
+所以在这一步( Diffusion 步骤)的损失函数和正常的 DM 类似，为 $L_{LDM} := E_{E(x), \epsilon \sim N(0,1), t}[||\epsilon - \epsilon_{\theta}(z_t,t)||_2^2]$。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 为了能在该框架下引入条件控制模型的生成，本文引入了 cross-attention 机制来帮助学习。
 对于预处理的条件 $y$ (可以是各种模态)，本文使用了特定域的编码器 $\tau_{\theta}$ 将 $y$ 投影到中间表示(intermediate representation)：$\tau_{\theta}(y) \in R^{M \times d_{\tau}}$。
 同时也将 latent representation $z_t$ 也投影到中间表示：$\varphi_i(z_t) \in R^{N \times d_{\epsilon}^i}$。
-然后通过 cross-attention 层将其与 DM 模型(通常是 U-net)的中间层进行交互：
+然后通过 cross-attention 层将条件 $y$ 的之间表示 $\tau_{\theta}(y)$ 与 DM 模型(通常是 U-net)的中间层进行交互：
 $Q = W_Q^{(i)}·\varphi_i(z_t)$, $K = W_K^(i)·\tau_{\theta}(y)$, $V = W_V^{i}·\tau_{\theta}(y)$, $Attention(Q, K, V) = softmax(\frac{QK^T}{\sqrt{d}})·V$。
 最后基于图像-条件对，损失函数为 $L_{LDM} := E_{E(x),y,\epsilon \sim N(0,1),t}[||\epsilon - \epsilon_{\theta}(z_t, t, \tau_{\theta}(y))||_2^2]$。</p>
