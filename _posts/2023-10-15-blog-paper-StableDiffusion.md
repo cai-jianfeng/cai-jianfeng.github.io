@@ -1,6 +1,6 @@
 ---
 title: 'Stable Diffusion'
-date: 23-10-115
+date: 23-10-15
 permalink: /posts/2023/10/blog-paper-stablediffusion/
 tags:
   - 论文阅读
@@ -30,3 +30,8 @@ Preliminary
 同时通过 $I_{t-1}$ 直接生成 $I_t$ 较为困难，因为它需要生成正确其每个像素值，而每次添加的噪声 $\epsilon_t$ 较容易预测。
 因此可以更换为每次输入 $I_{t-1}$，模型预测第 $t$ 次所加的噪声 $\epsilon_t$。所以损失函数为 $L = E_{z_0, t, c_t, \epsilon \sim N(0,1)}[||\epsilon - \epsilon_{\theta}(z_t, t, c_t)||_2^2]$。
 其中 $z_0$ 是原始噪声(即一开始输入的图像)，而 $z_t$ 是第 $t$ 步输出的图像, $\epsilon_{\theta}(z_t, t, c_t)$ 为模型预测的第 $t$ 步所加的噪声。</p>
+
+Method
+===
+
+<p style="text-align:justify; text-justify:inter-ideograph;"> 
