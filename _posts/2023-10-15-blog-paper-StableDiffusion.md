@@ -34,4 +34,4 @@ Preliminary
 Method
 ===
 
-<p style="text-align:justify; text-justify:inter-ideograph;"> DM 虽然在图像逼真度上已经超过了目前的 SOTA　GAN　</p>
+<p style="text-align:justify; text-justify:inter-ideograph;"> DM 虽然在图像逼真度上已经超过了目前的 SOTA(GAN)　</p>
