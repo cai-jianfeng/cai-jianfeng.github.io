@@ -56,5 +56,5 @@ autoencoder 由编码器 $E(·)$ 和解码器 $D(·)$ 组成，编码器 $E(·)$
 对于预处理的条件 $y$ (可以是各种模态)，本文使用了特定域的编码器 $\tau_{\theta}$ 将 $y$ 投影到中间表示(intermediate representation)：$\tau_{\theta}(y) \in R^{M \times d_{\tau}}$。
 同时也将 latent representation $z_t$ 也投影到中间表示：$\varphi_i(z_t) \in R^{N \times d_{\epsilon}^i}$。
 然后通过 cross-attention 层将条件 $y$ 的之间表示 $\tau_{\theta}(y)$ 与 DM 模型(通常是 U-net)的中间层进行交互：
-$Q = W_Q^{(i)}·\varphi_i(z_t)$, $K = W_K^(i)·\tau_{\theta}(y)$, $V = W_V^{i}·\tau_{\theta}(y)$, $Attention(Q, K, V) = softmax(\frac{QK^T}{\sqrt{d}})·V$。
+$Q = W_Q^{(i)}·\varphi_i(z_t)$, $K = W_K^{(i)}·\tau_{\theta}(y)$, $V = W_V^{(i)}·\tau_{\theta}(y)$, $Attention(Q, K, V) = softmax(\frac{QK^T}{\sqrt{d}})·V$。
 最后基于图像-条件对，损失函数为 $L_{LDM} := E_{E(x),y,\epsilon \sim N(0,1),t}[||\epsilon - \epsilon_{\theta}(z_t, t, \tau_{\theta}(y))||_2^2]$。</p>
