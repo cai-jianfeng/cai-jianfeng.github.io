@@ -17,7 +17,7 @@ Question
 ![impossible triangle](/images/paper_RetNet_impossible_triangle.png)
 <p style="text-align:justify; text-justify:inter-ideograph;"> 如何设计出一种模型架构，能够打破不可能三角的限制，即既要保持 training parallelism, 又要实现 low-cost inference, 同时还要有 strong performance. </p>
 
-Method
+Method(Mathematical)
 ===
 <p style="text-align:justify; text-justify:inter-ideograph;"> 首先可以明确一点，寻找单一的架构打破不可能三角几乎是无法做到的，所以可行的方法便是通过结合不同架构之间的优势来实现。
 而本文通过分析，可以发现传统的 RNN 模型在 inference 时的时间复杂度为 $O(1)$，但是它无法实现并行训练；
@@ -34,7 +34,7 @@ Method
 <p style="text-align:justify; text-justify:inter-ideograph;"> 然后对 $X$ 的每个词 $X_n \in  R^{1 \times d}$ 乘上权重 $\omega_V \in R^{d \times d}$ 得到 $v_n \in R^{1 \times d}$：$v_n = X_n · \omega_V$。
 同时和 transformer 相似，通过 $W_Q \in R^{d \times d}$ 和 $W_K \in R^{d \times d}$ 计算 $Q$ 和 $K$：$Q = XW_Q,\ K = XW_K$ </p>
 
-* <p style="text-align:justify; text-justify:inter-ideograph;"> 由于我们是要从 RNN 推算到 transformer，因此我们先要从 RNN 开始。
+<ol><p style="text-align:justify; text-justify:inter-ideograph;"> 由于我们是要从 RNN 推算到 transformer，因此我们先要从 RNN 开始。
 它包含了一个隐藏状态 $s_n \in R^{d \times d}$ 和 一个输出 $o_n \in R^{1 \times d}$ 的计算：</p>
 
 <center> $s_n = AS_{n-1} + K_n^Tv_n$ </center>
@@ -43,9 +43,9 @@ Method
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 其中 $A \in R^{d \times d}$ 是一个矩阵，$K_n \in R^{1 \times d}$ 表示 K 中的第 n 个词所对应的 key。
 同样 $Q_n \in R^{1 \times d}$ 表示 Q 中的第 n 个词对应的 query。
-对于 $o_n$ 从 $Q_ns_n$ 到 $\sum_{m=1}^n{Q_nA^{n-m}K_m^Tv_m}$ 的推理，只需要假设 $s_0$ 为全 0 矩阵进行归纳推理即可得到。</p>
+对于 $o_n$ 从 $Q_ns_n$ 到 $\sum_{m=1}^n{Q_nA^{n-m}K_m^Tv_m}$ 的推理，只需要假设 $s_0$ 为全 0 矩阵进行归纳推理即可得到。</p></ol>
 
-* <p style="text-align:justify; text-justify:inter-ideograph;"> 本文定义 A 矩阵为 diagonalizable(可对角化) 矩阵，则可以将 A 分解为： </p>
+<ol><p style="text-align:justify; text-justify:inter-ideograph;"> 本文定义 A 矩阵为 diagonalizable(可对角化) 矩阵，则可以将 A 分解为： </p>
 
 <center> $A = \Lambda \lambda \Lambda^{-1} = \Lambda (\gamma e^{i\theta}) \Lambda^{-1}$ </center>
 
@@ -63,29 +63,39 @@ Method
 <center> $o_n = \sum_{m=1}^n{Q_nA^{n-m}K_m^Tv_m} \\ 
 = \sum_{m=1}^n{Q_n(\Lambda (\gamma e^{i\theta})^{n-m} \Lambda^{-1})K_m^Tv_m} \\
 = \sum_{m=1}^n{X_nW_Q(\Lambda (\gamma e^{i\theta})^{n-m} \Lambda^{-1})(X_mW_K)^Tv_m} \\
-= \sum_{m=1}^n{X_nW_Q\Lambda (\gamma e^{i\theta})^{n-m} \Lambda^{-1}W_K^TX_m^Tv_m}$ </center>
+= \sum_{m=1}^n{X_nW_Q\Lambda (\gamma e^{i\theta})^{n-m} \Lambda^{-1}W_K^TX_m^Tv_m}$ </center></ol>
 
-* <p style="text-align:justify; text-justify:inter-ideograph;"> 由于 $W_Q, W_K, \Lambda$ 都是可学习参数，所以可以将 $\Lambda$ 融合进 $W_Q, W_K$ 中当作一个参数学习，
+<ol><p style="text-align:justify; text-justify:inter-ideograph;"> 由于 $W_Q, W_K, \Lambda$ 都是可学习参数，所以可以将 $\Lambda$ 融合进 $W_Q, W_K$ 中当作一个参数学习，
 即 $W_Q = W_Q\Lambda, W_K^T = \Lambda^{-1} W_K^T$。则可以进一步简化 $o_n$ 的计算公式：</p>
 
 <center> $o_n = \sum_{m=1}^n{Q_n(\gamma e^{i\theta})^{n-m}K_m^Tv_m} \\
 = \sum_{m=1}^n{Q_n(\gamma e^{i\theta})^{n}(\gamma e^{i\theta})^{-m}K_m^Tv_m} \\
 = \sum_{m=1}^n{Q_n(\gamma e^{i\theta})^{n}(K_m(\gamma e^{i\theta})^{-m})^Tv_m} \\
-= \sum_{m=1}^n{Q_n(\gamma^n e^{in\theta})(K_m(\gamma^{-m} e^{i(-m)\theta}))^Tv_m}$ </center>
+= \sum_{m=1}^n{Q_n(\gamma^n e^{in\theta})(K_m(\gamma^{-m} e^{i(-m)\theta}))^Tv_m}$ </center></ol>
 
-* <p style="text-align:justify; text-justify:inter-ideograph;"> 接着将公式继续简化，将 $\gamma$ 设为一个 scaler $\in R$，这样就可以将它提到外面：$o_n = \sum_{m=1}^n{\gamma^{n-m}(Q_ne^{in\theta})((K_me^{i(-m)\theta}))^Tv_m}$
-(之前不能提出来是因为在前面的推导中我们将其视为一个 $d$ 维的向量，而向量的乘法不具有交换律)。</p>
+<ol><p style="text-align:justify; text-justify:inter-ideograph;"> 接着将公式继续简化，将 $\gamma$ 设为一个 scaler $\in R$，这样就可以将它提到外面：$o_n = \sum_{m=1}^n{\gamma^{n-m}(Q_ne^{in\theta})((K_me^{i(-m)\theta}))^Tv_m}$
+(之前不能提出来是因为在前面的推导中我们将其视为一个 $d$ 维的向量，而向量的乘法不具有交换律)。</p></ol>
 
-* <p style="text-align:justify; text-justify:inter-ideograph;"> 然后根据欧拉公式：</p>
+<ol><p style="text-align:justify; text-justify:inter-ideograph;"> 然后根据欧拉公式：</p>
 
 <center> $e^{i(-m)\theta} = [cos(-m\theta_1)+sin(-m\theta_1),...,cos(-m\theta_d)+sin(-m\theta_d)] \\
 = [cos\ m\theta_1-sin\ m\theta_1,...,cos\ m\theta_d-sin\ m\theta_d] = e^{im\theta T*}$ </center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 其中 $T*$ 表示复数共轭转置，所以 $o_n$ 的计算公式可以进一步简化为 $o_n = \sum_{m=1}^n{\gamma^{n-m}(Q_ne^{in\theta})((K_me^{i(m)\theta}))^{T*}v_m}$ 
-(对于实数向量 $K_m$，其复数共轭转置对于自身的转置，所以不影响)。</p>
+(对于实数向量 $K_m$，其复数共轭转置对于自身的转置，所以不影响)。</p></ol>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 由于 $Q_n, K_m, v_m, e^{in\theta}/e^{im\theta}, \gamma^{n-m}$ 都可以并行计算得出，所以 $\sum_{m=1}^n$ 的操作只需一步便可计算出 $o_n$。
 而不像最开始的需要计算出每个 $s_n$ 后再计算 $o_n$ 的 $n$ 步 操作。这样便完成了由 RNN 到 transformer ($n$ 步操作到 $1$ 步操作)的转化证明，而且参数基本相同。
+
+Method(apply)
+===
+
+![RetNet Architecture](/images/paper_RetNet_architecture.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;"> 所以根据上面的推导，可以在训练的时候选择 transformer 的 $1$ 步操作模式提高训练并行性，而在预测时选择 RNN 的 $n$ 步操作模式提高推理速度。
+具体而言，RetNet 将这两种模式分别命名为 Parallel 和 Recurrent。</p>
+
+* <p style="text-align:justify; text-justify:inter-ideograph;">
 
 
 
