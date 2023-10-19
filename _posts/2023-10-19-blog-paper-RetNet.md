@@ -56,8 +56,6 @@ Method(Mathematical)
 因为 $\gamma$ 也是一个 $d$ 维向量，所以两者相乘($d \times 1 · 1 \times d = d \times d$)便可得到 $d \times d$的矩阵 $\lambda$。
 对角元素的值就对应将 $\gamma$ 和 $e^{i\theta}$ 转成复数向量相乘再将结果转回实数向量的结果。</p>
 
-<p style="color: red;"> 对角性质的证明 </p>
-
 <p style="text-align:justify; text-justify:inter-ideograph;"> 通过将矩阵 $A$ 对角化，则可以将 $o_n$ 的计算公式中的 $A^{n-m}$ 展开为 $A^{n-m} = \Lambda (\gamma e^{i\theta})^{n-m} \Lambda^{-1}\ (\Lambda^{-1}\Lambda = 1)$。
 将展开式带入到 $o_n$ 的计算公式中可得：</p>
 
@@ -134,6 +132,9 @@ $(Q{[i]}R_{i-1}) \bigodot \xi$ 表示 Cross-Chunk，即 Recurrent 模式。</p><
 而在推理过程中使用了 Recurrent 模式，很好地拟合了自回归解码。O(1)的复杂度降低了内存和推理延迟，同时达到了和 transformer 相同的结果。</p>
 
 ![Pseudocode](/images/paper_RetNet_pseudocode.png)
+
+
+<p style="color: red;"> 后续补充：1. 对角性质的证明；2. 如何将 Parallent 模式的公式变换回 Recurrent 模式 </p>
 
 
 
