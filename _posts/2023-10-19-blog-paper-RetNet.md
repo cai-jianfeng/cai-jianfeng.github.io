@@ -28,4 +28,5 @@ Method
 而 FFN 与 Transformer 一致，因此下面就详细讲解 MSR. 
 由于 RetNet 的 parallel (对应 transformer) 和 recurrent (对应 RNN) 使用的是同一套参数，我们就需要数学推导来证明 RNN 可以通过一定的转化变成 transformer.
 具体而言，首先给定一个输入序列 $\{x_i\}_{i=1}^{|x|}$，其中 $|x|$ 表示序列的长度。然后经过 word embedding 层得到词嵌入向量：</p>
+
 <center> $X = [x_1, ..., x_{|x|} \in R^{|x| \times d}$ </center>
