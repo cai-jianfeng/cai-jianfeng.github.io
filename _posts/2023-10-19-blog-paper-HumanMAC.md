@@ -21,7 +21,7 @@ Question
 Preliminary
 ===
 
-![Diffusion Model & HumanMAC model](/images/paper_HumanMAC_architecture.png)
+![Diffusion Model & HumanMAC model](/images/paper_HumanMAC_model.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> Diffusion Model(DM)：扩散模型是近年来最热的图像生成思想。如图 1 (a),
 将任意一张图像 $I_0$ 进行噪声添加，每次添加一个服从 $N(0,1)$ 分布的随机噪声 $\epsilon_t$，获得含有噪声的图像 $I_t$，则进行了无数次后，原本的图像就会变成一个各向同性的随机高斯噪声。
@@ -36,7 +36,9 @@ Preliminary
 Method
 ===
 
-![prior method & HumanMAC](/images/paper_HumanMAC_overall.png)
+![prior method & HumanMAC](/images/paper_HumanMAC_compare.png)
+
+![TransLinear model](/images/paper_HumanMAC_architecture.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 如图 2 (a), 在此之前，解决 HMP 的主流方法都是使用 encoder-decoder 架构，即使用 encoder 对已观测到的 motions 进行编码获得 latent，
 再使用 decoder 对 latent 进行解码获得剩下的预测 motions，但是这种方法有 3 个臂端：1) 它们通常都是使用 multi-loss 限制模型训练，这样就需要设计 hyper-parameter 来平衡各个损失；
@@ -51,7 +53,7 @@ HMP 需要预测接下来的 $F$ 帧 motions $x^{(H+1:H+F)} = $x^{(1PH)} = [x^{(
 由于 DCT 是正交变换，最后只需要通过反离散余弦变换 iDCT 将结果 $\hat{y}$ 转换回时间域即可：$\hat{x} = iDCT(\hat{y}) = D^T\hat{y}$。
 在本文中，为了减少计算量并去除高频部分(通常高频部分是噪声或者难以察觉的细节)，仅使用前 $L$ 行 $D$ 进行 DCT，即 $y_0 = D_Lx, D_L \in R^{L \times (H+F)}$。
 然后对 $y_0$ 使用重参数技巧添加噪声：$y_t = \sqrt{\bar{\alpha_t}}y_0 + \sqrt{1-\bar{\alpha_t}}\epsilon;\ \bar{\alpha_t} = \prod_{i=1}^t{\alpha_i}, \alpha_i \in [0,1], \epsilon \sim N(0,I)$。
-然后使用 TransLinear 模型 $\Theta$ 进行训练，损失函数为 $L = E_{\epsilon, t}[||\epsilon - epsilon_{\theta}(y_t, t)||^2]$。</p></li>
+然后使用 TransLinear 模型 $\Theta$ (如图 3) 进行训练，损失函数为 $L = E_{\epsilon, t}[||\epsilon - epsilon_{\theta}(y_t, t)||^2]$。</p></li>
 <li><p style="text-align:justify; text-justify:inter-ideograph;">在 inference 时，由于在训练阶段没有输入额外条件，所以直接使用训练好的 DM 模型进行预测会使得模型生成的 motion 很随机，很可能没有以已观测到的 motions 为前提。
 使用需要设计将已观测到的 motions 作为条件来限制模型的输出。本文采用一种十分巧妙的 mask 方法，称为 DCT-Completion，这种方法使得模型不需要重新训练就可以进行推理。
 对于从第 t 步推理到第 t-1 步，如图 1 (b) 的左边分支，首先对于已观测的 motions $x^{(1:H)}$，将他的最后一帧填充到需要预测的帧中，即令 $x^{(H+1)},...,x^{(H+F)} = x^H$ 得到 $y$。
@@ -67,7 +69,7 @@ $y_{t-1} = DCT(M \bigodot iDCT(y_{t-1}^n) + (1 - M) \bigodot iDCT(y_{t-1}^d)$。
 
 <p style="text-align:justify; text-justify:inter-ideograph;">最后经过 $T$ 步去噪步骤后，将得到的 $y_0$ 进行 iDCT，则其后 $F$ 帧就为模型预测得到的结果。train 和 inference 算法如下：</p>
 
-![HumanMAC train and inference algorithm](/images/paper_HumanMAC_algorithm.png)
+![HumanMAC train and inference algorithm](/images/paper_HumanMAC_algorithms.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">针对含有 switch 的数据，本文采用不同的策略进行 inference。
 除了提供前 $H$ 观测帧 motions 之外。还提供后 $P$ 目标帧 motions，并将掩码 $M$ 设计为 $M = [1_1,...,1_H,0_1,...,0_{F-P},1_1,...,1_P]$。
