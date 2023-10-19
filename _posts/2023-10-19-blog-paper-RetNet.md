@@ -34,7 +34,7 @@ Method
 <p style="text-align:justify; text-justify:inter-ideograph;"> 然后对 $X$ 的每个词 $X_n \in  R^{1 \times d}$ 乘上权重 $\omega_V \in R^{d \times d}$ 得到 $v_n \in R^{1 \times d}$：$v_n = X_n · \omega_V$。
 同时和 transformer 相似，通过 $W_Q \in R^{d \times d}$ 和 $W_K \in R^{d \times d}$ 计算 $Q$ 和 $K$：$Q = XW_Q,\ K = XW_K$ </p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"> 由于我们是要从 RNN 推算到 transformer，因此我们先要从 RNN 开始。
+- <p style="text-align:justify; text-justify:inter-ideograph;"> 由于我们是要从 RNN 推算到 transformer，因此我们先要从 RNN 开始。
 它包含了一个隐藏状态 $s_n \in R^{d \times d}$ 和 一个输出 $o_n \in R^{1 \times d}$ 的计算：</p>
 
 <center> $s_n = AS_{n-1} + K_n^Tv_n$ </center>
@@ -45,13 +45,13 @@ Method
 同样 $Q_n \in R^{1 \times d}$ 表示 Q 中的第 n 个词对应的 query。
 对于 $o_n$ 从 $Q_ns_n$ 到 $\sum_{m=1}^n{Q_nA^{n-m}K_m^Tv_m}$ 的推理，只需要假设 $s_0$ 为全 0 矩阵进行归纳推理即可得到。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"> 本文定义 A 矩阵为 diagonalizable(可对角化) 矩阵，则可以将 A 分解为： </p>
+- <p style="text-align:justify; text-justify:inter-ideograph;"> 本文定义 A 矩阵为 diagonalizable(可对角化) 矩阵，则可以将 A 分解为： </p>
 
 <center> $A = \Lambda \lambda \Lambda^{-1} = \Lambda (\gamma e^{i\theta}) \Lambda^{-1}$ </center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 其中 $\gamma$ 和 $\theta \in R^{1 \times d} | R^{d \times 1}$，$\lambda$ 是一个对角矩阵，$\Lambda$ 是一个可逆矩阵。
 下面推导如何从 $\lambda$ 转化为 $\gamma e^{i\theta}$：首先需要理解 $e^{ix}$ 是一个欧拉公式，将其转化为复数可得 $e^{ix} = cos\ x + isin\ x$。
-而 $\theta$ 是一个 $d$ 维向量，所以根据欧拉公式可得 $e^{i\theta} = [cos\theta_1+sin\theta_1,...,cos\theta_d+sin\theta_d] \in R^{d \times d}$。
+而 $\theta$ 是一个 $d$ 维向量，所以根据欧拉公式可得 $e^{i\theta} = [cos\theta_1+sin\theta_1...,cos\theta_d+sin\theta_d] \in R^{d \times d}$。
 因为 $\gamma$ 也是一个 $d$ 维向量，所以两者相乘($d \times 1 · 1 \times d = d \times d$)便可得到 $d \times d$的矩阵 $\lambda$。
 对角元素的值就对应将 $\gamma$ 和 $e^{i\theta}$ 转成复数向量相乘再将结果转回实数向量的结果。</p>
 
@@ -65,10 +65,24 @@ Method
 = \sum_{m=1}^n{X_nW_Q(\Lambda (\gamma e^{i\theta})^{n-m} \Lambda^{-1})(X_mW_K)^Tv_m} \\
 = \sum_{m=1}^n{X_nW_Q\Lambda (\gamma e^{i\theta})^{n-m} \Lambda^{-1}W_K^TX_m^Tv_m}$ </center>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"> 由于 $W_Q, W_K, \Lambda$ 都是可学习参数，所以可以将 $\Lambda$ 融合进 $W_Q, W_K$ 中当作一个参数学习，
+- <p style="text-align:justify; text-justify:inter-ideograph;"> 由于 $W_Q, W_K, \Lambda$ 都是可学习参数，所以可以将 $\Lambda$ 融合进 $W_Q, W_K$ 中当作一个参数学习，
 即 $W_Q = W_Q\Lambda, W_K^T = \Lambda^{-1} W_K^T$。则可以进一步简化 $o_n$ 的计算公式：</p>
 
 <center> $o_n = \sum_{m=1}^n{Q_n(\gamma e^{i\theta})^{n-m}K_m^Tv_m} \\
 = \sum_{m=1}^n{Q_n(\gamma e^{i\theta})^{n}(\gamma e^{i\theta})^{-m}K_m^Tv_m} \\
 = \sum_{m=1}^n{Q_n(\gamma e^{i\theta})^{n}(K_m(\gamma e^{i\theta})^{-m})^Tv_m} \\
 = \sum_{m=1}^n{Q_n(\gamma^n e^{in\theta})}(K_m(\gamma^{-m} e^{i(-m)\theta}))^Tv_m}$ </center>
+
+- <p style="text-align:justify; text-justify:inter-ideograph;"> 接着将公式继续简化，将 $\gamma$ 设为一个 scaler $\in R$，这样就可以将它提到外面：$o_n = \sum_{m=1}^n{\gamma^{n-m}(Q_ne^{in\theta})}((K_me^{i(-m)\theta}))^Tv_m}$
+(之前不能提出来是因为在前面的推导中我们将其视为一个 $d$ 维的向量，而向量的乘法不具有交换律)。</p>
+
+- <p style="text-align:justify; text-justify:inter-ideograph;"> 然后根据欧拉公式：</p>
+
+<center> $e^{i(-m)\theta} = [cos(-m\theta_1)+sin(-m\theta_1),...,cos(-m\theta_d)+sin(-m\theta_d)]
+= [cos\ m\theta_1-sin\ m\theta_1,...,cos\ m\theta_d-sin\ m\theta_d] = e^{im\theta T*}$ </center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"> 其中 $T*$ 表示复数共轭转置，所以 $o_n$ 的计算公式可以进一步简化为 $o_n = \sum_{m=1}^n{\gamma^{n-m}(Q_ne^{in\theta})}((K_me^{i(m)\theta}))^{T*}v_m}$ 
+(对于实数向量 $K_m$，其复数共轭转置对于自身的转置，所以不影响)。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"> 
+
