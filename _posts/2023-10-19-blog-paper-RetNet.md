@@ -84,5 +84,8 @@ Method
 <p style="text-align:justify; text-justify:inter-ideograph;"> 其中 $T*$ 表示复数共轭转置，所以 $o_n$ 的计算公式可以进一步简化为 $o_n = \sum_{m=1}^n{\gamma^{n-m}(Q_ne^{in\theta})}((K_me^{i(m)\theta}))^{T*}v_m}$ 
 (对于实数向量 $K_m$，其复数共轭转置对于自身的转置，所以不影响)。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"> 
+<p style="text-align:justify; text-justify:inter-ideograph;"> 由于 $Q_n, K_m, v_m, e^{in\theta}/e^{im\theta}, \gammga^{n-m}$ 都可以并行计算得出，所以 $\sum_{m=1}^n$ 的操作只需一步便可计算出 $o_n$。
+而不像最开始的需要计算出每个 $s_n$ 后再计算 $o_n$ 的 $n$ 步 操作。这样便完成了由 RNN 到 transformer ($n$ 步操作到 $1$ 步操作)的转化证明，而且参数基本相同。
+
+
 
