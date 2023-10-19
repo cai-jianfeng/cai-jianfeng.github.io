@@ -103,7 +103,7 @@ Method(apply)
 
 <center> $\Theta_n = e^{in\theta}, D_{nm} = \begin{cases} \gamma^{n-m}, n \geq m \\ 0, n < m \end{cases} \in R^{|x| \times |x|}$ </center>
 
-<center> $O = Retention(X) = (QK^T \bigdot D)V$ </center></li>
+<center> $O = Retention(X) = (QK^T \bigodot D)V$ </center></li>
 
 <li><p style="text-align:justify; text-justify:inter-ideograph;"> Recurrent：在这种模式下，RetNet 类似于 RNN，
 通过 $O(1)$ 的计算复杂度计算隐藏状态 $S_n$ 和 输出 $O_n$ 进行序列计算来提高推理速度。
@@ -122,11 +122,11 @@ Method(apply)
 可以得到训练速度和推理速度居中的模式。具体的结合方式为：本文将输入序列划分为块。在每个块内，按照 Parallel 模型进行计算。相比之下，跨块信息按照 Recurrent 模式传递：</p>
 
 <center> $Q_{[i]} = Q_{Bi:B(i+1}, K_{[i]} = K_{Bi:B(i+1}, V_{[i]} = V_{Bi:B(i+1}$ </center>
-<center> $R_i = K_{[i]}^T(V_{[i]} \bigdots \zeta + \gamma^BR_{i-1}, \zeta_{ij} = \gamma^{B-i-1})$ </center>
-<center> $Retention(X_{[i]} = (Q_{[i]}K_{[i]}^T \bigdots D)V_{[i]} + (Q{[i]}R_{i-1}) \bigdots \xi, \xi_{ij} = \gamma^{i+1}$ </center>
+<center> $R_i = K_{[i]}^T(V_{[i]} \bigodot \zeta + \gamma^BR_{i-1}, \zeta_{ij} = \gamma^{B-i-1})$ </center>
+<center> $Retention(X_{[i]} = (Q_{[i]}K_{[i]}^T \bigodot D)V_{[i]} + (Q{[i]}R_{i-1}) \bigodot \xi, \xi_{ij} = \gamma^{i+1}$ </center>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中 $(Q_{[i]}K_{[i]}^T \bigdots D)V_{[i]}$ 表示 Inner-Chunk，即 Parallel 模式；
-$(Q{[i]}R_{i-1}) \bigdots \xi$ 表示 Cross-Chunk，即 Recurrent 模式。</p></li>
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $(Q_{[i]}K_{[i]}^T \bigodot D)V_{[i]}$ 表示 Inner-Chunk，即 Parallel 模式；
+$(Q{[i]}R_{i-1}) \bigodot \xi$ 表示 Cross-Chunk，即 Recurrent 模式。</p></li>
 </ul>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 在训练过程中，本文使用 Parallel 模式和 Chunk-wise Recurrent 模式。
