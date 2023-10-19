@@ -13,6 +13,7 @@ tags:
 第一作者：Yutao Sun(Tsinghua University)
 
 <a href="https://mp.weixin.qq.com/s/QfWv7AiF3yO88KaZ5VfURg" target="_blank">参考资料：一文理解RetNet</a>
+
 Question
 ===
 ![impossible triangle](/images/paper_RetNet_impossible_triangle.png)
