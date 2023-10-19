@@ -12,6 +12,7 @@ tags:
 
 第一作者：Yutao Sun(Tsinghua University)
 
+<a href="https://mp.weixin.qq.com/s/QfWv7AiF3yO88KaZ5VfURg" target="_blank">参考资料：一文理解RetNet</a>
 Question
 ===
 ![impossible triangle](/images/paper_RetNet_impossible_triangle.png)
@@ -116,6 +117,16 @@ Method(apply)
 改为先计算 $K_n$ 和 $V_n$ 的相乘然后一直累加到状态矩阵 $S_n$ 上，最后再和 $Q_n$ 相乘。
 而不是像 Parallel 模式那样，每个词的计算要先算 $Q_n$ 和前面所有词的 $K$ 相乘得到 attention 权值再和 $V$ 相乘求和，这样就需要一直保留历史的 $K$ 和 $V$，
 导致模型的内存消耗很大。</p></li>
+
+<li><p style="text-align:justify; text-justify:inter-ideograph;">Chunk-wise Recurrent：通过将 Parallel 模式和 Recurrent 模型相结合，
+可以得到训练速度和推理速度居中的模式。具体的结合方式为：本文将输入序列划分为块。在每个块内，按照 Parallel 模型进行计算。相比之下，跨块信息按照 Recurrent 模式传递：</p>
+
+<center> $Q_{[i]} = Q_{Bi:B(i+1}, K_{[i]} = K_{Bi:B(i+1}, V_{[i]} = V_{Bi:B(i+1}$ </center>
+<center> $R_i = K_{[i]}^T(V_{[i]} \bigdots \zeta + \gamma^BR_{i-1}, \zeta_{ij} = \gamma^{B-i-1})$ </center>
+<center> $Retention(X_{[i]} = (Q_{[i]}K_{[i]}^T \bigdots D)V_{[i]} + (Q{[i]}R_{i-1}) \bigdots \xi, \xi_{ij} = \gamma^{i+1}$ </center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $(Q_{[i]}K_{[i]}^T \bigdots D)V_{[i]}$ 表示 Inner-Chunk，即 Parallel 模式；
+$(Q{[i]}R_{i-1}) \bigdots \xi$ 表示 Cross-Chunk，即 Recurrent 模式。</p></li>
 </ul>
 
 
