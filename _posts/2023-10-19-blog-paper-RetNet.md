@@ -110,7 +110,7 @@ Method(apply)
 
 <center> $S_n = \gamma S_{n-1} + K_n^TV_n$ </center>
 
-<center> $Retention(X_n) = Q_nS_n,\ n = 1,...,|x|$ </center>
+<center> $O_n= Retention(X_n) = Q_nS_n,\ n = 1,...,|x|$ </center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 可以看到 Recurrent 模式下就是把 Parallel 模式下的计算顺序修改，
 改为先计算 $K_n$ 和 $V_n$ 的相乘然后一直累加到状态矩阵 $S_n$ 上，最后再和 $Q_n$ 相乘。
