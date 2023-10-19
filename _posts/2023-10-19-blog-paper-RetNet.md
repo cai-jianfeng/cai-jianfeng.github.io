@@ -37,7 +37,9 @@ Method
 <p style="text-align:justify; text-justify:inter-ideograph;"> 由于我们是要从 RNN 推算到 transformer，因此我们先要从 RNN 开始。
 它包含了一个隐藏状态 $s_n \in R^{d \times d}$ 和 一个输出 $o_n \in R^{1 \times d}$ 的计算：</p>
 
-<center> $s_n = AS_{n-1} + K_n^Tv_n \\ o_n = Q_ns_n = \sum_{m=1}^n{Q_nA^{n-m}K_m^Tv_m}$ </center>
+<center> $s_n = AS_{n-1} + K_n^Tv_n$ </center>
+
+<center> $o_n = Q_ns_n = \sum_{m=1}^n{Q_nA^{n-m}K_m^Tv_m}$ </center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 其中 $A \in R^{d \times d}$ 是一个矩阵，$K_n \in R^{1 \times d}$ 表示 K 中的第 n 个词所对应的 key。
 同样 $Q_n \in R^{1 \times d}$ 表示 Q 中的第 n 个词对应的 query。
