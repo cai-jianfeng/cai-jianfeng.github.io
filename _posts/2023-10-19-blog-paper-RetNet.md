@@ -136,7 +136,7 @@ $(Q{[i]}R_{i-1}) \bigodot \xi$ 表示 Cross-Chunk，即 Recurrent 模式。</p><
 ![Pseudocode](/images/paper_RetNet_pseudocode.png)
 
 
-<p style="color: red;"> 后续补充：1. 对角性质的证明；2. 如何将 Parallent 模式的公式变换回 Recurrent 模式 </p>
+<p style="color: red;"> 后续补充：1. 对角性质的证明；2. 如何将 Parallent 模式的公式变换回 Recurrent 模式。 </p>
 
 
 
