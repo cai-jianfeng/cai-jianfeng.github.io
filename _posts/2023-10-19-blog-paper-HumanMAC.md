@@ -47,7 +47,7 @@ Method
 为此，本文放弃了 encoder-decoder 架构，使用新的角度来看待整个问题：如果将未被观测到的 motions 看作是被 mask 的，那就是一个掩码补全问题(masked motion completion framwork)。</p>
 <ul><li><p style="text-align:justify; text-justify:inter-ideograph;">具体而言，
 假设已观测到的 motions 为 $x^{(1:H)} = [x^{(1)};...;x^{(H)}] \in R^{H \times 3J}$ 表示 $H$ 帧，每帧 $J$ 个关节(joint)的 3 维坐标。
-HMP 需要预测接下来的 $F$ 帧 motions $x^{(H+1:H+F)} = $x^{(1PH)} = [x^{(H+1)};...;x^{(H+F)}] \in R^{F \times 3J}$。
+HMP 需要预测接下来的 $F$ 帧 motions $x^{(H+1:H+F)} = x^{(1PH)} = [x^{(H+1)};...;x^{(H+F)}] \in R^{F \times 3J}$。
 在 training 时，本文使用传统的 DM 模型，将已观测到的数据和需要预测的数据看作一个整体 $x^{(1:H+F)}$ 进行正常的去噪训练。
 首先将 $x^{(1:H+F)}$ 使用离散余弦变换 DCT 转换到频域 $y = DCT(x) = Dx, D \in R^{(H+F) \times (H+F)}$，其中 $D$ 是预定义的 DCT basis。
 由于 DCT 是正交变换，最后只需要通过反离散余弦变换 iDCT 将结果 $\hat{y}$ 转换回时间域即可：$\hat{x} = iDCT(\hat{y}) = D^T\hat{y}$。
