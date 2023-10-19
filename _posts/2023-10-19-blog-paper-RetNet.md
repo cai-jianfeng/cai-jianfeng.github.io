@@ -37,14 +37,13 @@ Method
 <p style="text-align:justify; text-justify:inter-ideograph;"> 由于我们是要从 RNN 推算到 transformer，因此我们先要从 RNN 开始。
 它包含了一个隐藏状态 $s_n \in R^{d \times d}$ 和 一个输出 $o_n \in R^{1 \times d}$ 的计算：</p>
 
-<div style="text-align: center;"> $s_n = AS_{n-1} + K_n^Tv_n \\ o_n = Q_ns_n = \sum_{m=1}^n{Q_nA^{n-m}K_m^Tv_m}$ </div>
+<center> $s_n = AS_{n-1} + K_n^Tv_n \\ o_n = Q_ns_n = \sum_{m=1}^n{Q_nA^{n-m}K_m^Tv_m}$ </center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 其中 $A \in R^{d \times d}$ 是一个矩阵，$K_n \in R^{1 \times d}$ 表示 K 中的第 n 个词所对应的 key。
 同样 $Q_n \in R^{1 \times d}$ 表示 Q 中的第 n 个词对应的 query。
 对于 $o_n$ 从 $Q_ns_n$ 到 $\sum_{m=1}^n{Q_nA^{n-m}K_m^Tv_m}$ 的推理，只需要假设 $s_0$ 为全 0 矩阵进行归纳推理即可得到。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"> 本文定义 A 矩阵为 diagonalizable(可对角化) 矩阵，
-则可以将 A 分解为 </p>
+<p style="text-align:justify; text-justify:inter-ideograph;"> 本文定义 A 矩阵为 diagonalizable(可对角化) 矩阵，则可以将 A 分解为： </p>
 
 <center> $A = \Lambda \lambda \Lambda^{-1} = \Lambda (\gamma e^{i\theta}) \Lambda^{-1}$ </center>
 
