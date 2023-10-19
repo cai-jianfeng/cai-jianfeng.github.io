@@ -30,3 +30,19 @@ Method
 具体而言，首先给定一个输入序列 $\{x_i\}_{i=1}^{|x|}$，其中 $|x|$ 表示序列的长度。然后经过 word embedding 层得到词嵌入向量：</p>
 
 <center> $X = [x_1, ..., x_{|x|} \in R^{|x| \times d}$ </center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"> 然后对 $X$ 的每个词 $X_n \in  R^{1 \times d}$ 乘上权重 $\omega_V \in R^{d \times d}$ 得到 $v_n \in R^{1 \times d}$：$v_n = X_n · \omega_V$。
+同时和 transformer 相似，通过 $W_Q \in R^{d \times d}$ 和 $W_K \in R^{d \times d}$ 计算 $Q$ 和 $K$：$Q = XW_Q,\ K = XW_K$ </p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"> 由于我们是要从 RNN 推算到 transformer，因此我们先要从 RNN 开始。
+它包含了一个隐藏状态 $s_n \in R^{d \times d}$ 和 一个输出 $o_n \in R^{1 \times d}$ 的计算：</p>
+
+<center> $s_n = AS_{n-1} + K_n^Tv_n \\ o_n = Q_ns_n = \sum_{m=1}^n{Q_nA^{n-m}K_m^Tv_m$ </center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">
+
+<p style="text-align:justify; text-justify:inter-ideograph;">
+
+<p style="text-align:justify; text-justify:inter-ideograph;">
+
+<p style="text-align:justify; text-justify:inter-ideograph;">
