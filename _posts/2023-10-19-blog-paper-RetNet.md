@@ -25,7 +25,8 @@ Method(Mathematical)
 而本文通过分析，可以发现传统的 RNN 模型在 inference 时的时间复杂度为 $O(1)$，但是它无法实现并行训练；
 而 transformer 可以实现并行训练，但是其 inference 的时间复杂度为 $O(N)$，同时它们都具有 strong performance。
 如果能将 RNN 模型和 transformer 模型结合，就可以实现打破不可能三角，但是问题在于如何能将两者结合，使得它们既使用同一套参数，又能实现不同的架构效果。
-于是本文便提出了 RetNet，可以在使用相同参数的情况下同时支持三个计算范式：1) parallel; 2) recurrent; 3) chunk-wise recurrent。
+于是本文便提出了 RetNet，可以在使用相同参数的情况下同时支持三个计算范式：1) parallel; 2) recurrent; 3) chunk-wise recurrent。</p>
+
 <p style="text-align:justify; text-justify:inter-ideograph;"> RetNet 架构和 Transformer 相似，都是由一个个 RetNet block 组成，每个 block 包含一个 multi-scale retention (MSR) 和一个 feed-forward network (FFN).
 而 FFN 与 Transformer 一致，因此下面就详细讲解 MSR. 
 由于 RetNet 的 parallel (对应 transformer) 和 recurrent (对应 RNN) 使用的是同一套参数，我们就需要数学推导来证明 RNN 可以通过一定的转化变成 transformer.
