@@ -51,6 +51,8 @@ Method
 下面推导如何从 $\lambda$ 转化为 $\gamma e^{i\theta}$：首先需要理解 $e^{ix}$ 是一个欧拉公式，将其转化为复数可得 $e^{ix} = cos\ x + isin\ x$。
 而 $\theta$ 是一个 $d$ 维向量，所以根据欧拉公式可得 $e^{i\theta} = [cos\theta_1+sin\theta_1,...,cos\theta_d+sin\theta_d] \in R^{d \times d}$。
 因为 $\gamma$ 也是一个 $d$ 维向量，所以两者相乘($d \times 1 · 1 \times d = d \times d$)便可得到 $d \times d$的矩阵 $\lambda$。
-对角元素的值就对应将 $\gamma$ 和 $e^{i\theta}$ 转成复数向量相乘再将结果转回实数向量的结果。
+对角元素的值就对应将 $\gamma$ 和 $e^{i\theta}$ 转成复数向量相乘再将结果转回实数向量的结果。</p>
+
+<p style="color: red;"> 对角性质的证明 </p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">
