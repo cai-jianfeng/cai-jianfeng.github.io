@@ -57,4 +57,10 @@ Method
 
 <p style="color: red;"> 对角性质的证明 </p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">
+<p style="text-align:justify; text-justify:inter-ideograph;"> 通过将矩阵 $A$ 对角化，则可以将 $o_n$ 的计算公式中的 $A^{n-m}$ 展开为 $A^{n-m} = \Lambda (\gamma e^{i\theta})^{n-m} \Lambda^{-1}\ (\Lambda^{-1}\Lambda = 1)$。
+将展开式带入到 $o_n$ 的计算公式中可得：</p>
+
+<center> o_n = \sum_{m=1}^n{Q_nA^{n-m}K_m^Tv_m} \\ 
+= \sum_{m=1}^n{Q_n(\Lambda (\gamma e^{i\theta})^{n-m} \Lambda^{-1})K_m^Tv_m} \\
+= \sum_{m=1}^n{X_nW_Q(\Lambda (\gamma e^{i\theta})^{n-m} \Lambda^{-1})(X_mW_K)^Tv_m} \\
+= \sum_{m=1}^n{X_nW_Q\Lambda (\gamma e^{i\theta})^{n-m} \Lambda^{-1}W_K^TX_m^Tv_m}</center>
