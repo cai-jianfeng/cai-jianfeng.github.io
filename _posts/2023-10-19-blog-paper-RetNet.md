@@ -95,7 +95,23 @@ Method(apply)
 <p style="text-align:justify; text-justify:inter-ideograph;"> 所以根据上面的推导，可以在训练的时候选择 transformer 的 $1$ 步操作模式提高训练并行性，而在预测时选择 RNN 的 $n$ 步操作模式提高推理速度。
 具体而言，RetNet 将这两种模式分别命名为 Parallel 和 Recurrent。</p>
 
-* <p style="text-align:justify; text-justify:inter-ideograph;">
+<ol><p style="text-align:justify; text-justify:inter-ideograph;"> Parallel：在这种模式下，RetNet 类似于 transformer，通过计算 $K,Q,V$ 并进行注意力机制来提高并行性。
+具体而言，本文计算 $Q,K,V$ 和输出 $O$ 的公式为(其中 $\bar{\Theta}$ 是 $\Theta$ 的复数共轭)：</p>
+
+<center> $Q = (XW_Q) \bigodot \Theta, K = (XW_K) \bigodot \bar{\Theta}, V = XW_V$ </center>
+
+<center> $\Theta_n = e^{in\theta}, D_{nm} = \begin{cases} \gamma^{n-m}, n \geq m \\ 0, n < m \end{cases} \in R^{|x| \times |x|}$ </center>
+
+<center> $O = Retention(X) = (QK^T \bigdot D)V$ </center></ol>
+
+<ol><p style="text-align:justify; text-justify:inter-ideograph;"> Recurrent：在这种模式下，RetNet 类似于 RNN，
+通过 $O(1)$ 的计算复杂度计算隐藏状态 $S_n$ 和 输出 $O_n$ 进行序列计算来提高推理速度。
+具体而言，本文计算 $S_n, O_n$ 的公式为(其中的 $Q,K,V,\gamma$ 和 Parallel 模式的是一样的参数)：</p>
+
+<center> $S_n = \gamma S_{n-1} + K_n^TV_n$ </center>
+
+<center> $Retention(X_n) = Q_nS_n,\ n = 1,...,|x|$ </center></ol>
+
 
 
 
