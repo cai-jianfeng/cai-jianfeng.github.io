@@ -129,6 +129,12 @@ Method(apply)
 $(Q{[i]}R_{i-1}) \bigdots \xi$ 表示 Cross-Chunk，即 Recurrent 模式。</p></li>
 </ul>
 
+<p style="text-align:justify; text-justify:inter-ideograph;"> 在训练过程中，本文使用 Parallel 模式和 Chunk-wise Recurrent 模式。
+序列或块内的并行化可以有效地利用 gpu 来加速计算。更有利的是，Chunk-wise Recurrent 对于长序列训练特别有用，它在计算量和内存消耗方面都很高效。
+而在推理过程中使用了 Recurrent 模式，很好地拟合了自回归解码。O(1)的复杂度降低了内存和推理延迟，同时达到了和 transformer 相同的结果。</p>
+
+![Pseudocode](/images/paper_RetNet_pseudocode.png)
+
 
 
 
