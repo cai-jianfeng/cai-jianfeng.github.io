@@ -41,10 +41,17 @@ Method
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 其中 $A \in R^{d \times d}$ 是一个矩阵，$K_n \in R^{1 \times d}$ 表示 K 中的第 n 个词所对应的 key。
 同样 $Q_n \in R^{1 \times d}$ 表示 Q 中的第 n 个词对应的 query。
-对于 $o_n$ 从 $Q_ns_n$ 到 $\sum_{m=1}^n{Q_nA^{n-m}K_m^Tv_m$ 的推理，只需要假设 $s_0$ 为全 0 矩阵进行归纳推理即可得到。</p>
+对于 $o_n$ 从 $Q_ns_n$ 到 $\sum_{m=1}^n{Q_nA^{n-m}K_m^Tv_m}$ 的推理，只需要假设 $s_0$ 为全 0 矩阵进行归纳推理即可得到。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"> 本文定义 A 矩阵为 diagonalizable 矩阵，则可以将 A 分解为 $A = \Lambda \lambda \Lambda^{-1} = \Lambda (\gamma e^{i\theta}) \Lambda^{-1}$
+<p style="text-align:justify; text-justify:inter-ideograph;"> 本文定义 A 矩阵为 diagonalizable(可对角化) 矩阵，
+则可以将 A 分解为 </p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">
+<center> $A = \Lambda \lambda \Lambda^{-1} = \Lambda (\gamma e^{i\theta}) \Lambda^{-1}$ </center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"> 其中 $\gamma$ 和 $\theta \in R^{1 \times d} | R^{d \times 1}$，$\lambda$ 是一个对角矩阵，$\Lambda$ 是一个可逆矩阵。
+下面推导如何从 $\lambda$ 转化为 $\gamma e^{i\theta}$：首先需要理解 $e^{ix}$ 是一个欧拉公式，将其转化为复数可得 $e^{ix} = cos\ x + isin\ x$。
+而 $\theta$ 是一个 $d$ 维向量，所以根据欧拉公式可得 $e^{i\theta} = [cos\theta_1+sin\theta_1,...,cos\theta_d+sin\theta_d] \in R^{d \times d}$。
+因为 $\gamma$ 也是一个 $d$ 维向量，所以两者相乘($d \times 1 · 1 \times d = d \times d$)便可得到 $d \times d$的矩阵 $\lambda$。
+对角元素的值就对应将 $\gamma$ 和 $e^{i\theta}$ 转成复数向量相乘再将结果转回实数向量的结果。
 
 <p style="text-align:justify; text-justify:inter-ideograph;">
