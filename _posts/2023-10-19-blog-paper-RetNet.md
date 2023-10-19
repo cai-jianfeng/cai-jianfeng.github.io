@@ -45,7 +45,7 @@ Method(Mathematical)
 同样 $Q_n \in R^{1 \times d}$ 表示 Q 中的第 n 个词对应的 query。
 对于 $o_n$ 从 $Q_ns_n$ 到 $\sum_{m=1}^n{Q_nA^{n-m}K_m^Tv_m}$ 的推理，只需要假设 $s_0$ 为全 0 矩阵进行归纳推理即可得到。</p></ol>
 
-<ol><p style="text-align:justify; text-justify:inter-ideograph;"> 本文定义 A 矩阵为 diagonalizable(可对角化) 矩阵，则可以将 A 分解为： </p>
+<ul><li><p style="text-align:justify; text-justify:inter-ideograph;"> 本文定义 A 矩阵为 diagonalizable(可对角化) 矩阵，则可以将 A 分解为： </p>
 
 <center> $A = \Lambda \lambda \Lambda^{-1} = \Lambda (\gamma e^{i\theta}) \Lambda^{-1}$ </center>
 
@@ -63,26 +63,26 @@ Method(Mathematical)
 <center> $o_n = \sum_{m=1}^n{Q_nA^{n-m}K_m^Tv_m} \\ 
 = \sum_{m=1}^n{Q_n(\Lambda (\gamma e^{i\theta})^{n-m} \Lambda^{-1})K_m^Tv_m} \\
 = \sum_{m=1}^n{X_nW_Q(\Lambda (\gamma e^{i\theta})^{n-m} \Lambda^{-1})(X_mW_K)^Tv_m} \\
-= \sum_{m=1}^n{X_nW_Q\Lambda (\gamma e^{i\theta})^{n-m} \Lambda^{-1}W_K^TX_m^Tv_m}$ </center></ol>
+= \sum_{m=1}^n{X_nW_Q\Lambda (\gamma e^{i\theta})^{n-m} \Lambda^{-1}W_K^TX_m^Tv_m}$ </center></li>
 
-<ol><p style="text-align:justify; text-justify:inter-ideograph;"> 由于 $W_Q, W_K, \Lambda$ 都是可学习参数，所以可以将 $\Lambda$ 融合进 $W_Q, W_K$ 中当作一个参数学习，
+<li><p style="text-align:justify; text-justify:inter-ideograph;"> 由于 $W_Q, W_K, \Lambda$ 都是可学习参数，所以可以将 $\Lambda$ 融合进 $W_Q, W_K$ 中当作一个参数学习，
 即 $W_Q = W_Q\Lambda, W_K^T = \Lambda^{-1} W_K^T$。则可以进一步简化 $o_n$ 的计算公式：</p>
 
 <center> $o_n = \sum_{m=1}^n{Q_n(\gamma e^{i\theta})^{n-m}K_m^Tv_m} \\
 = \sum_{m=1}^n{Q_n(\gamma e^{i\theta})^{n}(\gamma e^{i\theta})^{-m}K_m^Tv_m} \\
 = \sum_{m=1}^n{Q_n(\gamma e^{i\theta})^{n}(K_m(\gamma e^{i\theta})^{-m})^Tv_m} \\
-= \sum_{m=1}^n{Q_n(\gamma^n e^{in\theta})(K_m(\gamma^{-m} e^{i(-m)\theta}))^Tv_m}$ </center></ol>
+= \sum_{m=1}^n{Q_n(\gamma^n e^{in\theta})(K_m(\gamma^{-m} e^{i(-m)\theta}))^Tv_m}$ </center></li>
 
-<ol><p style="text-align:justify; text-justify:inter-ideograph;"> 接着将公式继续简化，将 $\gamma$ 设为一个 scaler $\in R$，这样就可以将它提到外面：$o_n = \sum_{m=1}^n{\gamma^{n-m}(Q_ne^{in\theta})((K_me^{i(-m)\theta}))^Tv_m}$
-(之前不能提出来是因为在前面的推导中我们将其视为一个 $d$ 维的向量，而向量的乘法不具有交换律)。</p></ol>
+<li><p style="text-align:justify; text-justify:inter-ideograph;"> 接着将公式继续简化，将 $\gamma$ 设为一个 scaler $\in R$，这样就可以将它提到外面：$o_n = \sum_{m=1}^n{\gamma^{n-m}(Q_ne^{in\theta})((K_me^{i(-m)\theta}))^Tv_m}$
+(之前不能提出来是因为在前面的推导中我们将其视为一个 $d$ 维的向量，而向量的乘法不具有交换律)。</p></li>
 
-<ol><p style="text-align:justify; text-justify:inter-ideograph;"> 然后根据欧拉公式：</p>
+<li><p style="text-align:justify; text-justify:inter-ideograph;"> 然后根据欧拉公式：</p>
 
 <center> $e^{i(-m)\theta} = [cos(-m\theta_1)+sin(-m\theta_1),...,cos(-m\theta_d)+sin(-m\theta_d)] \\
 = [cos\ m\theta_1-sin\ m\theta_1,...,cos\ m\theta_d-sin\ m\theta_d] = e^{im\theta T*}$ </center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 其中 $T*$ 表示复数共轭转置，所以 $o_n$ 的计算公式可以进一步简化为 $o_n = \sum_{m=1}^n{\gamma^{n-m}(Q_ne^{in\theta})((K_me^{i(m)\theta}))^{T*}v_m}$ 
-(对于实数向量 $K_m$，其复数共轭转置对于自身的转置，所以不影响)。</p></ol>
+(对于实数向量 $K_m$，其复数共轭转置对于自身的转置，所以不影响)。</p></li></ul>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 由于 $Q_n, K_m, v_m, e^{in\theta}/e^{im\theta}, \gamma^{n-m}$ 都可以并行计算得出，所以 $\sum_{m=1}^n$ 的操作只需一步便可计算出 $o_n$。
 而不像最开始的需要计算出每个 $s_n$ 后再计算 $o_n$ 的 $n$ 步 操作。这样便完成了由 RNN 到 transformer ($n$ 步操作到 $1$ 步操作)的转化证明，而且参数基本相同。
@@ -95,22 +95,23 @@ Method(apply)
 <p style="text-align:justify; text-justify:inter-ideograph;"> 所以根据上面的推导，可以在训练的时候选择 transformer 的 $1$ 步操作模式提高训练并行性，而在预测时选择 RNN 的 $n$ 步操作模式提高推理速度。
 具体而言，RetNet 将这两种模式分别命名为 Parallel 和 Recurrent。</p>
 
-<ol><p style="text-align:justify; text-justify:inter-ideograph;"> Parallel：在这种模式下，RetNet 类似于 transformer，通过计算 $K,Q,V$ 并进行注意力机制来提高并行性。
+<ul><li><p style="text-align:justify; text-justify:inter-ideograph;"> Parallel：在这种模式下，RetNet 类似于 transformer，通过计算 $K,Q,V$ 并进行注意力机制来提高并行性。
 具体而言，本文计算 $Q,K,V$ 和输出 $O$ 的公式为(其中 $\bar{\Theta}$ 是 $\Theta$ 的复数共轭)：</p>
 
 <center> $Q = (XW_Q) \bigodot \Theta, K = (XW_K) \bigodot \bar{\Theta}, V = XW_V$ </center>
 
 <center> $\Theta_n = e^{in\theta}, D_{nm} = \begin{cases} \gamma^{n-m}, n \geq m \\ 0, n < m \end{cases} \in R^{|x| \times |x|}$ </center>
 
-<center> $O = Retention(X) = (QK^T \bigdot D)V$ </center></ol>
+<center> $O = Retention(X) = (QK^T \bigdot D)V$ </center></li>
 
-<ol><p style="text-align:justify; text-justify:inter-ideograph;"> Recurrent：在这种模式下，RetNet 类似于 RNN，
+<li><p style="text-align:justify; text-justify:inter-ideograph;"> Recurrent：在这种模式下，RetNet 类似于 RNN，
 通过 $O(1)$ 的计算复杂度计算隐藏状态 $S_n$ 和 输出 $O_n$ 进行序列计算来提高推理速度。
 具体而言，本文计算 $S_n, O_n$ 的公式为(其中的 $Q,K,V,\gamma$ 和 Parallel 模式的是一样的参数)：</p>
 
 <center> $S_n = \gamma S_{n-1} + K_n^TV_n$ </center>
 
-<center> $Retention(X_n) = Q_nS_n,\ n = 1,...,|x|$ </center></ol>
+<center> $Retention(X_n) = Q_nS_n,\ n = 1,...,|x|$ </center></li>
+</ul>
 
 
 
