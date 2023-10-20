@@ -62,7 +62,7 @@ $y_t = \sqrt{\bar{\alpha_t}}y_0 + \sqrt{1-\bar{\alpha_t}}\epsilon;\ \bar{\alpha_
 具体而言，对于从第 $t$ 步推理到第 $t-1$ 步，模型分成了 $2$ 个分支。
 如图 1 (b) 的左边分支，首先对于已观测的 motions $x^{(1:H)}$，将其最后一帧填充到需要预测的帧中，即令 $x^{(H+1)},...,x^{(H+F)} = x^H$，
 再对填充得到的 $x$ 进行 $DCT$ 得到 $y$。
-接着对 $y$ 中添加时间步为 $t-1$ 的噪声获得含有噪声的 $y_{t-1}^n$，即 $y_{t-1}^n = \sqrt{\bar{\alpha}_{t-1}}y + \sqrt{1 - \bar{\alpha}_{t-1}}z, z \sim N(0, I)$，则 $y_{t-1}^n \sim q(y_{t-1}|y)$。
+接着对 $y$ 中添加时间步为 $t-1$ 的噪声获得含有噪声的 $y_{t-1}^n$，即 $y_{t-1}^n = \sqrt{\bar{\alpha}_{t-1}}y + \sqrt{1 - \bar{\alpha}_{t-1}}z, z \sim N(0, I)$，则可以得到 $y_{t-1}^n \sim q(y_{t-1}|y)$。
 同时，如图 1 (b) 的右边分支，模型使用前一步预测得到的 $y_t$ 进行进一步去噪得到
 $y_{t-1}^d$：$y_{t-1}^d = \frac{1}{\sqrt{\alpha_t}}(y_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}\epsilon_{\theta}(y_t, t))}+\sigma_tz; z \sim N(0,I)$$\ if\ t = 1\ else\ 0$，
 则 $y_{t-1}^d \sim p_{\theta}(y_{t-1}|y_t)$。
@@ -80,6 +80,6 @@ train 和 inference 算法如下：</p>
 ![HumanMAC train and inference algorithm](/images/paper_HumanMAC_algorithms.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">针对含有 switch 的数据，本文采用不同的策略进行 inference。
-除了提供前 $H$ 观测帧 motions 之外。还提供后 $P$ 目标帧 motions，并将掩码 $M$ 设计为 $M = [1_1,...,1_H,0_1,...,0_{F-P},1_1,...,1_P]$。
+除了提供前 $H$ 观测帧 motions 之外。还提供后 $P$ 目标帧 motions，并将掩码 $M$ 进行修改，设计为 $M = [1_1,...,1_H,0_1,...,0_{F-P},1_1,...,1_P]$。
 由于本文在训练时时直接对整个序列进行建模，使得生成的 motions 被限制为在观测($H$)、预测($F_P$)和目标($P$)帧之间连续。
 此外，得益于运动的连续性，训练后的模型能够自然地完成不同类别运动的切换。</p>
