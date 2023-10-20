@@ -43,9 +43,9 @@ Method
 
 <li><p style="text-align:justify; text-justify:inter-ideograph;">Transformer：其架构和普通的 Transformer 一致，包括 LayerNorm，Self-Attention 和 FFN。
 不同的是，iTransformer 只有唯一的输入 $H$，而没有加入位置信息，因为各个变量的排序对学习变量间的相关性影响不大。
-对于 LayerNorm，模型针对每个 $h_n$ 进行归一化：$LayerNorm(H) = \{\frac{h_n - Mean(h_n)}{\sqrt{Var(h_n)}\}|n = 1,...,N$。
+对于 LayerNorm，模型针对每个 $h_n$ 进行归一化：$LayerNorm(H) = \{\frac{h_n - Mean(h_n)}{\sqrt{Var(h_n)}}\}|n = 1,...,N$。
 对于 Self-Attention，模型主要利用注意力机制学习各个变量之间的相关性(即学习不同的 $h_n$ 之间的关联性)，
-通过 $W_Q^{l-1},W_K^{l-1},W_V^{l-1} \in R^{D \time d_k}$ 将 $H^{l-1}$ 投射到不同的表示：
+通过 $W_Q^{l-1},W_K^{l-1},W_V^{l-1} \in R^{D \times d_k}$ 将 $H^{l-1}$ 投射到不同的表示：
 $Q^{l-1} = HW_Q^{l-1}, K^{l-1} = HW_K^{l-1}, V^{l-1} = HW_V^{l-1}$。
 并使用注意力机制计算新的表示：$hat{H}^l = (Q^{l-1}{K^{l-1}}^T/\sqrt{d_k})V^{l-1}$。
 对于FFN：模型主要是为了学习时间序列的复杂表示(即独立学习每个 $h_n$ 的表示)，
