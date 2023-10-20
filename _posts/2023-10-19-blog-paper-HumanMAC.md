@@ -65,7 +65,7 @@ $y_t = \sqrt{\bar{\alpha_t}}y_0 + \sqrt{1-\bar{\alpha_t}}\epsilon;\ \bar{\alpha_
 接着对 $y$ 中添加时间步为 $t-1$ 的噪声获得含有噪声的 $y_{t-1}^n$，即 $y_{t-1}^n = \sqrt{\bar{\alpha}_{t-1}}y + \sqrt{1 - \bar{\alpha}_{t-1}}z, z \sim N(0, I)$，则可以得到 $y_{t-1}^n \sim q(y_{t-1}|y)$。
 同时，如图 1 (b) 的右边分支，模型使用前一步预测得到的 $y_t$ 进行进一步去噪得到
 $y_{t-1}^d$：$y_{t-1}^d = \frac{1}{\sqrt{\alpha_t}}(y_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}\epsilon_{\theta}(y_t, t))}+\sigma_tz; z \sim N(0,I)$$\ if\ t = 1\ else\ 0$，
-则 $y_{t-1}^d \sim p_{\theta}(y_{t-1}|y_t)$。
+则可以得到 $y_{t-1}^d \sim p_{\theta}(y_{t-1}|y_t)$。
 对于 $y_{t-1}^n$，它的前 $H$ 帧是由观测数据加入第 $t-1$ 步噪声得到的，应该更加接近真实数据在第 $t-1$ 步时前 $H$ 帧的值；
 而 $y_{t-1}^d$，它的后 $F$ 帧是由模型从第 $t$ 步的输出 $y_t$ 进一步预测得到的，应该更加接近真实数据在第 $t-1$ 步时后 $F$ 帧的值。
 所以，我们把 $y_{t-1}^n$ 的前 $H$ 帧和 $y_{t-1}^d$的后 $F$ 帧结合起来，作为本次模型预测得到的输出 $y_{t-1}$。
