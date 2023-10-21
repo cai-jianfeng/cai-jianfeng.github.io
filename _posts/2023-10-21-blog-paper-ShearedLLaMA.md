@@ -42,10 +42,10 @@ hidden dimentions 就是 Embedding 层将原始数据转换成的潜表示所包
 假设源模型，即大模型 $M_S$ 的 hidden dimention 为 $d_S$, 有 $L_S$ 层，每一层包括 $1$ 个 Multi-head Attention (MHA) 和一个 FFN，
 每个 MHA 中 head 的数量为 $H_S$，，每个 FFN 的 intermediate dimensions 为 $m_S$，则可以设计如下掩码：</p>
 
-|   Granularity   |   Layer   |   Hidden dimension   |   Head   |   Intermediate dimension   |
-| :--: | :--: | :--: | :--: | :--: |
-|   Pruning masks   |   $z^{layer} \in R^{L_S}$   |   $z^{hidden} \in R^{d_S}$   |   $z^{head} \in R^{H_S} (\times L_S)$   |   $z^{int} \in R^{m_S} (\times L_S)$   |
+| Granularity | Layer | Hidden dimension | Head | Intermediate dimension |
+|:--------|:-------:|:-------:|:-------:|--------:|
+|Pruning masks|$z^{layer} \in R^{L_S}$|$z^{hidden} \in R^{d_S}$|$z^{head} \in R^{H_S} (\times L_S)$|$z^{int} \in R^{m_S} (\times L_S)$|
 
 <p style="text-align:justify; text-justify:inter-ideograph;">例如，其中的 $z^{layer}$ 表示 $L_S$ 层 Transforner Block 的掩码，$z_i^{layer} = 0$ 表示 $i$ 层的 Transforner Block 舍弃；反之则表示保留。
-接着便是如何将掩码融入到剪枝优化过程中以限制模型的架构。</p></li>
+接着便是如何将掩码融入到剪枝优化过程中以限制模型的架构。很明显这是一个约束的优化问题，最常用的方法便是</p></li>
 </ul>
