@@ -66,6 +66,24 @@ $\widetilde{L}^{head}(\lambda, \theta, z) = \lambda^{head} · (\sum{z^{head}} - 
 但是这样有一个问题：对于大模型来说，它的训练是从头开始的，即它的初始状态是对各个 domain 的知识容量 $=0$；而对于剪枝得到的小模型，它本身对不同的 domain 存在一定的、各不相同的知识
 (本文通过分析和实验证明了剪枝小模型一般对 low-entropy 且小型的 domain (例如 Github) 保留有较多的知识，而对于 high-entropy 且大型的 domain (例如 C4) 保留的知识较少)，
 如果再直接将大模型训练的数据集给小模型训练，则会导致数据利用的 inefficient (即对于 low-entropy 且小型的 domain 学习的很快，但是对于 high-entropy 且大型的 domain 学的很慢)，
-进而有损模型性能，所以就需要对数据集进行采样以平衡小模型在训练时对各个 domain 学习的快慢。
-这里本文还是假设大模型 pre-trained 的最终模型结果是较为优质的
-</p>
+进而有损模型性能，所以就需要对数据集进行采样以平衡小模型在训练时对各个 domain 的学习程度。
+于是本文便提出了 dynamic batch loading 的数据集采样方式。
+这里便引出了 2 个新的问题：1) 如何定义模型对每个 domain 的学习程度；2) 训练时该和谁去对齐每个 domain 的学习程度以调整数据集的采样。
+对于第一个问题，本文采用模型在每个 domain 上的 loss 来近似定义模型对每个 domain 的学习程度：loss 越低则表示在该 domain 的学习程度较低；反之则表示在该 domain 的学习程度较高。
+而对于第二个问题，这里本文还是假设大模型 pre-trained 的最终模型结果是较为优质的，这与大模型在每个 domain 上的最终 loss 进行对齐就可以调整数据集的采样。
+具体而言，假设训练数据集有 k$ 个 domains：$D_1,...,D_k$，每个 domain 还有一个验证集 $D_v^{val}$ 用于小模型的对齐。
+首先将大模型在每个 domain 的 loss 设为参考 loss：$l_{ref}(D_i)$，需要在训练过程中不断对齐 $l_{ref}(D_i)$。
+由于每个 loss 的量纲可能不同，所以比较绝对大小没有意义，而是最常见的是将小模型当前的 loss 减去参考 loss，并用参考 loss 进行归一化后，才能说明每个 domain 的学习情况，
+本文采用了更高级的方法来更新，即每过 $m$ 次训练迭代，模型便在 $D_i^{val}$ 中测试每个 domain 的 loss $l_t$ (假设当前是 step $t$)。
+然后更新数据集的采样权重 $\omega_t$，模型学习程度较低的应该多采样，而学习程度较高的应该少采样，所以采样权重的更新公式为(exponential ascent)：</p>
+
+<center>$\alpha_t = \omega_{t-m} · exp(\Delta_t) = \omega_{t-m} · exp(max\{l_t - l_{ref}\}); \omega_t = \frac{\alpha_t}{\sum_i{\alpha_t[i]}}$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">最后获得 $\omega_t$ 便是新一轮的数据集采样权重，循环 $m$ 往复，便可进行训练。dynamic batch loading 的整个算法流程如下图：
+可以看到虽然 dynamic batch loading 只是在剪枝模型再训练阶段提到，但是它也可以运用在 target structed pruning 阶段，
+这样剪枝得到的初始模型在每个 domain 的学习程度便已经尽可能和大模型相似了，更有利于后面的再训练。
+这里还有一个小问题，初始的 $\omega_0$ 该如何确定？对于 target structed pruning 阶段，则使用数据集 $D^{val}$ 本身的 domain 权重(即数据集 $D^{val}$ 中各个 domain 的数据量)作为 $\omega_0$；
+而对于剪枝后的再训练，则使用初始的剪枝模型在数据集 $D^{val}$ 上的原始的各个 domain 的 loss 比重作为 $\omega_0$。
+除此之外。在参考 loss 的选择中，除了将大模型在每个 domain 的 loss 设为参考 loss，还可以使用 scaling law 所预测的 loss 作为参考 loss。</p>
+
+![Sheared LLaMA](/images/paper_ShearedLLaMA_algorithm2.png)
