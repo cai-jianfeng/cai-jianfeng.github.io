@@ -71,7 +71,7 @@ $\widetilde{L}^{head}(\lambda, \theta, z) = \lambda^{head} · (\sum{z^{head}} - 
 这里便引出了 2 个新的问题：1) 如何定义模型对每个 domain 的学习程度；2) 训练时该和谁去对齐每个 domain 的学习程度以调整数据集的采样。
 对于第一个问题，本文采用模型在每个 domain 上的 loss 来近似定义模型对每个 domain 的学习程度：loss 越低则表示在该 domain 的学习程度较低；反之则表示在该 domain 的学习程度较高。
 而对于第二个问题，这里本文还是假设大模型 pre-trained 的最终模型结果是较为优质的，这与大模型在每个 domain 上的最终 loss 进行对齐就可以调整数据集的采样。
-具体而言，假设训练数据集有 k$ 个 domains：$D_1,...,D_k$，每个 domain 还有一个验证集 $D_v^{val}$ 用于小模型的对齐。
+具体而言，假设训练数据集有 $k$ 个 domains：$D_1,...,D_k$，每个 domain 还有一个验证集 $D_v^{val}$ 用于小模型的对齐。
 首先将大模型在每个 domain 的 loss 设为参考 loss：$l_{ref}(D_i)$，需要在训练过程中不断对齐 $l_{ref}(D_i)$。
 由于每个 loss 的量纲可能不同，所以比较绝对大小没有意义，而是最常见的是将小模型当前的 loss 减去参考 loss，并用参考 loss 进行归一化后，才能说明每个 domain 的学习情况，
 本文采用了更高级的方法来更新，即每过 $m$ 次训练迭代，模型便在 $D_i^{val}$ 中测试每个 domain 的 loss $l_t$ (假设当前是 step $t$)。
