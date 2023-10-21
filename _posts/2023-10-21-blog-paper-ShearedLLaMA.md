@@ -23,3 +23,10 @@ Method
 
 ![targeted structured pruning](/images/paper_ShearedLLaMA.png)
 
+<p style="text-align:justify; text-justify:inter-ideograph;">首先要从一个以及训练好的大模型获得高性能的小模型最直观也是最主流的方法就是模型剪枝(pruning；当然 student-teacher 架构也是一种解决方法，但是需要训练 student 模型 from scratch)。
+但是 pruning 有 2 个问题需要解决：</p>
+
+1) 如何设计小模型的架构，使其拥有良好的性能和高效推理的潜力？ 
+2) 如何继续训练剪枝好的小模型使其达到理想性能？
+
+<p style="text-align:justify; text-justify:inter-ideograph;">本文就针对这 2 个 问题分别给出了自己的解决思路。</p>
