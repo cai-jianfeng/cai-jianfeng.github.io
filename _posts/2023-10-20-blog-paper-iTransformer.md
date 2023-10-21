@@ -39,7 +39,8 @@ Method
 而模型主要包括三部分：1) Embedding; 2) TransformerBlock; 3) Projection。</p>
 
 <ul><li><p style="text-align:justify; text-justify:inter-ideograph;">Embedding：和普通的 Transformer 一致，Embedding 层是一个 MLP，
-它将原始数据 $X \in R^{T \times N}$ 映射为潜表示 $H \in R^{D \times N}$：$h_n^0 = Embedding(X_{:,n}), H = \{h_1,...,h_N\}$。</p></li>
+它将原始数据 $X \in R^{T \times N}$ 映射为潜表示 $H \in R^{D \times N}$：$h_n^0 = Embedding(X_{:,n}), H = \{h_1,...,h_N\}$，
+便可将 $H$ 送入模型进行训练。</p></li>
 
 <li><p style="text-align:justify; text-justify:inter-ideograph;">Transformer：其架构和普通的 Transformer 一致，包括 LayerNorm，Self-Attention 和 FFN。
 不同的是，iTransformer 只有唯一的输入 $H$，而没有加入位置信息，因为各个变量的排序对学习变量间的相关性影响不大。
