@@ -37,7 +37,15 @@ Basic Application
 在 LaTeX 中，大部分的代码格式都是 \代码函数名[基本参数]{内容}，在无需设置特定的基本参数(即全部使用默认)时可以不写 [基本参数]，例如，选择 IEEEtran 的文档格式，并且基本参数为 lettersize,journal，则可以使用代码 \documentclass[lettersize,journal]{IEEEtran}。
 接着是引入编写内容时所需要用到的宏包(类似于 C 语言的 include 和 python 的 import)来引入自己所要使用的代码函数，引入宏包的代码函数为 \usepackage{包名}，
 例如，你想在文章中使用 \cite{} 这个代码函数来对参考文献进行引用，就需要在这里引入宏包 \usepackage{cite}。
-接下来便是正文部分，它使用代码函数 \begin{document} 以及 \end{document} 包裹。所有需要在论文中展示出来的部分都必须写在这里面。
+接下来便是正文部分，它使用代码函数：</p>
+
+```latex
+\begin{document}
+...
+\end{document}
+```
+
+<p style="text-align:justify; text-justify:inter-ideograph;">对内容进行包裹。所有需要在论文中展示出来的部分都必须写在这里面。
 一篇论文中主要包括了标题、作者、章节、图表、公式、参考文献。下面将一一讲解它们的使用方式。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">首先是标题，它使用代码函数 \title{标题}，而作者使用 \author{作者名}。
@@ -46,11 +54,13 @@ Basic Application
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其次是章节，即目录，根据不同的目录等级使用不同的代码函数。首级的目录使用 \section{目录名}，次级目录使用 \subsection{目录名}，三级目录使用 \subsubsection{目录名}，
 ‘IEEETran’ 格式的文件最多只支持三级目录。除此之外，还可以给每个目录名设置标签以方便我们在正文中进行引用，具体代码函数为 \label{标签名}，需要紧接在目录代码函数之后。
-在设置完标签后，我们便可以使用标签来对目录进行引用，例如，我们设置目录 A 的标签为 la：</p>
+在设置完标签后，我们便可以使用标签来对目录进行引用，例如，我们设置目录 A 的标签为 la，则我们在正文中就可以使用 \cite{la} 对其进行引用：</p>
 
 ```latex
 \section{A}
 \label{la}
+...
+\cite{la}
 ```
 
-<p style="text-align:justify; text-justify:inter-ideograph;">则我们在正文中就可以使用 \cite{la} 对其进行引用。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
