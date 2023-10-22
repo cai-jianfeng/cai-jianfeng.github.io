@@ -34,7 +34,8 @@ Basic Application
 ===
 
 <p style="text-align:justify; text-justify:inter-ideograph;">LaTeX 的文件名后缀为 `.tex`。在编写 LaTeX 文件时，首先需要确定自己需要哪种文档类型(必要的)，不同的文档类型的最终排版格式不同，同时在编写内容是使用的代码也有一定差异。
-在 LaTeX 中，大部分的代码格式都是 \代码函数名[基本参数]{内容}，在无需设置特定的基本参数(即全部使用默认)时可以不写 [基本参数]，例如，选择 IEEEtran 的文档格式，并且基本参数为 lettersize,journal，则可以使用代码 \documentclass[lettersize,journal]{IEEEtran}。
+在 LaTeX 中，大部分的代码格式都是 \代码函数名[基本参数]{内容}，在无需设置特定的基本参数(即全部使用默认)时可以不写 [基本参数]，
+例如，选择 IEEEtran 的文档格式，并且基本参数为 lettersize,journal，则可以使用代码 \documentclass[lettersize,journal]{IEEEtran}。
 接着是引入编写内容时所需要用到的宏包(类似于 C 语言的 include 和 python 的 import)来引入自己所要使用的代码函数，引入宏包的代码函数为 \usepackage{包名}，
 例如，你想在文章中使用 \cite{} 这个代码函数来对参考文献进行引用，就需要在这里引入宏包 \usepackage{cite}。
 接下来便是正文部分，它使用代码函数：</p>
@@ -115,3 +116,25 @@ $$
 </pre></center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">这样生成的公式不仅单独展示在一行，还有 LaTeX 的自动编号。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">最后是参考文献，这里建议使用 `.bib` 文件来实现参考文献的引入。
+具体而言，首先在和 `.tex` 文件相同的位置创建一个 `.bib` 文件，然后对于每一篇你想引用的文献，找到它的 bibtex 引用格式(在 google scholar 上可以找到)，并将其按顺序复制到 `.bib` 文件中。
+然后在 `.tex` 文件的正文末尾(\end{document}之前)，使用如下代码函数引入参考文献：</p>
+
+<center><pre>
+\bibliographystyle{参考文献格式}  -和 \documentclass 一样，不同的参考文献格式所展示的参考文献分格不同
+\nocite{*}  -是否把 .bib 文件中的所有参考文献都展示: 如果没有该代码函数，LaTeX 只会展示出在正文中被引用过的参考文献
+\bibliography{.bib 文件名}  -.bib 文件的文件名
+</pre></center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">除了在最后列出参考文献，我们还需要在正文中引用参考文献，一般而言，参考文献的 bibtex 引用格式(即复制在 `.bib` 文件中的格式)为：</p>
+
+<center><pre>
+@article{参考文献缩写,
+  title={...},
+  author={...},
+  ...
+}
+</pre></center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">此时，我们只需要在正文中需要引用的位置使用代码函数 \cite{参考文献缩写} 即可引用该参考文献。</p>
