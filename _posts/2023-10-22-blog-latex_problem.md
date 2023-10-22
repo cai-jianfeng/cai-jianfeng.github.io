@@ -1,14 +1,14 @@
 ---
 title: 'latex 问题合集'
 date: 23-10-22
-permalink: /posts/2023/10/blog-latex/
+permalink: /posts/2023/10/blog-latex-problem/
 tags:
   - 论文写作工具
 ---
 
 <p style="text-align:justify; text-justify:inter-ideograph;">这篇博客主要记录我在使用 latex 的过程中所遇到的问题和解决的方法(注：有些问题可能我自己也不知道原理，但是所有的解决方法都是亲测有效)。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">前言：我所使用的tex编辑器是 TeXstudio，它里面包含了多个 tex 编译器，包括 Latex、PDFLatex、XeLatex 等。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">前言：我所使用的tex编辑器是 TeXstudio，编译器是 TeX Live，它里面包含了多个 tex 编译器，包括 Latex、PDFLatex、XeLatex 等。</p>
 
 - 遇到 **abstract** 和 **题目** 没有黑体字加粗，可能是编译器问题，选择 **pdflatex** 进行编译
 
