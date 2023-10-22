@@ -34,7 +34,8 @@ Basic Application
 ===
 
 <p style="text-align:justify; text-justify:inter-ideograph;">LaTeX 的文件名后缀为 `.tex`。在编写 LaTeX 文件时，首先需要确定自己需要哪种文档类型(必要的)，不同的文档类型的最终排版格式不同，同时在编写内容是使用的代码也有一定差异。
-在 LaTeX 中，大部分的代码格式都是 $\\代码函数名[基本参数]\{内容\}$，在无需设置特定的基本参数(即全部使用默认)时可以不写 $[基本参数]$，例如，选择 IEEEtran 的文档格式，并且基本参数为 lettersize,journal，则可以使用代码 $\\documentclass[lettersize,journal]\{IEEEtran\}$。
-接着是引入编写内容时所需要用到的宏包(类似于 C 语言的 include 和 python 的 import)来引入自己所要使用的代码函数，引入宏包的代码函数为 $\\usepackage\{包名\}$，
-例如，你想在文章中使用 $\\cite\{\}$ 这个代码函数来对参考文献进行引用，就需要在这里引入宏包 $\\usepackage\{cite\}$。
-接下来便是正文部分，它使用代码函数 $\\begin\{document\}$ 和 $\\end\{document\}$ 包裹。所有需要在论文中展示出来的部分都必须写在这里面。</p>
+在 LaTeX 中，大部分的代码格式都是 \代码函数名[基本参数]{内容}，在无需设置特定的基本参数(即全部使用默认)时可以不写 [基本参数]，例如，选择 IEEEtran 的文档格式，并且基本参数为 lettersize,journal，则可以使用代码 \documentclass[lettersize,journal]{IEEEtran}。
+接着是引入编写内容时所需要用到的宏包(类似于 C 语言的 include 和 python 的 import)来引入自己所要使用的代码函数，引入宏包的代码函数为 \usepackage{包名}，
+例如，你想在文章中使用 \cite{} 这个代码函数来对参考文献进行引用，就需要在这里引入宏包 \usepackage{cite}。
+接下来便是正文部分，它使用代码函数 \begin{document} 和 \end{document} 包裹。所有需要在论文中展示出来的部分都必须写在这里面。
+一篇论文中主要包括了</p>**标题、章节、图表、参考文献**<p style="text-align:justify; text-justify:inter-ideograph;">。下面将一一讲解它们的使用方式。</p>
