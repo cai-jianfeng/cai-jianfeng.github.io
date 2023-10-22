@@ -161,48 +161,52 @@ Code Demo
 \usepackage{graphicx}
 
 \begin{document}
-\title{LaTeX basic knowledge}
-\author{Jianfeng Cai}
-
-\maketitle
-
-\section{A}
-\label{la}
-
-\begin{figure}[!t]
-	\includegraphics[width=\columnwidth]{figure/2D-CNN.png}
-	\caption{This is an image caption.It is center-left by default, and latex automatically numbers each image.}
-	\label{fig1}
-\end{figure}
-
-\begin{table}
-	\centering
-	\caption{This is an tabel caption.It is center by default, and latex automatically numbers each image.}
-	\label{table:tab}
-	\begin{tabular}{ccc}
-		1 & 2 & 3 \\
-		4 & 5 & 6
-	\end{tabular}
-\end{table}
-
-equation or fomulation:
-$$
-a + b = c
-$$
-
-equation or fomulation:
-$
-a + b = c
-$
-
-\begin{equation}
+	\title{LaTeX basic knowledge}
+	\author{Jianfeng Cai}
+	
+	\maketitle
+	
+	\section{A}
+	\label{la}
+	
+	The first paragraph: Welcome everyone to my blog error feedback, my QQ is 1622613693, also can send email to tell me. Thanks!
+	
+	The second paragraph, I will continue to update the blog, welcome to continue to pay attention to my home page.
+	
+	\begin{figure}[!t]
+		\includegraphics[width=\columnwidth]{figure/2D-CNN.png}
+		\caption{This is an image caption.It is center-left by default, and latex automatically numbers each image.}
+		\label{fig1}
+	\end{figure}
+	
+	\begin{table}
+		\centering
+		\caption{This is an tabel caption.It is center by default, and latex automatically numbers each image.}
+		\label{table:tab}
+		\begin{tabular}{ccc}
+			1 & 2 & 3 \\
+			4 & 5 & 6
+		\end{tabular}
+	\end{table}
+	
+	equation or fomulation:
+	$$
 	a + b = c
-\end{equation}
-
-\bibliographystyle{IEEEtran}
-\nocite{*}
-\bibliography{reference}
-
+	$$
+	
+	equation or fomulation:
+	$
+	a + b = c
+	$
+	
+	\begin{equation}
+		a + b = c
+	\end{equation}
+	
+	\bibliographystyle{IEEEtran}
+	\nocite{*}
+	\bibliography{reference}
+	
 \end{document}
 </pre>
 
