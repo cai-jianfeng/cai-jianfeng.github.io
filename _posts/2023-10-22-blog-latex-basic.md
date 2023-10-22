@@ -64,7 +64,7 @@ Basic Application
 \cite{la}
 </pre>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">接着是正文，正文可以直接在 代码函数 document 包裹的区域中书写。同时无需自己加入空格来保持缩进，LaTeX 默认会进行每段的首行缩进。
+<p style="text-align:justify; text-justify:inter-ideograph;">接着是正文，正文可以直接在代码函数 document 包裹的区域中书写。同时无需自己加入空格来保持缩进，LaTeX 默认会进行每段的首行缩进。
 相邻的上下两行在编译时仍然会被 LaTeX 视为同一段(即 LaTeX 编译时会忽略两行之间的回车)，而需要另起一段的方式是使用一行相隔，即使用一个空白行表示分段：</p>
 
 <pre>
@@ -119,7 +119,7 @@ $$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">表示独立公式，即它会与前段文字与后段文字分离。成为单独的一个公式展示在一行。
 所以第一种方式适用于嵌入在行中的公式，而第二种方式适用于一些大型公式或者较为重要的公式，需要使用单独行进行展示。
-对于第二个问题，它有一个问题，就是公式后面没有标号，无法对其进行引用。因此，在论文写作中，基本上不会使用该方式，而是采用另一种方式，即使用代码函数：</p>
+对于第二种方式，它有一个问题，就是公式后面没有标号，而且无法对其进行引用。因此，在论文写作中，基本上不会使用该方式，而是采用另一种方式，即使用代码函数：</p>
 
 <pre>
 \begin{equation}
@@ -130,7 +130,7 @@ $$
 <p style="text-align:justify; text-justify:inter-ideograph;">这样生成的公式不仅单独展示在一行，还有 LaTeX 的自动编号。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">最后是参考文献，这里建议使用 `.bib` 文件来实现参考文献的引入。
-具体而言，首先在和 `.tex` 文件相同的位置创建一个 `.bib` 文件，然后对于每一篇你想引用的文献，找到它的 bibtex 引用格式(在 google scholar 上可以找到)，并将其按顺序复制到 `.bib` 文件中。
+具体而言，首先在和 `.tex` 文件相同的位置(同一个文件夹)创建一个 `.bib` 文件，然后对于每一篇你想引用的文献，找到它的 bibtex 引用格式(在 google scholar 上可以找到)，并将其按顺序复制到 `.bib` 文件中。
 然后在 `.tex` 文件的正文末尾(\end{document}之前)，使用如下代码函数引入参考文献：</p>
 
 <pre>
@@ -139,7 +139,7 @@ $$
 \bibliography{.bib 文件名}  -.bib 文件的文件名
 </pre>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">除了在最后列出参考文献，我们还需要在正文中引用参考文献，一般而言，参考文献的 bibtex 引用格式(即复制在 `.bib` 文件中的格式)为：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">除了在最后列出参考文献，我们还需要在正文中引用参考文献。一般而言，参考文献的 bibtex 引用格式(即复制在 `.bib` 文件中的格式)为：</p>
 
 <pre>
 @article{参考文献缩写,
@@ -229,5 +229,5 @@ Code Demo
 ![demo](/images/latex_basic_application.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">可以看到，图片和表格并没有按照我们给定的顺序插入到文章中，而是经过了 LaTeX 内部的算法来确定最合适的位置进行插入。
-这一方面省去了我们对每张图片/每个表格进行排版的麻烦，但另一方面，它也不能百分比满足我们的对图片/表格的排版要求
+这一方面省去了我们对每张图片/每个表格进行排版的麻烦，但另一方面，它也不能百分百满足我们的对图片/表格的排版要求
 (例如在编译生成的文件中，你有时候会看到一个很合适的图片/表格排版方式，但是 LaTeX 死活就是不那么排，即便你加了很多约束)。</p>
