@@ -56,22 +56,62 @@ Basic Application
 ‘IEEETran’ 格式的文件最多只支持三级目录。除此之外，还可以给每个目录名设置标签以方便我们在正文中进行引用，具体代码函数为 \label{标签名}，需要紧接在目录代码函数之后。
 在设置完标签后，我们便可以使用标签来对目录进行引用，例如，我们设置目录 A 的标签为 la，则我们在正文中就可以使用 \cite{la} 对其进行引用：</p>
 
-<pre>
+<center><pre>
 \section{A}
 \label{la}
 ...
 \cite{la}
-</pre>
+</pre></center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">接着是图表，想要在 LaTeX 中插入图片，需要引入宏包 \usepackage{graphicx}，接着便可使用如下代码函数进行图片插入：</p>
 
-<pre>
+<center><pre>
 \begin{figure}  -插入图片代码函数: figure 表示插入一栏(对于两栏的论文而言), figure* 表示插入两栏
 	\centering  -表示居中对齐
 	\includegraphics[width=3.5in]{path/to/figure}  -插入图片: width 表示设置宽度，除了具体数值，还可以设置为 \textwidth等 LaTeX 自带的常数变量; path/to/figure 表示图片位置(相对 .tex 文件的位置)
 	\caption{图片标题}
 	\label{标签名}  -设置标签，在正文中就可以使用 \cite{标签名}进行图片引用
 \end{figure}
-</pre>
+</pre></center>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">而想要在 LaTeX 中插入表格，可以使用如下代码函数：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">需要注意的是，LaTeX会对每一个插入的图片按插入顺序进行自动编号 Fig. 1., Fig. 2. ,...，因此无需自己在图片标题中标号。
+而想要在 LaTeX 中插入表格，可以使用如下代码函数(同样，LaTeX 也会对插入的所有表格按顺序进行自动编号)：</p>
+
+<center><pre>
+\begin{table}
+	\caption{表格标题}
+	\label{标签名}
+	\begin{tabular}{ccc}  - 表格内容: {ccc} 表示一共有多少列, 下面每行内容的列数都必须与它保持一致
+		1 & 2 & 3 \\  - 每一行表格内容: 每一列用 & 分割, 使用 \\ 换行(表示后面是下一行的内容)
+		4 & 5 & 6
+	\end{tabular}
+\end{table}
+</pre></center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">然后是公式，公式的编写格式和 markdown 非常相似，其中：</p>
+
+<center><pre>
+$
+公式内容
+$
+</pre></center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">表示嵌入在段落中的公式，即它和前段文字与后段文字都在同一行中。而</p>
+
+<center><pre>
+$$
+公式内容
+$$
+</pre></center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">表示独立公式，即它会与前段文字与后段文字分离。成为单独的一个公式展示在一行。
+所以第一种方式适用于嵌入在行中的公式，而第二种方式适用于一些大型公式或者较为重要的公式，需要使用单独行进行展示。
+对于第二个问题，它有一个问题，就是公式后面没有标号，无法对其进行引用。因此，在论文写作中，基本上不会使用该方式，而是采用另一种方式，即使用代码函数：</p>
+
+<center><pre>
+\begin{equation}
+	a + b = c
+\end{equation}
+</pre></center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">这样生成的公式不仅单独展示在一行，还有 LaTeX 的自动编号。</p>
