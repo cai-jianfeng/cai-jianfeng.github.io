@@ -26,7 +26,7 @@ Install
 <p style="text-align:justify; text-justify:inter-ideograph;">既然 LaTeX 是  TeX 的封装，其内部的代码还是需要 TeX 工具来解析编译，因此首先我们需要安装 TeX 的编译器：<a href="https://tug.org/texlive/" target="_blank" title="TeX Live">TeX Live</a>。
 它是 TUG (TeX User Group) 维护和发布的 TeX 系统，可以说是「官方」的 TeX 系统，对于 TeX 的维护和开发是最频繁的。
 其中包含的多个 TeX 编译器，如 Latex、PDFLatex、XeLatex 等。
-因此推荐任何阶段的 TeX/LaTeX 用户，都尽可能使用 TeX Live，以保持在跨操作系统平台、跨用户的一致性。
+因此推荐任何阶段的 TeX/LaTeX 用户，都尽可能使用 TeX Live，以保持在跨操作系统平台、跨用户的一致性。安装教程可以参考：<a href="https://liam.page/texlive/" target="_blank" title="TeX Live 下载及安装说明">TeX Live 下载及安装说明</a>。
 其次我们需要一个编辑器来编写我们的 LaTeX 代码，常见的编辑器有 TeXworks、<a href="https://texstudio.sourceforge.net/" target="_blank" title="TeXstudio">TeXstudio</a>、VSCode等。
 我使用的是 TeXstudio，在使用的这段时间感觉还是不错的，它的编译器选择在工具栏的 tool - commands。</p>
 
