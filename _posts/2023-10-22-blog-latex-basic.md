@@ -33,6 +33,8 @@ Install
 Basic Application
 ===
 
-<p style="text-align:justify; text-justify:inter-ideograph;">LaTeX 的文件名后缀为 ```.tex```。在编写 LaTeX 文件时，首先需要确定自己需要哪种文档类型(**必要的**)，不同的文档类型的最终排版格式不同，同时在编写内容是使用的代码也有一定差异。
-在 LaTeX 中，大部分的代码格式都是 ```\代码名[基本参数]{内容}```，例如，选择 IEEEtran 的文档格式，并且基本参数为 lettersize,journal，则可以使用代码 ```\documentclass[lettersize,journal]{IEEEtran}```。
+<p style="text-align:justify; text-justify:inter-ideograph;">LaTeX 的文件名后缀为 `.tex`。在编写 LaTeX 文件时，首先需要确定自己需要哪种文档类型(必要的)，不同的文档类型的最终排版格式不同，同时在编写内容是使用的代码也有一定差异。
+在 LaTeX 中，大部分的代码格式都是 ```\代码函数名[基本参数]{内容}```，例如，选择 IEEEtran 的文档格式，并且基本参数为 lettersize,journal，则可以使用代码 `\documentclass[lettersize,journal]{IEEEtran}`。
+接着是引入编写内容时所需要用到的宏包(类似于 C 语言的 include 和 python 的 import)来引入自己所要使用的代码函数，引入宏包的代码函数为 ```\usepackage{包名}```，
+例如，你想在文章中使用 ```\cite{}``` 这个代码函数来对参考文献进行引用，就需要在这里引入宏包 ```\usepackage{cite}```。
 </p>
