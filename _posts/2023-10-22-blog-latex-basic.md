@@ -39,11 +39,13 @@ Basic Application
 例如，你想在文章中使用 \cite{} 这个代码函数来对参考文献进行引用，就需要在这里引入宏包 \usepackage{cite}。
 接下来便是正文部分，它使用代码函数：</p>
 
+<pre>
 ```latex
 \begin{document}
 ...
 \end{document}
 ```
+</pre>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">对内容进行包裹。所有需要在论文中展示出来的部分都必须写在这里面。
 一篇论文中主要包括了标题、作者、章节、图表、公式、参考文献。下面将一一讲解它们的使用方式。</p>
@@ -56,11 +58,24 @@ Basic Application
 ‘IEEETran’ 格式的文件最多只支持三级目录。除此之外，还可以给每个目录名设置标签以方便我们在正文中进行引用，具体代码函数为 \label{标签名}，需要紧接在目录代码函数之后。
 在设置完标签后，我们便可以使用标签来对目录进行引用，例如，我们设置目录 A 的标签为 la，则我们在正文中就可以使用 \cite{la} 对其进行引用：</p>
 
+<pre>
 ```latex
 \section{A}
 \label{la}
 ...
 \cite{la}
 ```
+</pre>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+<p style="text-align:justify; text-justify:inter-ideograph;">接着是图表，想要在 LaTeX 中插入图片，需要引入宏包 \usepackage{graphicx}，接着便可使用如下代码函数进行图片插入：</p>
+
+<pre>
+```latex
+\begin{figure}[!t]
+	\centering  -表示居中对齐
+	\includegraphics[width=3.5in]{path/to/figure}  -插入图片: width 表示设置宽度，除了具体数值，还可以设置为 \textwidth等 LaTeX 自带的常数变量; path/to/figure 表示图片位置(相对 .tex 文件的位置)
+	\caption{图片标题}
+	\label{fig:fig1}
+\end{figure}
+```
+</pre>
