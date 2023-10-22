@@ -33,6 +33,4 @@ Install
 Basic Application
 ===
 
-<p style="text-align:justify; text-justify:inter-ideograph;">LaTeX 的文件名后缀为 </p>
-```.tex```
-<p style="text-align:justify; text-justify:inter-ideograph;">。在编写 LaTeX 文件时，首先需要确定自己需要哪种文档类型</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">LaTeX 的文件名后缀为 </p>```.tex```<p style="text-align:justify; text-justify:inter-ideograph;">。在编写 LaTeX 文件时，首先需要确定自己需要哪种文档类型，不同的文档类型的最终排版格式不同</p>
