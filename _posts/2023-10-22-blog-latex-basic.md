@@ -47,7 +47,7 @@ Basic Application
 </pre>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">对内容进行包裹。所有需要在论文中展示出来的部分都必须写在这里面。
-一篇论文中主要包括了标题、作者、章节、图表、公式、参考文献。下面将一一讲解它们的使用方式。</p>
+一篇论文中主要包括了标题、作者、章节、正文、图表、公式、参考文献。下面将一一讲解它们的使用方式。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">首先是标题，它使用代码函数 \title{标题}，而作者使用 \author{作者名}。
 在代码函数填写的内容中(即 {} 里的内容)，如果有多个需要填写，一般使用 , 分隔，例如对于多个作者，则使用 \author{作者名1, 作者名2, ...}。
@@ -64,7 +64,19 @@ Basic Application
 \cite{la}
 </pre>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">接着是图表，想要在 LaTeX 中插入图片，需要引入宏包 \usepackage{graphicx}，接着便可使用如下代码函数进行图片插入：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">接着是正文，正文可以直接在 代码函数 document 包裹的区域中书写。同时无需自己加入空格来保持缩进，LaTeX 默认会进行每段的首行缩进。
+相邻的上下两行在编译时仍然会被 LaTeX 视为同一段(即 LaTeX 编译时会忽略两行之间的回车)，而需要另起一段的方式是使用一行相隔，即使用一个空白行表示分段：</p>
+
+<pre>
+第一段
+
+第二段
+</pre>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">这样编译出来就是两个段落。在正文部分，多余的空格、回车等等都会被自动忽略，这保证了全文排版时不会突然多出一行或者多出一个空格(例如在两段之间加入 3 个空白行也只会被当作 1 个)。
+另外，另起一页的方式是使用代码函数 \newpage。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">然后是图表，想要在 LaTeX 中插入图片，需要引入宏包 \usepackage{graphicx}，接着便可使用如下代码函数进行图片插入：</p>
 
 <pre>
 \begin{figure}  -插入图片代码函数: figure 表示插入一栏(对于两栏的论文而言), figure* 表示插入两栏
@@ -89,7 +101,7 @@ Basic Application
 \end{table}
 </pre>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">然后是公式，公式的编写格式和 markdown 非常相似，其中：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">再然后是公式，公式的编写格式和 markdown 非常相似，其中：</p>
 
 <pre>
 $
@@ -141,7 +153,7 @@ $$
 
 Code Demo
 ===
-<p style="text-align:justify; text-justify:inter-ideograph;">最后，对上面所有的内容集成到一个 `test.tex` 文件中，并展示其编译后的 pdf 文件内容形式。其中， `test.tex` 文件中的内容如下：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">最后，对上面所有的内容集成到一个 `test.tex` 文件中(除了 \newpage)，并展示其编译后的 pdf 文件内容形式。其中， `test.tex` 文件中的内容如下：</p>
 
 <pre>
 \documentclass[lettersize,journal]{IEEEtran}
@@ -211,3 +223,7 @@ $
 <p style="text-align:justify; text-justify:inter-ideograph;">编译器使用 PDFLaTeX，最终编译生成的 PDF 文件内容如下：</p>
 
 ![demo](/images/latex_basic_application.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">可以看到，图片和表格并没有按照我们给定的顺序插入到文章中，而是经过了 LaTeX 内部的算法来确定最合适的位置进行插入。
+这一方面省去了我们对每张图片/每个表格进行排版的麻烦，但另一方面，它也不能百分比满足我们的对图片/表格的排版要求
+(例如在编译生成的文件中，你有时候会看到一个很合适的图片/表格排版方式，但是 LaTeX 死活就是不那么排，即便你加了很多约束)。</p>
