@@ -33,4 +33,6 @@ Install
 Basic Application
 ===
 
-<p style="text-align:justify; text-justify:inter-ideograph;">LaTeX 的文件名后缀为 ```.tex```。在编写 LaTeX 文件时，首先需要确定自己需要哪种文档类型，不同的文档类型的最终排版格式不同，同时在编写内容是使用的代码也有一定差异。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">LaTeX 的文件名后缀为 ```.tex```。在编写 LaTeX 文件时，首先需要确定自己需要哪种文档类型(**必要的**)，不同的文档类型的最终排版格式不同，同时在编写内容是使用的代码也有一定差异。
+在 LaTeX 中，大部分的代码格式都是 ```\代码名[基本参数]{内容}```，例如，选择 IEEEtran 的文档格式，并且基本参数为 lettersize,journal，则可以使用代码 ```\documentclass[lettersize,journal]{IEEEtran}```。
+</p>
