@@ -27,8 +27,9 @@ Method
 这就存在 3 个问题：1) 使用该架构的目标检测方法只能检测出事先给定的类别，而无法做到 open-vocabulary 的目标检测；
 2) 目前而言，所有目标检测模型的类别数太少，一般不超过 2000 类，无法使得模型推广到更大的范围进行使用；
 3) 这种仅仅将类别 index 作为最终分类(在训练时是将一个个类别标号为 0,1,...然后使用 Cross-entropy损失进行学习的，并没有使用/学习到语义信息)的学习方法，
-不能很好地让模型学习到 language-aware 的图像表征。
-为此，本文对目标检测模型进行了改进。首先是针对问题 1，借鉴于 CLIP 在分类上的 open-vocabulary 的思路(使用双塔结构计算相似度进行分类)，
+不能很好地让模型学习到 language-aware 的图像表征。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">为此，本文对目标检测模型进行了改进。首先是针对问题 1，借鉴于 CLIP 在分类上的 open-vocabulary 的思路(使用双塔结构计算相似度进行分类)，
 GLIP 也使用了双塔结构并计算相似度进行目标检测。具体而言，如图，GLIP 分别使用了 Text Encoder $Enc_L$ 和 Image Encoder $Enc_I$ 对类别和图像进行编码。
 在 Text-Encoder 部分，GLIP 通过一定的构造方式将类别转化为句子 $Prompt$ (例如，将每个类别按顺序进行排列并使用 . 进行分隔，就形成了句子)，
 然后将 $Prompt$ 送入 Text-Encoder $Enc_L$ 进行编码得到特征 $P \in R^{M \times d}$，其中 $M$ 表示 $Prompt$ 中的单词数。
@@ -47,3 +48,12 @@ GLIP 也使用了双塔结构并计算相似度进行目标检测。具体而言
 最后使用 $L_1/L_2$ loss 计算损失：$L_{loc} = \sum_{i=1}^{N}{||D_{predict}^i - D_{ground}^i||_2^2}$，
 其中 $D_{ground} \in R^{N \times 4}$，表示每个 box 的真实偏差，对于没有匹配到类别的 box，其真实偏差全为 $0$。</p></li></ul>
 
+<li><p style="text-align:justify; text-justify:inter-ideograph;">针对问题 2，本文找到了一种非常简单好用的思路：将其他不同的任务和目标检测统一起来，使得它们之间的数据集可以共用。
+具体而言，本文将 phrase grounding 和 object detection 统一到一起(统一成 phrase grounding)，这样就可以使用 phrase grounding 和 objection detection 两个任务的数据集一起训练。
+由于 phrase grounding 的输入和 GLIP 的形式一样，都是输入一个句子和一张图片，将句子中的单词和图片中的位置相匹配，因此不需要对模型和损失函数进行任何调整。
+同时，本文还采用了 self-training 的方式来增加训练数据以获得更好的模型性能。本文首先使用了现有的 phrase grounding 和 objection detection 人工标记数据集(一共 3M)预训练了一个 $teacher$ GLIP。
+然后使用该 $teacher$ GLIP 对网上爬取的数据(图像-文本对，一共 24M)进行伪标签标记(即为文本中的每个名词预测对于图像的位置，每个文本的名词可以由 NLP parser 解析)。
+最后，使用人工标记数据集(3M)和伪标签数据集(24M) 重新训练一个 $student$ GLIP-L，则这个 $student$ GLIP-L 就具有很强的性能(大大强于 $teacher$ GLIP)。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">关于为什么 $student$ GLIP-L 会比 $teacher$ GLIP 性能强(明明它也是在  $teacher$ GLIP 训练的数据集和预测出的结果上训练得到的)有一个比较直观的解释：
+</p></li>
