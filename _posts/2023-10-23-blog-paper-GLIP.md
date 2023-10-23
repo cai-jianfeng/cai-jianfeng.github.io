@@ -46,7 +46,7 @@ GLIP 也使用了双塔结构并计算相似度进行目标检测。具体而言
 <li><p style="text-align:justify; text-justify:inter-ideograph;">而对于定位，GLIP和主流的目标检测方法一致，都是将每个 box 特征 $O_i$ 进行 ROIPool/ROIAlign，
 然后送入下游网络(CNN+Linear layer)对 box 的位置偏差 $(\Delta x, \Delta y, \Delta w, \Delta h)$ 进行预测：$D_{predict} = Linear(CNN(ROIPool(O))) \in R^{N \times 4}$。
 最后使用 $L_1/L_2$ loss 计算损失：$L_{loc} = \sum_{i=1}^{N}{||D_{predict}^i - D_{ground}^i||_2^2}$，
-其中 $D_{ground} \in R^{N \times 4}$，表示每个 box 的真实偏差，对于没有匹配到类别的 box，其真实偏差全为 $0$。</p></li></ul>
+其中 $D_{ground} \in R^{N \times 4}$，表示每个 box 的真实偏差，对于没有匹配到类别的 box，其真实偏差全为 $0$。</p></li>
 
 <li><p style="text-align:justify; text-justify:inter-ideograph;">针对问题 2，本文找到了一种非常简单好用的思路：将其他不同的任务和目标检测统一起来，使得它们之间的数据集可以共用。
 具体而言，本文将 phrase grounding 和 object detection 统一到一起(统一成 phrase grounding)，这样就可以使用 phrase grounding 和 objection detection 两个任务的数据集一起训练。
@@ -60,3 +60,20 @@ GLIP 也使用了双塔结构并计算相似度进行目标检测。具体而言
 句法结构等丰富的语言语境可以为模型进行“有根据的猜测”提供有力的指导(比如它识别到了图像中的几个物体，但是其他的物体都已经和句子中的其他词匹配好了，只剩下疫苗物体和疫苗单词，此时即使模型不知道疫苗概念，也能匹配成功)，
 但本质上它还只是猜的，并没有学习到这个概念，对于下次同样的类别可能就会判断错误。但是当我们训练 $student$ GLIP-L 时，$teacher$ GLIP 的“根据经验猜测”变成了“监督信号”，就使得 GLIP-L 能够学习疫苗的概念。
 因此  $student$ GLIP-L 会比 $teacher$ GLIP 性能强。</p></li>
+
+<li><p style="text-align:justify; text-justify:inter-ideograph;">针对问题 3，其实 GLIP 使用图像-文本相似度的方式训练已经可以让模型学习到 language-aware 的图像表征，但是仅仅只是在模型最后进行 late-fusion (即点乘)还是不够的，
+还应该在模型中间添加 middle-fusion 以促进模型更好地学习图像和本文之间的关系。
+具体而言，如图，GLIP 在 Text-Encoder 和 Image-Encoder 的最后几层使用 cross-modality communication 对两者的特征进行 deep fusion(假设 Image-Encoder 是 DyHead，Text-Encoder 是 BERT)：</p>
+
+<center>$O_{t2i}^i,P_{i2t}^i = X-MHA(O^i, P^i),\ i \in\{0,1,...,L-1\} \\
+O^{i+1} = DyHeadModule(O^i + O_{t2i}^i),\ O = O^L, \\
+P^{i+1} = BETRLayer(P^i + P_{i2t}^i),\ P = P^L$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$L$ 是 DyHead 中 DyHeadModules 的数量，BETRLayer 是在预训练好的 BETR 上新增的 BETR Layers。
+$O^0$ 和 $P^0$ 分别表示 visual backbone 和 language backbone(BETR) 编码的特征。而 X-MHA 是 cross-modality multi-head attention module：</p>
+
+<center>$O^{(q)} = OW^{(q,I)}, P^{(q)} = PW^{(q,L)}, Attn = O^{(q)}(P^{(q)})^T/\sqrt{d}, \\
+P^{(v)} = PW^{(v,L)}, O_{t2i} = SoftMax(Attn)P^{(v)}W^{(out,I)}, \\
+O^{(v)} = OW^{(v,L)}, P_{i2t} = SoftMax(Attn^T)O^{(v)}W^{(out,L)}$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $\{W^{(symbol, I/L)}:\ symbol \in {q,v,out}\}$ 都是训练参数，与 MHA(Transformer 中的多头注意力机制) 中的 query, value 和 output linear layer 相似。</p></li></ul>
