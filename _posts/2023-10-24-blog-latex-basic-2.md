@@ -59,3 +59,9 @@ Theorem 1.1 (定理别名): This is a theorem about f function:
     ...
 \end{列表类型}
 </pre>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">上一篇 blog 提到了如何编写显示数学公式的代码函数，但对于数学公式本身的编写的语法没有提及。这里对一些基础的公式进行说明：</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">首先是 <b>上下标</b>，使用 _{} / ^{} 输入(在上下标只有一个字符时 {} 可以省略)，如 a_n / a^n 分别表示 $a_n / a^n$。
+其次是<b>分式</b>，使用 \dfrac{}{} / \frac{}{} 输入(区别在于后者的字体较小，一般用于指数等地方)，如 \dfrac{a}{b} / \frac{a}{b} 分别表示 $\dfrac{a}{b} / \frac{a}{b}$。
+</p>
