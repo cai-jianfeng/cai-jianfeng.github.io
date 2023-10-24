@@ -19,7 +19,7 @@ Basic Application
 \newtheorem{theorem}{定理的显示前缀}[在何种条件下重新计数]
 </pre>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中，\newtheorem{·}{·}[·] 的第一个 {} 中填写需要的格式，包括 theorem(定理)、corollary(推论)、lemma(引理)等；
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，\newtheorem{·}{·}[·] 的第一个 {} 中填写需要的格式，包括 theorem(定理)、corollary(推论)、lemma(引理)、definition(定义)等；
 而第二个 {} 中填写需要显示在定理前的前缀，并且每条定理也会自动编号；而第三个 [·] 中填写需要以谁为基准重新编号。然后，在需要正文中需要插入定理的位置，使用如下代码函数生成定理：</p>
 
 <pre>
@@ -35,12 +35,17 @@ Basic Application
 % [section] 表示对于每个 section，定理都会重新自动编号
 % 如在 section 1 中是 1.1, ...；则在 section 2 中就变成了 2.1, ...
 % 这是 latex 的自动编号，无需我们手动编写
+% 而 {Theorem} 表示会生成前缀，如对 section 1 的第一条定理，会生成前缀 Theorem 1.1
 \newtheorem{theorem}{Theorem}[section]
 ...
 % 在需要添加定理的位置加入
-\begin{theorem}
+\begin{theorem}[定理别名]
 % 在定理编写区，数学符号用 \(·\) 包裹展示，而数学表达式用 \[·\] 包裹展示(其语法和正文的 $·$ 中的语法相同)
 This is a theorem about \(f\) function: \[ 1 + 1 = 2 \]
 \end{theorem}
+
+最终生成的效果是：
+Theorem 1.1 (定理别名): This is a theorem about f function: 
+                    1 + 1 = 2
 </pre>
 
