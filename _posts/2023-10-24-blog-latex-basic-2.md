@@ -90,9 +90,9 @@ Theorem 1.1 (定理别名): This is a theorem about f function:
 \end{bmatrix}
 </pre>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">另外，公式中可能对于某些字符需要加粗显示，这里建议使用 \bm{} 代码函数(需要导入 bm 宏包 \usepackage{bm})进行加粗，可以保留它的斜体属性。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">另外，公式中可能对于某些字符需要<b>加粗显示</b>，这里建议使用 \bm{} 代码函数(需要导入 bm 宏包 \usepackage{bm})进行加粗，可以保留它的斜体属性。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">最后，在论文中可能会出现公式推导的情况，这时候需要对每个公式的等号进行对齐，此时可以使用如下代码函数进行输入：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">最后，在论文中可能会出现公式推导的情况，这时候需要对每个公式的等号进行<b>对齐</b>，此时可以使用如下代码函数进行输入：</p>
 
 <pre>
 \begin{aligned}
