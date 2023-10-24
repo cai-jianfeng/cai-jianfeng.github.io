@@ -20,7 +20,7 @@ Basic Application
 </pre>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，\newtheorem{·}{·}[·] 的第一个 {} 中填写需要的格式，包括 theorem(定理)、corollary(推论)、lemma(引理)等；
-而第二个 {} 中填写需要显示在定理前的前缀，并且每条定理也会自动编号。然后，在需要正文中需要插入定理的位置，使用如下代码函数生成定理：</p>
+而第二个 {} 中填写需要显示在定理前的前缀，并且每条定理也会自动编号；而第三个 [·] 中填写需要以谁为基准重新编号。然后，在需要正文中需要插入定理的位置，使用如下代码函数生成定理：</p>
 
 <pre>
 \begin{theorem}
@@ -28,15 +28,19 @@ Basic Application
 \end{theorem}
 </pre>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">例如，我们需要编写一条定理 $1+1 = 2$，其前缀为 Theorem，这代码如下：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">例如，我们需要编写一条定理 $1+1 = 2$，其前缀为 Theorem，并且定理以 section 为基准重新编号，则代码如下：</p>
 
 <pre>
-// 在导言区加入(注：latex 的注释是 %)
-\newtheorem{theorem}{Theorem}
+% 在导言区加入(注：latex 的注释是 %)
+% [section] 表示对于每个 section，定理都会重新自动编号
+% 如在 section 1 中是 1.1, ...；则在 section 2 中就变成了 2.1, ...
+% 这是 latex 的自动编号，无需我们手动编写
+\newtheorem{theorem}{Theorem}[section]
 ...
-// 在需要添加定理的位置加入
+% 在需要添加定理的位置加入
 \begin{theorem}
-1 + 1 = 2
+% 在定理编写区，数学符号用 \(·\) 包裹展示，而数学表达式用 \[·\] 包裹展示(其语法和正文的 $·$ 中的语法相同)
+This is a theorem about \(f\) function: \[ 1 + 1 = 2 \]
 \end{theorem}
 </pre>
 
