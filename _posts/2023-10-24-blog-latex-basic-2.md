@@ -60,8 +60,133 @@ Theorem 1.1 (定理别名): This is a theorem about f function:
 \end{列表类型}
 </pre>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">上一篇 blog 提到了如何编写显示数学公式的代码函数，但对于数学公式本身的编写的语法没有提及。这里对一些基础的公式进行说明：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">上一篇 blog 提到了如何编写显示数学公式的代码函数，但对于数学公式本身的编写的语法没有提及。这里对一些基础的公式进行说明(注意，下述的代码都是要写在上篇 blog 提到的公式代码函数所包裹的区域内的)：</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">首先是 <b>上下标</b>，使用 _{} / ^{} 输入(在上下标只有一个字符时 {} 可以省略)，如 a_n / a^n 分别表示 $a_n / a^n$。
 其次是<b>分式</b>，使用 \dfrac{}{} / \frac{}{} 输入(区别在于后者的字体较小，一般用于指数等地方)，如 \dfrac{a}{b} / \frac{a}{b} 分别表示 $\dfrac{a}{b} / \frac{a}{b}$。
-</p>
+然后是括号，对于花括号 {}，由于默认的情况表示范围，所以一般不会显示，需要显示则需要使用转义符 \，即 \{\} 显示为 $\{\}$，
+而对于需要较大的括号，则需要使用 \left(...\right)，其显示为 $\left(...\right)$。此外，在中间需要隔开时，可以用 \left(..\middle|..\right)，其显示为 $\left(..\middle|..\right)$。
+除了常规括号，还有<b>单边大括号</b>，其使用如下代码函数进行输入：</p>
+
+<pre>
+\begin{cases}
+    % \\ 表示换行，即各行使用 \\ 分隔
+    % 同时，case 以 & 符号作为对齐标志，即对齐每行的 & 的左右两边
+    equation1 & condition1 ... \\
+    equation2 & condition2 ...
+\end{cases}
+</pre>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">接着是<b>求和/求积公式</b>，分别使用 \sum / \prod 输入(上下标表示和上述相同)，如 \sum_i^N{a_i} / \prod_j^M{b_j} 分别表示 $\sum_i^N{a_i} / \prod_j^M{b_j}$。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">然后是<b>矩阵和行列式</b>，分别使用如下的代码函数进行输入：</p>
+
+<pre>
+% bmatrix/pmatrix/vmatirx 分别表示 方括号矩阵、圆括号矩阵、行列式
+\begin{bmatrix/pmatrix/vmatirx}
+    % 各个元素使用 & 间隔，各行使用 \\ 分隔
+    a & b \\
+    c & d
+\end{bmatrix}
+</pre>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">另外，公式中可能对于某些字符需要加粗显示，这里建议使用 \bm{} 代码函数(需要导入 bm 宏包 \usepackage{bm})进行加粗，可以保留它的斜体属性。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">最后，在论文中可能会出现公式推导的情况，这时候需要对每个公式的等号进行对齐，此时可以使用如下代码函数进行输入：</p>
+
+<pre>
+\begin{aligned}
+% aligned 以 & 符号作为对齐标志，即对齐每行的 & 的左右两边
+    a & =b+c \\
+    & =d+e
+\end{aligned}
+</pre>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在公式中的换行符是 \\，但是在 \begin{equation} 的代码环境下并不起作用，这时如果因为公式过长或者其他原因需要强制换行，
+可以放弃使用 \begin{equation}，使用 \begin{multline} (需要导入 amsmath 宏包 \usepackage{amsmath})：</p>
+
+<pre>
+\begin{multline}
+    % 注意，默认第一行的公式是靠左对齐，最后一行的公式是靠右对齐
+    ....
+\end{multline}
+</pre>
+
+Code Demo
+===
+<p style="text-align:justify; text-justify:inter-ideograph;">最后，对上面所有的内容集成到一个 `test2.tex` 文件中，并展示其编译后的 pdf 文件内容形式。其中， `test2.tex` 文件中的内容如下：</p>
+
+<pre>
+\documentclass[lettersize,journal]{IEEEtran}
+\usepackage{bm}
+\usepackage{amsmath}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{definition}{Definition}[section]
+\begin{document}
+	\title{Latex basic knowledge 2}
+	\author{Jianfeng Cai}
+	
+	\maketitle
+	
+	\section{Introduction}
+	
+	\begin{theorem}[Pythagorean theorem]
+		\label{pythagorean}
+		This is a theorem about right triangles and can be summarised in the next 
+		equation 
+		\[ x^2 + y^2 = z^2 \]
+	\end{theorem}
+	
+	\begin{description}
+		\item[(1)] first; 
+		\item[(2)] second;
+		\item[(3)] third. 
+	\end{description}
+
+	$$
+	a_i^n + b_j^m = 0
+	$$
+	$$
+	a^{\dfrac{num}{den}} / a^{\frac{num}{den}}
+	$$
+	$$
+	\left(1 + \frac{1}{2} \middle | \bm{\{i \neq j\}}\right)
+	$$
+	\begin{equation}
+		f = \begin{cases}
+			equation1 & condition1 ... \\
+			equation2 & condition2 ...
+		\end{cases}
+	\end{equation}
+	$$
+	\begin{bmatrix}
+		a & b \\
+		c & d
+	\end{bmatrix}
+	\begin{pmatrix}
+		a & b \\
+		c & d
+	\end{pmatrix}
+	\begin{vmatrix}
+		a & b \\
+		c & d
+	\end{vmatrix}
+	$$
+	$$
+	\begin{aligned}
+		a & =b+c \\
+		& =d+e
+	\end{aligned}
+	$$
+	\begin{multline}
+		f(x) = \\
+		\prod_{min}^{max} b\\
+		\sum_{min}^{max} c \\
+		= 0
+	\end{multline}	
+\end{document}
+</pre>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">编译器使用 PDFLaTeX，最终编译生成的 PDF 文件内容如下：</p>
+
+![demo](/images/latex_basic_application2.png)
