@@ -101,7 +101,7 @@ Basic Application
 \end{table}
 </pre>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">再然后是公式，公式的编写格式和 markdown 非常相似，其中：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">也可以使用<a href="https://www.tablesgenerator.com/#" target="_blank">在线表格编辑器</a>进行编写，再然后是公式，公式的编写格式和 markdown 非常相似，其中：</p>
 
 <pre>
 $
@@ -127,7 +127,7 @@ $$
 \end{equation}
 </pre>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">这样生成的公式不仅单独展示在一行，还有 LaTeX 的自动编号。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">这样生成的公式不仅单独展示在一行，还有 LaTeX 的自动编号。同样，也可以选择使用<a href="https://www.latexlive.com/" target="_blank">在线公式编辑器</a>进行公式编写。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">最后是参考文献，这里建议使用 `.bib` 文件来实现参考文献的引入。
 具体而言，首先在和 `.tex` 文件相同的位置(同一个文件夹)创建一个 `.bib` 文件，然后对于每一篇你想引用的文献，找到它的 bibtex 引用格式(在 google scholar 上可以找到)，并将其按顺序复制到 `.bib` 文件中。

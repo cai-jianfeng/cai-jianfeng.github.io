@@ -12,7 +12,7 @@ tags:
 Basic Application
 ===
 
-<p style="text-align:justify; text-justify:inter-ideograph;">在一篇论文中，可能还会出现定理、推论、引理、定义等需要单独展示并使用特殊的展示样式，对于 latex 的不同文件格式其展示的样式也不同。
+<p style="text-align:justify; text-justify:inter-ideograph;">在一篇论文中，可能还会出现<b>定理</b>、<b>推论</b>、<b>引理</b>、<b>定义</b>等需要单独展示并使用特殊的展示样式，对于 latex 的不同文件格式其展示的样式也不同。
 以定理为例，首先需要在导言区(即导包的区域)添加对定理的使用设置：</p>
 
 <pre>
@@ -49,3 +49,13 @@ Theorem 1.1 (定理别名): This is a theorem about f function:
                     1 + 1 = 2
 </pre>
 
+<p style="text-align:justify; text-justify:inter-ideograph;">此外，<b>列表</b>也是论文中可能会出现的类型，LaTeX 中的列表环境包含无序列表 itemize、有序列表 enumerate 和描述 description，它们都是使用如下代码函数进行编写：</p>
+
+<pre>
+\begin{列表类型(包括 itemize/enumerate/description)}
+    % 当使用 [自定义列表标号] 后，默认的列表标记符号就不会显示
+    \item[自定义列表标号] ...;
+    \item[...] ...;
+    ...
+\end{列表类型}
+</pre>
