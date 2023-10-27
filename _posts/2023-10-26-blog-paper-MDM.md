@@ -65,6 +65,8 @@ middle-fuse $F_m(·)$ (对 $I_l$ 进行进一步学习生成 $I_l'$) 和 up-samp
 
 ![NestedUnet](/images/paper_MDM_pescode.png)
 
+<p style="text-align:justify; text-justify:inter-ideograph;">(ps: 这段代码非常有意思，建议使用 $z = [z_1,z_2,z_3]$ 进行手推一下递归过程，你就会被它惊艳到，如此复杂的融合过程可以写成如此简短优美的递归过程)</p>
+
 ![NestedUnet_architecture](/images/paper_MDM_NestedUnet.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">从数学证明上而言，MDM 生成了多个分辨率的图像以帮助最终的高分辨率图像的生成。对于给定的高分辨率图像 $x \in R^N$，
