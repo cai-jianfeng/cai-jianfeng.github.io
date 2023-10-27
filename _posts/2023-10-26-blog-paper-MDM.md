@@ -8,7 +8,7 @@ tags:
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 论文题目：<a href="https://arxiv.org/abs/2310.15111" target="_blank" title="MDM">Matryoshka Diffusion Models</a></p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">截至2023年10月26日暂无，论文版本为 arxiv-v1</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">发表会议：截至2023年10月26日暂无，论文版本为 arxiv-v1</p>
 
 第一作者：Jiatao Gu (Apple)
 
