@@ -37,6 +37,8 @@ Method
 
 ![MDM-architecture](/images/paper_MDM_architecture.png)
 
+![NestedUnet_architecture](/images/paper_MDM_NestedUnet.png)
+
 <p style="text-align:justify; text-justify:inter-ideograph;">目前 DM 模型想要生成高分辨率的图像主要有 $2$ 种方式：一是先使用 DM 模型生成分辨率较低的图像，再通过超分 (super-resolution) 模型将分辨率较低的图像转化为高分辨率图像。
 这就使得至少需要 2 个模型实现高分辨率；同时，由于是分开训练 DM 和超分模型，这就使得模型计算量的增加，同时生成质量受到 exposure bias 的限制。
 第二种方法是将图像转化到维度(即分辨率)更低的潜变量空间，然后实现扩散生成，如 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-stablediffusion/" target="_blank" title="Stable Diffusion">Stable-Diffusion (LDM)</a>。
@@ -50,10 +52,12 @@ middle-fuse (对 $I_l$ 进行进一步学习生成 $I_l'$) 和 up-sample (对 $I
 而我们知道， dowm-sample, middle-fuse 和 up-sample 都是对图像大小 unaware 的
 (例如，对于一个下采样 $x$ 个像素的 down-sample 模块来说，无论输入多大 $h \times w$ 的图像，都是将其变成 $(h-x) \times (w-x)$)。
 所以，一个 U-net 模型可以生成/处理任意分辨率的图像，就解决了使用一个模型生成任意分辨率图像的问题(其实简单归结就是使用 U-net 模型)。
-而对于使用低分辨率图像辅助生成高分辨率图像，MDM 对 U-net 进行了改进，提出了 NestedUnet 模型(主要是在输入和输出连接上进行改变)，它首先生成低分辨率图像 $I^{low}$，再将已经生成好的低分辨率图像 $I^{low}$ 和
+而对于使用低分辨率图像辅助生成高分辨率图像，MDM 对 U-net 进行了改进，提出了 NestedUnet 模型(主要是在输入和输出连接上进行改变，如下伪代码)，它首先生成低分辨率图像 $I^{low}$，再将已经生成好的低分辨率图像 $I^{low}$ 和
 原始的高分辨率图像 $I^{high}$ 经过 down-sample 生成的潜表示 $I_l^{high}$ 相结合 $I^{low} + I_l^{high}$，
 作为融合了低分辨率图像和原始高分辨率图像的更新潜表示 $I_{l-new}^{high}$，然后再使用 middle-fuse 进行进一步学习，生成 $I_{l-new}^{high}$$'$，最后通过 up-sample 生成更新后的高分辨率图像 $I^{high}$$'$，
 这样便实现了使用低分辨率图像辅助高分辨率图像生成的目的。</p>
+
+![NestedUnet](/images/paper_MDM_pescode.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">更具体而言，MDM 生成了多个分辨率的图像以帮助最终的高分辨率图像的生成。对于给定的高分辨率图像 $x \in R^N$，
 假设一共有 $R$ 个分辨率，其分辨率分别为 $R^{N_1},...,R^{N_R}, N_1 < ... N_R = N$ (这里使用一维向量代表图像，即 $h_i \times w_i = N_i$)。
