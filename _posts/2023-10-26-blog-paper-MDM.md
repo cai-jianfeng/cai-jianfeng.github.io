@@ -47,15 +47,23 @@ Method
 MDM 模型通过融合了多分辨率图像生成的并行训练方式解决了 end-to-end 模型生成高分辨率图像的问题。其模型思想较为直观：
 先前的模型通过 DM 直接生成高分辨率图像的效果不行，很可能主要是因为没有辅助的条件帮助模型学习，导致模型从零生成难度较大。如果能像第一种方法一样，给出低分辨率图像作为参考，模型生成的效率和质量应该会更高。
 于是，问题便转化为如何将低分辨率图像的生成融合到高分辨率图像的生成中(即使用一个模型生成)，并使得高分辨率图像的生成能借助低分辨率的图像。
-通过观察 U-net 架构(DM 模型最常用的架构)可以看到，U-net 模型主要包括 dowm-sample (将图像 $I$ 下采样为潜表示 $I_l$), 
-middle-fuse (对 $I_l$ 进行进一步学习生成 $I_l'$) 和 up-sample (对 $I_l'$ 进行上采样生成原始分辨率图像 $\hat{I}$)，
+通过观察 U-net 架构(DM 模型最常用的架构)可以看到，U-net 模型主要包括 dowm-sample $F_d(·)$ (将图像 $I$ 下采样为潜表示 $I_l$), 
+middle-fuse $F_m(·)$ (对 $I_l$ 进行进一步学习生成 $I_l'$) 和 up-sample $F_u(·)$ (对 $I_l'$ 进行上采样生成原始分辨率图像 $\hat{I}$)，
 而我们知道， dowm-sample, middle-fuse 和 up-sample 都是对图像大小 unaware 的
 (例如，对于一个下采样 $x$ 个像素的 down-sample 模块来说，无论输入多大 $h \times w$ 的图像，都是将其变成 $(h-x) \times (w-x)$)。
 所以，一个 U-net 模型可以生成/处理任意分辨率的图像，就解决了使用一个模型生成任意分辨率图像的问题(其实简单归结就是使用 U-net 模型)。
-而对于使用低分辨率图像辅助生成高分辨率图像，MDM 对 U-net 进行了改进，提出了 NestedUnet 模型(主要是在输入和输出连接上进行改变，如下伪代码)，它首先生成低分辨率图像 $I^{low}$，再将已经生成好的低分辨率图像 $I^{low}$ 和
-原始的高分辨率图像 $I^{high}$ 经过 down-sample 生成的潜表示 $I_l^{high}$ 相结合 $I^{low} + I_l^{high}$，
-作为融合了低分辨率图像和原始高分辨率图像的更新潜表示 $I_{l-new}^{high}$，然后再使用 middle-fuse 进行进一步学习，生成 $I_{l-new}^{high}$$'$，最后通过 up-sample 生成更新后的高分辨率图像 $I^{high}$$'$，
-这样便实现了使用低分辨率图像辅助高分辨率图像生成的目的。</p>
+而对于使用低分辨率图像辅助生成高分辨率图像，MDM 对 U-net 进行了改进，提出了 NestedUnet 模型(主要是在输入和输出连接上进行改变，如下伪代码)，
+它首先生成低分辨率图像 $I^{low}$，再将已经生成好的低分辨率图像 $I^{low}$ 和
+原始的高分辨率图像 $I^{high}$ 经过 down-sample 生成的潜表示 $I_l^{high} = F_d(I^{high})$ 相结合 $I^{low} + I_l^{high}$，
+作为融合了低分辨率图像和原始高分辨率图像的更新潜表示 $I_{l-new}^{high}$，然后再使用 middle-fuse 进行进一步学习，生成 $I_{l-new}^{high}$$'$，
+最后通过 up-sample 生成更新后的高分辨率图像 $\hat{I}^{high} = F_u(I_{l-new}^{high}$$')$，
+这样便实现了使用<b>低分辨率图像辅助高分辨率图像</b>生成的目的。
+同样地，也可以通过对高分辨率图像 $I^{high}$ 进行 2 次 down-sample 生成潜变量 $I_{ll}^{high} = F_d(F_d(I^{high}))$，
+对低分辨率图像进行 1 次 down-sample 生成潜变量 $I_{l}^{low} = F_d(I^{low})$，
+再将两者结合作为融合了原始低分辨率图像和高分辨率图像的更新潜表示 $I_{l-new}^{low}$，
+然后再使用 middle-fuse 进行进一步学习，生成 $I_{l-new}^{high}$$'$，
+最后通过 up-sample 生成更新后的低分辨率图像 $\hat{I}^{low} = F_u(I_{l-new}^{low}$$')$，
+这样便实现了使用<b>高分辨率图像辅助低分辨率图像</b>生成。</p>
 
 ![NestedUnet](/images/paper_MDM_pescode.png)
 
@@ -65,5 +73,6 @@ middle-fuse (对 $I_l$ 进行进一步学习生成 $I_l'$) 和 up-sample (对 $I
 符合正态分布 $q(z_t^r|x) = N(z_t^r;\alpha_t^rD^r(x),{\sigma_t^r}^2I)$，
 其中 $D^r(x): R^N \rightarrow R^{N_r}$ 表示 $x$ 在第 $r$ 个分辨率下的图像 $x_r \in R^{N_r}$，$D^r(·)$ 被称作 deterministic "down-sample" operator (如 $avgpool(·)$)；
 而 $\{\alpha_t^r,\sigma_t^r\}$ 也是第 $r$ 个分辨率下的噪声参数。
-然后 MDM 模型学习 $p_{\theta}(z_{t−1}|z_t)$ 与 $R$ 个 neural denoisers $x_{\theta}^{r}(z_t)$ 的反向过程(根据上一段的分析，这 $R$ 个模型由一个 NestedUnet 模型替代)。
-每个变量 $z_{t−1}^r$ 依赖于所有分辨率 $\{z_t^1...z_t^R\}$。而在 inference 过程中，MDM 模型并行生成所有 $R$ 个分辨率的图像。</p>
+然后 MDM 模型学习 $p_{\theta}(z_{t−1}|z_t)$ 与 $R$ 个 neural denoisers $x_{\theta}^{r}(z_t)$ 的反向过程
+(根据上一段的分析，这 $R$ 个模型由一个 NestedUnet 模型替代)生成更新的所有分辨率的图像 $z_{t-1}$。
+其中每个变量 $z_{t−1}^r$ 依赖于所有分辨率 $\{z_t^1...z_t^R\}$。而在 inference 过程中，MDM 模型并行生成所有 $R$ 个分辨率的图像。</p>
