@@ -37,8 +37,6 @@ Method
 
 ![MDM-architecture](/images/paper_MDM_architecture.png)
 
-![NestedUnet_architecture](/images/paper_MDM_NestedUnet.png)
-
 <p style="text-align:justify; text-justify:inter-ideograph;">目前 DM 模型想要生成高分辨率的图像主要有 $2$ 种方式：一是先使用 DM 模型生成分辨率较低的图像，再通过超分 (super-resolution) 模型将分辨率较低的图像转化为高分辨率图像。
 这就使得至少需要 2 个模型实现高分辨率；同时，由于是分开训练 DM 和超分模型，这就使得模型计算量的增加，同时生成质量受到 exposure bias 的限制。
 第二种方法是将图像转化到维度(即分辨率)更低的潜变量空间，然后实现扩散生成，如 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-stablediffusion/" target="_blank" title="Stable Diffusion">Stable-Diffusion (LDM)</a>。
@@ -66,6 +64,8 @@ middle-fuse $F_m(·)$ (对 $I_l$ 进行进一步学习生成 $I_l'$) 和 up-samp
 这样便实现了使用<b>高分辨率图像辅助低分辨率图像</b>生成。</p>
 
 ![NestedUnet](/images/paper_MDM_pescode.png)
+
+![NestedUnet_architecture](/images/paper_MDM_NestedUnet.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">从数学证明上而言，MDM 生成了多个分辨率的图像以帮助最终的高分辨率图像的生成。对于给定的高分辨率图像 $x \in R^N$，
 假设一共有 $R$ 个分辨率，其分辨率分别为 $R^{N_1},...,R^{N_R}, N_1 < ... N_R = N$ (这里使用一维向量代表图像，即 $h_i \times w_i = N_i$)。
