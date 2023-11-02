@@ -35,4 +35,14 @@ Preliminary
 Method
 ===
 
-<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+<p style="text-align:justify; text-justify:inter-ideograph;">可以看到，glossification 是一个 Machine Tranlation 问题。最直观的做法是使用 encoder-decoder 架构，输入 sentence，输出预测的 glosses。
+但是，和普通的 Machine Translation 不同的是：一方面， sentence-glosses 的数据集较少，如果直接采用传统的 Machine Translation 方式可能效果不佳；另一方面，和传统的 Machine Translation 不同，
+sentence 和 glosses 的字典集是相同的，仅仅是语法规则不同，这就意味着它们之间存在着很强的句法联系。因此，本文便通过利用它们之间的句法联系作为先验知识来帮助模型学习，以减轻数据集匮乏的问题。
+通过观察可以看到，sentence 和 glosses 不仅字典集相同，而且在每个 sentence-glosses 对中，glosses 的大部分单词都在对应的 sentence 中出现过(通常是保留关键词，删除次要词)。
+因此，相比于直接预测 glosses，可以通过对 sentence 进行增删改操作(即 editing actions)来获得对应的 glosses。
+这样，通过显式地引入转化过程可以更好地帮助模型学习(即之前需要模型自己摸索如何从 sentence 转化到 glosses，现在通过一步步的 editing action 显式地告诉模型转化规则)。
+所以，模型不再直接预测 glosses，而是预测 editing program，并执行它以获得最终的 glosses。
+具体而言，本文设计了特定的 editing program 语法，如下图所示：</p>
+
+![syntax](/images/paper_glossification_editing_program_syntax.png)
+
