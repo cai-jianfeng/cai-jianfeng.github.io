@@ -76,11 +76,11 @@ $SKIP$ 表示删除 $x$ 中余下的所有 tokens，并结束。
 具体而言，对于 $executor$，给定 sentence $x$ 和 $generator$ 生成的 patial editing program $z_{1:t-1}$， 
 $executor$ 首先在 $x$ 上执行 $z_{1:t-1}$ 获得 partial glosses $y_{1:j_{t-1}}$ (通过使用前述的 $executor\ point\ k$，注意，没有被编辑的 $x_{k+1:m}$ 不算 partial glosses 的一部分)。
 然后，$executor$ 使用 Encoder 对 $y_{1:j_{t-1}}$ 进行总结：先将 $y_{1:j_{t-1}}$ 转化为 embedding $\{E_{y_1},...,E_{y_{j_{t-1}}}\}$。
-然后使用 Transformer Encoder 进行编码融合获得 hidden embedding $g_{1:j_{t-1}}$：</p>
+然后使用 Transformer Encoder 进行编码融合获得最终的总结 hidden embedding $g_{1:j_{t-1}}$：</p>
 
 <center>$g_1^{(l+1)},...,g_{j_{t-1}}^{(l+1)} = \begin{cases}E_{y_1}+P_1,..., E_{y_{j_{t-1}}}+P_{j_{t-1}},\ l=1, \\ EncoderLayer_l(g_1^{(l)},...,g_{j_{t-1}}^{(l)}),\ l>1\end{cases}$</center>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中 $P_i$ 表示位置编码，$EncoderLayer(·)$ 表示 Transformer Encoder Block(包括一个 self-MHA 和一个 FFN)，$l$ 表示第 $l$ 层。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $P_i$ 表示位置编码，$EncoderLayer(·)$ 表示 Transformer Encoder Block(包括一个 MHA(self) 和一个 FFN)，$l$ 表示第 $l$ 层。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">对于 $generator$，由于仍然是一个序列预测问题，所以采用简单的 Transformer Encoder-Decoder 架构即可。
 在第 $t$ 步时，其中 Encoder 和 $executor$ 的 Encoder类似，输入 sentence $x = [x_1,..,x_m]$，并将其映射为 hidden embedding $h = [h_1,...,h_m]$，
@@ -90,5 +90,23 @@ $executor$ 首先在 $x$ 上执行 $z_{1:t-1}$ 获得 partial glosses $y_{1:j_{t
 
 <center>$e_1^{(l'+1)},...,e_{t-1}^{(l'+1)} = \begin{cases}E_{z_1}+P_1,..., E_{z_{t-1}}+P_{t-1},\ l'=1, \\ DecoderLayer_{l'}(e_1^{(l')},...,e_{t-1}^{(l')},h_1,...,h_m),\ l'>1\end{cases}$</center>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中 $P_i$ 表示位置编码，$DecoderLayer(·)$ 表示 Transformer Decoder Block(包括一个 self-MHA，一个 cross-MHA 和一个 FFN)，$l'$ 表示第 $l'$ 层。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $P_i$ 表示位置编码，$DecoderLayer(·)$ 表示 Transformer Decoder Block(包括一个 MHA(self)，一个 MHA(cross) 和一个 FFN)，$l'$ 表示第 $l'$ 层。
+注意，这里的 $DecoderLayer(·)$ 的第一个 MHA 不是 mask 的，因为 $y$ 的长度的动态变化性，不能使用常规的 Mask MHA。</p>
 
+<p style="text-align:justify; text-justify:inter-ideograph;">为此，本文在 Decoder 之前添加了一个 <b>editing causal attention</b> 模块替换 Mask MHA，并将 $executor$ 总结的 $g_{1:j_{t-1}}$ 与 $e_{1:t-1}$ 融合进行融合交互。
+editing causal attention 和 Mask MHA 的结构十分类似，唯一的不同在于 Mask MHA 的 mask 是随着预测步骤 $t$ 单调递减的
+(即每预测一步，就会解码出一个元素，即预测序列的长度 $+1$，mask 就 $-1$，表示该步的 ground-truth 已经可见)，
+而对于 editing causal attention 而言，每预测一步只会使得 editing program 的序列长度 $+1$，并不一定会使 $y$ 的序列长度 $+1$，
+只有当 editing action 是 $ADD/COPY$ 时，$y$ 的序列长度才会 $+1$，此时 mask 才能 $-1$，
+而当 editing action 是 $DEL$ 时，mask 保持不变(因为此时 $y_{1:j_{t-1}}$ = $y_{1:j_{t}}$，其长度没有增加)，因此需要根据已经预测的 editing program 中的 editing action 的类型来确定每一步的 mask。
+为此，本文使用 $generator point p$ 来表示当前已经预测的 $y$ 的长度，即 $j_{t-1}$。
+对于预测的每一步 $t$，首先将 $p$ 初始化为 0，表示初始的 $y$ 是空的。当 $executor$ 执行一个 $ADD/COPY$ 时，$p = p + 1$ 表示 $y$ 的序列 $+1$；而当 $executor$ 执行一个 $DEL$ 时，$p$ 保持不变。
+这样，就可以帮助 $generator$ 的 editing causal attention 构造 mask，其中 $> p$ 的位置全部掩码。所以 editing causal attention 的表达式如下：</p>
+
+<center>$G_{attn}(Q,K,V) = softmax(QK^T/\sqrt{d}) \bigodot M \bigotimes V$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $Q$ 表示 $e_{1:t-1}$，$K$ 和 $V$ 表示 $g_{1:j_{t-1}}$，$M$ 表示 mask，$\bigodot$ 表示逐元素乘积，$\bigotimes$ 表示矩阵乘法。下图展示了一个 editing casual attention 的例子：</p>
+
+![editing casual attention](/images/paper_glossification_editing_casual_attention.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">最后便是模型训练，</p>
