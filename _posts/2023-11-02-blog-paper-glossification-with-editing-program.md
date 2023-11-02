@@ -62,5 +62,5 @@ $SKIP$ 表示删除 $x$ 中余下的所有 tokens，并结束。
 我的理解是因为连续添加两个相同的词几乎不可能，因此无需预测 $ADD$ 的重复次数(默认只有一次)，而是将预测得到的数字表示为需要添加的 token 的标号。
 这样就可以将所有 editing actions 的预测统一成预测 $name + number$。</b></p>
 
-！[editing program](/images/paper_glossification_editing_program.png)
+![editing program](/images/paper_glossification_editing_program.png)
 
