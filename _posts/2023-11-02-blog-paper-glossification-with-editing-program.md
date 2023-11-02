@@ -75,9 +75,20 @@ $SKIP$ 表示删除 $x$ 中余下的所有 tokens，并结束。
 后者通过执行已经预测的 partial editing program 获得 partial glosses，并将 partial glosses 进行总结归纳然后反馈给 $generator$，使 $generator$ 在下一步的预测中能关注到之前预测的情况，进一步改进自己的预测。
 具体而言，对于 $executor$，给定 sentence $x$ 和 $generator$ 生成的 patial editing program $z_{1:t-1}$， 
 $executor$ 首先在 $x$ 上执行 $z_{1:t-1}$ 获得 partial glosses $y_{1:j_{t-1}}$ (通过使用前述的 $executor\ point\ k$，注意，没有被编辑的 $x_{k+1:m}$ 不算 partial glosses 的一部分)。
-然后，$executor$ 对 $y_{1:j_{t-1}}$ 进行总结：先将 $y_{1:j_{t-1}}$ 转化为 embedding $\{E_{y_1},...,E_{y_{j_{t-1}}}\}$。
+然后，$executor$ 使用 Encoder 对 $y_{1:j_{t-1}}$ 进行总结：先将 $y_{1:j_{t-1}}$ 转化为 embedding $\{E_{y_1},...,E_{y_{j_{t-1}}}\}$。
 然后使用 Transformer Encoder 进行编码融合获得 hidden embedding $g_{1:j_{t-1}}$：</p>
 
-<center>$g_1^{(l+1)},...,g_{j_{t-1}}^{(l+1)} = \begin{cases}E_{y_1}+P_1,..., E_{y_{j_{t-1}}}+P_{j_{t-1}},\ l=1, \\ EncoderLayer_l(g_1^{(l)},...,g_{j_{t-1}}^{(l))\end{cases}$</center>
+<center>$g_1^{(l+1)},...,g_{j_{t-1}}^{(l+1)} = \begin{cases}E_{y_1}+P_1,..., E_{y_{j_{t-1}}}+P_{j_{t-1}},\ l=1, \\ EncoderLayer_l(g_1^{(l)},...,g_{j_{t-1}}^{(l)}),\ l>1\end{cases}$</center>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $P_i$ 表示位置编码，$EncoderLayer(·)$ 表示 Transformer Encoder Block(包括一个 self-MHA 和一个 FFN)，$l$ 表示第 $l$ 层。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">对于 $generator$，由于仍然是一个序列预测问题，所以采用简单的 Transformer Encoder-Decoder 架构即可。
+在第 $t$ 步时，其中 Encoder 和 $executor$ 的 Encoder类似，输入 sentence $x = [x_1,..,x_m]$，并将其映射为 hidden embedding $h = [h_1,...,h_m]$，
+而 Decoder 则输入 Encoder 的输出 $h$，第 $t$ 步之前的全部预测 $z_{1:t-1}$，以及从 $executor$ 总结得到的输出 $g_{1:j_{t-1}}$，
+然后预测 editing program 的第 $t$ 个 editing action $z_t$ (即建模条件分布 $P(z_t|h, g_{1:j_{t-1}}, z_{1:t-1}) \rightarrow P(z_t|x, y_{1:j_{t-1}}, z_{1:t-1})$)。
+具体而言，首先将 $z_{1:t-1}$ 转化为 embedding $\{E_{z_1},...,E_{y_{t-1}}\}$，然后使用 Transformer Decoder 将 $E_{z_i}$ 和 $h_i$ 进行交互融合，得到 hidden embedding $e_{1:t-1}$：</p>
+
+<center>$e_1^{(l'+1)},...,e_{t-1}^{(l'+1)} = \begin{cases}E_{z_1}+P_1,..., E_{z_{t-1}}+P_{t-1},\ l'=1, \\ DecoderLayer_{l'}(e_1^{(l')},...,e_{t-1}^{(l')},h_1,...,h_m),\ l'>1\end{cases}$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $P_i$ 表示位置编码，$DecoderLayer(·)$ 表示 Transformer Decoder Block(包括一个 self-MHA，一个 cross-MHA 和一个 FFN)，$l'$ 表示第 $l'$ 层。</p>
+
