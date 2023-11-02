@@ -55,7 +55,8 @@ $SKIP$ 表示删除 $x$ 中余下的所有 tokens，并结束。
 具体而言，初始化 $k = 1$ 表示当前 $x$ 的编辑位置在 $x_1$。
 接着，每当遇到一个 $DEL(k)$ 和 $COPY(k)$ 时，$k = k+1$ 将表示当前 $x$ 的编辑位置向前一步，而当遇到 $ADD(w)$ 时，$k$ 保持不变，因为 $x$ 并未被编辑。
 这样以来，在模型预测 $DEL$ 和 $COPY$ 时就无需预测需要操作的位置 $k$，因为其位置都由统一的 $executor\ point\ k$ 来表示。
-更进一步地，本文还引入了 $For(·)$ 来支持重复操作，例如，如果一个 editing program 的某个位置有 $3$ 个连续的 $DEL$ 操作，则可以使用 $For(·)$ 进行压缩：$DEL\ 3$。
+更进一步地，本文还引入了 $For(·)$ 来支持重复操作，例如，如果一个 editing program 的某个位置有 $3$ 个连续的 $DEL$ 操作，则可以使用 $For(·)$ 进行压缩：$DEL\ 3$ 
+(所以面对 $DEL\ n$ 和 $COPY\ n$ 时，$k$ 需要向前 $n$ 步)。
 最终，模型需要预测的内容包括：1) editing action 的 name ($ADD/DEL/COPY/SKIP$)；2) editing action 的重复次数，即 number。
 (还不明白具体预测内容的可以看一下下图给出的具体例子)
 <b>这里有一个问题就是 $ADD$ 的特殊性，文章中并没有明确说明对于 $ADD$ 的预测。
@@ -70,7 +71,13 @@ $SKIP$ 表示删除 $x$ 中余下的所有 tokens，并结束。
 
 ![model](/images/paper_glossification_model.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">而在模型设计上，如上图，本文提出了 $generator$ 和 $executor$ 模块，前者通过 sentence 一步步预测 editing program (即 step-by-step)；
-后者通过执行已经预测的部分 editing program 获得半成品的 glosses，并将这半成品的 glosses 进行总结归纳然后反馈给 $generator$，使其在下一步的预测中能关注到之前预测的情况，进一步改进自己的预测。
-</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">而在模型设计上，如上图，本文提出了 $generator$ 和 $executor$ 模块，前者通过深入理解 sentence 一步步预测 editing program (即 step-by-step)；
+后者通过执行已经预测的 partial editing program 获得 partial glosses，并将 partial glosses 进行总结归纳然后反馈给 $generator$，使 $generator$ 在下一步的预测中能关注到之前预测的情况，进一步改进自己的预测。
+具体而言，对于 $executor$，给定 sentence $x$ 和 $generator$ 生成的 patial editing program $z_{1:t-1}$， 
+$executor$ 首先在 $x$ 上执行 $z_{1:t-1}$ 获得 partial glosses $y_{1:j_{t-1}}$ (通过使用前述的 $executor\ point\ k$，注意，没有被编辑的 $x_{k+1:m}$ 不算 partial glosses 的一部分)。
+然后，$executor$ 对 $y_{1:j_{t-1}}$ 进行总结：先将 $y_{1:j_{t-1}}$ 转化为 embedding $\{E_{y_1},...,E_{y_{j_{t-1}}}\}$。
+然后使用 Transformer Encoder 进行编码融合获得 hidden embedding $g_{1:j_{t-1}}$：</p>
 
+<center>$g_1^{(l+1)},...,g_{j_{t-1}}^{(l+1)} = \begin{cases}E_{y_1}+P_1,..., E_{y_{j_{t-1}}}+P_{j_{t-1}},\ l=1, \\ EncoderLayer_l(g_1^{(l)},...,g_{j_{t-1}}^{(l))\end{cases}$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
