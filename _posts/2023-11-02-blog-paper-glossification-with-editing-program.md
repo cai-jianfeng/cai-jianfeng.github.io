@@ -42,7 +42,25 @@ sentence 和 glosses 的字典集是相同的，仅仅是语法规则不同，�
 因此，相比于直接预测 glosses，可以通过对 sentence 进行增删改操作(即 editing actions)来获得对应的 glosses。
 这样，通过显式地引入转化过程可以更好地帮助模型学习(即之前需要模型自己摸索如何从 sentence 转化到 glosses，现在通过一步步的 editing action 显式地告诉模型转化规则)。
 所以，模型不再直接预测 glosses，而是预测 editing program，并执行它以获得最终的 glosses。
-具体而言，本文设计了特定的 editing program 语法，如下图所示：</p>
+具体而言，假设 sentence 为 $x = [x_1,...,x_m]$，glosses 为 $y = [y_1,...,y_n]$，它们拥有相同的 vocabulary $V$。
+模型需要预测出合理的 editing program $z = [z_1,...,z_s]$，使得 $z(x) = y$。为此，本文设计了特定的 editing program 语法，如下图所示：</p>
 
 ![syntax](/images/paper_glossification_editing_program_syntax.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$ADD(w)$ 表示从字典集中选择一个 token $w$ 加入到 $y$ 的最后；
+$DEL(k)$ 表示删除 $x$ 中第 $k$ 个位置的 token $x_k$；
+$COPY(k)$ 表示将 $x$ 中第 $k$ 个位置的 token $x_k$ 复制到 $y$ 的最后；
+$SKIP$ 表示删除 $x$ 中余下的所有 tokens，并结束。
+为了使得程序更加简洁，本文通过引入一个 $executor point k$ 来表示当前 $x$ 的编辑位置。
+具体而言，初始化 $k = 1$ 表示当前 $x$ 的编辑位置在 $x_1$。
+接着，每当遇到一个 $DEL(k)$ 和 $COPY(k)$ 时，$k = k+1$ 将表示当前 $x$ 的编辑位置向前一步，而当遇到 $ADD(w)$ 时，$k$ 保持不变，因为 $x$ 并未被编辑。
+这样以来，在模型预测 $DEL$ 和 $COPY$ 时就无需预测需要操作的位置 $k$，因为其位置都由同一的 $executor point k$ 来表示。
+更进一步地，本文还引入了 $For(·)$ 来支持重复操作，例如，如果一个 editing program 的某个位置有 3 个连续的 $DEL$ 操作，则可以使用 $For(·)$ 进行压缩：$DEL\ 3$。
+最终，模型需要预测的内容包括：1) editing action 的名字($ADD/DEL/COPY/SKIP$)；2) editing action 的重复次数，即一个数字。
+(还不明白具体预测内容的可以看一下下图给出的具体例子)
+<b>这里有一个问题就是 $ADD$ 的特殊性，文章中并没有明确说明对于 $ADD$ 的预测。
+我的理解是因为连续添加两个相同的词几乎不可能，因此无需预测 $ADD$ 的重复次数(默认只有一次)，而是将预测得到的数字表示为需要添加的 token 的标号。
+这样就可以将所有 editing actions 的预测统一成预测 $name + number$。</b></p>
+
+！[editing program](/images/paper_glossification_editing_program.png)
 
