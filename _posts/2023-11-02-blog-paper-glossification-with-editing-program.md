@@ -28,7 +28,7 @@ Preliminary
 
 <p style="text-align:justify; text-justify:inter-ideograph;">Editing Program：对于一个给定序列 $seq_o$，可以通过一系列 editing actions 操作将其变成另一个序列 $seq_t$。
 其中，editing actions 包括 1) $Add\ e\ i$，即在序列 $seq_o$ 的第 $i$ 个位置添加元素 $e$；
-2) $Del i$，即删除序列 $seq_o$ 的第 $i$ 个位置的元素；
+2) $Del\ i$，即删除序列 $seq_o$ 的第 $i$ 个位置的元素；
 3) $Sub\ e\ i$，即将序列 $seq_o$ 的第 $i$ 个位置的元素替换成元素 $e$。
 而将序列 $seq_o$ 变成另一个序列 $seq_t$ 的一系列 editing actions 操作称为 Eiditing Program。</p>
 
