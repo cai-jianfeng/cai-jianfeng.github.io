@@ -118,7 +118,7 @@ editing causal attention 和 Mask MHA 的结构十分类似，唯一的不同在
 从而导致模型的探索能力下降。为此，本文提出了使用 $policy\ gradient\ method(RL)$ 的强化学习方法来缓解这个问题(将其称为 <b>peer-critic</b>)。
 具体而言，本文使用 $generator$ 生成的 glosses 和 ground-truth 进行计算得到的 BLEU-4 分数来作为奖励，并通过 minimize the negative expected reward 来训练模型：</p>
 
-<center>$L_{RL}(\theta) = E_{\tilde{z}\sim P_{\theta}(z|x)[r(\tilde{z}}]}$</center>
+<center>$L_{RL}(\theta) = E_{\tilde{z}\sim P_{\theta}(z|x)}[r(\tilde{z})]$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中 $\tilde{z}$ 表示模型 $P_{\theta}(z|x)$ 预测的 editing program，$r(·)$ 表示奖励函数，即 BLEU-4 分数。
 由于 BLEU-4 分数的计算是不可导的，无法进行 back-propagation，本文使用了 REINFORCE 算法，使用 Monte-Carlo 采样来计算梯度：</p>
