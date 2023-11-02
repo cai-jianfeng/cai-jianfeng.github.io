@@ -51,16 +51,26 @@ sentence 和 glosses 的字典集是相同的，仅仅是语法规则不同，�
 $DEL(k)$ 表示删除 $x$ 中第 $k$ 个位置的 token $x_k$；
 $COPY(k)$ 表示将 $x$ 中第 $k$ 个位置的 token $x_k$ 复制到 $y$ 的最后；
 $SKIP$ 表示删除 $x$ 中余下的所有 tokens，并结束。
-为了使得程序更加简洁，本文通过引入一个 $executor point k$ 来表示当前 $x$ 的编辑位置。
+为了使得程序更加简洁，本文通过引入一个 $executor\ point\ k$ 来表示当前 $x$ 的编辑位置。
 具体而言，初始化 $k = 1$ 表示当前 $x$ 的编辑位置在 $x_1$。
 接着，每当遇到一个 $DEL(k)$ 和 $COPY(k)$ 时，$k = k+1$ 将表示当前 $x$ 的编辑位置向前一步，而当遇到 $ADD(w)$ 时，$k$ 保持不变，因为 $x$ 并未被编辑。
-这样以来，在模型预测 $DEL$ 和 $COPY$ 时就无需预测需要操作的位置 $k$，因为其位置都由同一的 $executor point k$ 来表示。
-更进一步地，本文还引入了 $For(·)$ 来支持重复操作，例如，如果一个 editing program 的某个位置有 3 个连续的 $DEL$ 操作，则可以使用 $For(·)$ 进行压缩：$DEL\ 3$。
-最终，模型需要预测的内容包括：1) editing action 的名字($ADD/DEL/COPY/SKIP$)；2) editing action 的重复次数，即一个数字。
+这样以来，在模型预测 $DEL$ 和 $COPY$ 时就无需预测需要操作的位置 $k$，因为其位置都由统一的 $executor\ point\ k$ 来表示。
+更进一步地，本文还引入了 $For(·)$ 来支持重复操作，例如，如果一个 editing program 的某个位置有 $3$ 个连续的 $DEL$ 操作，则可以使用 $For(·)$ 进行压缩：$DEL\ 3$。
+最终，模型需要预测的内容包括：1) editing action 的 name ($ADD/DEL/COPY/SKIP$)；2) editing action 的重复次数，即 number。
 (还不明白具体预测内容的可以看一下下图给出的具体例子)
 <b>这里有一个问题就是 $ADD$ 的特殊性，文章中并没有明确说明对于 $ADD$ 的预测。
-我的理解是因为连续添加两个相同的词几乎不可能，因此无需预测 $ADD$ 的重复次数(默认只有一次)，而是将预测得到的数字表示为需要添加的 token 的标号。
+我的理解是因为连续添加两个相同的词几乎不可能，因此无需预测 $ADD$ 的重复次数(默认只有一次)，而是将预测得到的 number 表示为需要添加的 token 的标号。
 这样就可以将所有 editing actions 的预测统一成预测 $name + number$。</b></p>
 
 ![editing program](/images/paper_glossification_editing_program.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">确定了模型的输入和输出形式，接下来便是数据集的选择和模型的设计、训练。和普通的 glossification 不同(glossification 数据集中只有 sentence + gloss，没有 editing program)，
+这里需要自己构建每个 sentence-glosses pair 对应的 editing program。为此，本文将问题视为<b>最短编辑距离(minimal editing distance)</b>，并采用 DP 算法进行求解(剔除最短编辑距离问题中的 $Sub$ 操作)，
+求得最短编辑距离，然后通过回溯确定其 editing actions 序列，则该序列就是对应的 editing program。这样便自动构造了模型的输入输出。</p>
+
+![model](/images/paper_glossification_model.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">而在模型设计上，如上图，本文提出了 $generator$ 和 $executor$ 模块，前者通过 sentence 一步步预测 editing program (即 step-by-step)；
+后者通过执行已经预测的部分 editing program 获得半成品的 glosses，并将这半成品的 glosses 进行总结归纳然后反馈给 $generator$，使其在下一步的预测中能关注到之前预测的情况，进一步改进自己的预测。
+</p>
 
