@@ -109,4 +109,22 @@ editing causal attention 和 Mask MHA 的结构十分类似，唯一的不同在
 
 ![editing casual attention](/images/paper_glossification_editing_casual_attention.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">最后便是模型训练，</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">最后便是模型训练，本文首先使用了 imitation learning strategy 的策略，即将前述由 DP 算法生成的 edting program 作为唯一的 ground-truth 使用 cross-entropy 损失进行训练：</p>
+
+<center>$L_{IL}(\theta)$ = \sum_{t=1}^T{-z_t^*log(q_t)}</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$z_t^*$ 表示第 $t$ 个位置的 ground-truth，$q_t$ 表示模型在第 $t$ 个位置预测出 $z_t^*$ 的概率。
+但是这会导致 program aliasing 问题，即有多个 editing program 都可以将 sentence $x$ 转化为最终的 $y$，但是却都将它们归类为错误(只有用作 ground-truth 的那个才被当作正确的)，导致模型 over-penalized，
+从而导致模型的探索能力下降。为此，本文提出了使用 $policy gradient method(RL)$ 的强化学习方法来缓解这个问题(将其称为 <b>$peer-critic$</b>)。
+具体而言，本文使用 $generator$ 生成的 glosses 和 ground-truth的 BLEU-4 分数来作为奖励，并通过 minimize the negative expected reward 来训练模型：</p>
+
+<center>L_{RL}(\theta) = E_{\tilde{z}\sim P_{\theta}(z|x)[r(\tilde(z)}]}</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $\tilde(z)$ 表示模型 $P_{\theta}(z|x)$ 预测的 editing program，$r(·)$ 表示奖励函数，即 BLEU-4 分数。
+由于 BLEU-4 分数的计算是不可导的，无法进行 back-propagation，本文使用了 REINFORCE 算法，使用 Monte-Carlo 采样来计算梯度：</p>
+
+<center>\nabla_{\theta}L_{RL}(\theta) = -r(\tilde{z})\nabla_{\theta}log(P_{\theta}(\tilde(z)|x))</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$\tilde{z}$ 的采样次数为 $K = 5$ 次。最后，通过结合这两个损失函数，便可进行训练：</p>
+
+<center>L(\theta) = \lambda L_{IL}(\theta) + L_{RL}(\theta)</center>
