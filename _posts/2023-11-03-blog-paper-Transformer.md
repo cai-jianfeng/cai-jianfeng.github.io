@@ -20,11 +20,13 @@ Question
 Preliminary
 ===
 
+![attention](/images/paper_Transformer_attention.png)
+
 <p style="text-align:justify; text-justify:inter-ideograph;">attention：attention 是将人类的注意力机制引入神经网络的一种方式。人类在进行分类等任务时，更多的是使用比较的方法来进行学习，
 即对于自己的需求(即自己掌握的关键特征) $query$，通过将其与每个候选结果 $vector_i$ 的关键特征 $key_i$ 进行比较。
 一般而言，两个相似的物体的关键特征也是相似的，即 $query \approx key_{positive}$。这样我们就可以选择到最终的结果。
-在数学形式上，假设当前的 $query = q$，各个候选的结果 $\{vector_i, key_i\} i = [1,...,N]$ 为 $\{k_i, v_i\}$，
-则首先我们可以计算 $q$ 和 $k_i$ 之间的相似度来确定其与各个候选结果的相似性：</p>
+在数学形式上，如上图(Figure 2 left)，假设当前的 $query = q$，各个候选的结果 $\{vector_i, key_i\} i = [1,...,N]$ 为 $\{k_i, v_i\}$，
+则首先我们可以计算 $q$ 和 $k_i$ 之间的相似度来确定其与各个候选结果的相似性(最简单的使用点乘表示相似度)：</p>
 
 <center>$sim(q, k_i) = qk_i^T, i= [1,...,N]$</center>
 
@@ -45,6 +47,13 @@ Preliminary
 Method
 ===
 
-<p style="text-align:justify; text-justify:inter-ideograph;">传统的 recurrent 网络在序列建模的准确率上已经有了很大的改进，但是其最致命的问题是其训练的顺序性，
-导致其训练与推理时长和训练样本的长度成正比，这极大限制了模型可处理的序列长度。
+![Transformer architecture](/images/paper_Transformer_architecture.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">传统的 recurrent 模型在序列建模的准确率上已经有了很大的改进，但是其最致命的问题是其训练的顺序性，
+导致其训练与推理时长和训练样本的长度成正比，这极大限制了模型可处理的序列长度；而且，只要 recurrent 模型的架构不变，这个问题基本上无法解决(CNN + 隐变量 $h_i$)。
+为此，本文放弃了 recurrent 模型的架构，采用了全新的基于 attention 的架构 $Transformer$。
+它保留了 Encoder-Decoder 的框架，但是实现了 Encoder 编码序列的并行。
+具体而言，如上图，假设输入序列为 $x = (x_1,...,x_n)$，需要将其转化为 $y = (y_1,...,y_m)$。
+对于 Encoder，它需要将输入序列 $x$ 转化为之间表示 $z = (z_1,...,z_n)$。它是由一个个 Encoder Block 组成，每个 Encoder Block 的结构相同。
+在一个 Encoder Block 中，主要由 <b>Multi-Head Attention (MHA)</b>、<b>Feed Forward Network</b> 和 <b>LayerNorm</b> 组成。
 </p>
