@@ -115,4 +115,6 @@ Method
 <center>$PE_{(pos, 2i+1)} = cos(pos/1000^{2i/d_{model}})$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$pos$ 表示序列的第 $pos$ 个元素($pos = [1,...,n\ or\ m]$)，$i$ 表示序列元素的第 i 个维度($i = [1,...,d_{model}]$)。
-正余弦函数符合相对关系不变(即平移不变性)：$PE_{pos+k} \infty PE_{pos}, \forall fixed\ k$。</p>
+正余弦函数符合相对关系不变(即平移不变性)：$PE_{pos+k} \infty PE_{pos}, \forall fixed\ k$。
+当然，也可以和 Encoder/Decoder 的序列输入一样，直接把每个位置信息都变成一个可学习的 embedding 让模型自己学习。
+但是这种方法当在推理时遇到比在训练时遇到的最长序列还长时，就为超出的序列增加位置信息，而正余弦函数可以进行扩展。</p>
