@@ -103,3 +103,16 @@ Method
 而 MHA 机制是全局性的，即任意一个元素都能关注到其他所有元素，使得模型会”偷窥“到当前和之后需要预测的输出 $y_{t+1:m}$。为了避免这个问题，本文使用 Masked MHA 将 $t+1 \sim m$ 之间的元素全部掩码，使得模型无法看到。
 具体而言， Masked MHA 的整体结构和 MHA 相似，它在计算 softmax(·) 时，将所有 $t+1 \sim m$ 位置的输入都变成 $-\infty$，这
 样在经过 softmax(·) 之后，其对于位置的占比就变成 $0$，就保证了模型不会关注 $t+1 \sim m$ 位置的元素(原文的说法是阻止向左的信息流并保持其自回归特性)。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">最后，对 Decoder 的输出进行线性投影 $L_o$ 来改变维度(变成 vocabulary size)，并使用 softmax 来获得预测的每个元素的概率。
+同时，在 Encoder 和 Decoder 输入时，将 $x_i$ 和 $y_i$ 进行线性投影 $L_i^e$ 和 $L_i^d$ 转化为可学习的 embeddings 以便更好地学习(本文对 $L_o/L_i^e/L_i^d$ 使用同一个矩阵)。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">由于 attention 对元素之间的距离是 un-aware 的，这就导致打乱输入和输出序列的顺序对模型没有影响，即会导致模型预测的输出没有顺序性。
+因此，需要给模型添加位置信息，本文使用构造 <b>"position encodings"</b> 并加入到 Encoder 和 Decoder 开始的输入中来使得模型感知位置信息。
+具体而言，本文采用不同频率的正余弦函数来表示位置信息，即 "position encodings"：</p>
+
+<center>$PE_{(pos, 2i)} = sin(pos/1000^{2i/d_{model}})$</center>
+<center>$PE_{(pos, 2i+1)} = cos(pos/1000^{2i/d_{model}})$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$pos$ 表示序列的第 $pos$ 个元素($pos = [1,...,n\ or\ m]$)，$i$ 表示序列元素的第 i 个维度($i = [1,...,d_{model}]$)。
+正余弦函数符合相对关系不变(即平移不变性)：$PE_{pos+k} \infty PE_{pos}, \forall fixed\ k$。</p>
