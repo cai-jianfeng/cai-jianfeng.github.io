@@ -25,7 +25,7 @@ Preliminary
 <p style="text-align:justify; text-justify:inter-ideograph;">attention：attention 是将人类的注意力机制引入神经网络的一种方式。人类在进行分类等任务时，更多的是使用比较的方法来进行学习，
 即对于自己的需求(即自己掌握的关键特征) $query$，通过将其与每个候选结果 $vector_i$ 的关键特征 $key_i$ 进行比较。
 一般而言，两个相似的物体的关键特征也是相似的，即 $query \approx key_{positive}$。这样我们就可以选择到最终的结果。
-在数学形式上，如上图(Figure 2 left)，假设当前的 $query = q$，各个候选的结果 $\{vector_i, key_i\} i = [1,...,N]$ 为 $\{k_i, v_i\}$，
+在数学形式上，如上图(Figure 2 left)，假设当前的 $query = q$，各个候选的结果 $\{vector_i, key_i\},\ i = [1,...,N]$ 为 $\{k_i, v_i\}$，
 则首先我们可以计算 $q$ 和 $k_i$ 之间的相似度来确定其与各个候选结果的相似性(最简单的使用点乘表示相似度)：</p>
 
 <center>$sim(q, k_i) = qk_i^T, i= [1,...,N]$</center>
@@ -63,7 +63,7 @@ Method
 
 <p style="text-align:justify; text-justify:inter-ideograph;">然后使用 attention 关注自身与序列中的其他元素的关系来更新自身的表示：</p>
 
-<center>\hat{x}_i = \sum_{i=1}^N{p(q,k_i)v_i}, i=[1,...,n]$</center>
+<center>$\hat{x}_i = \sum_{i=1}^N{p(q,k_i)v_i}, i=[1,...,n]$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">任意看出，上述的操作可以将 $x$ 视为一个矩阵，使得各个元素同时计算计算，即：</p>
 
@@ -74,4 +74,13 @@ Method
 
 <center>$\hat{x} = Attention(Q,K,V) = softmax(\dfrac{QK^T}{\sqrt{d_k}})V$</center>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">在</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">更进一步地，在 CNN 架构中，模型通过卷积核来关注每个元素自身与其他元素的关系，并通过多个不同参数的卷积核来鼓励模型学习多种不同的关系。
+同样地，这里可以选择通过多个不同 $W_q, W_k, W_v$ 参数的 attention 来鼓励模型学习不同的关系。具体而言，本文提出了 Multi-Head Attention 机制。
+它使用 $h$ 组参数 $W_q^i, W_k^i, W_v^i$ 将输入投射到不同的表示(每组维度仍然是 $d_q, d_k, d_v$)，然后对每组实行 attention 来学习一种关系，以鼓励模型从不同的角度关注输入的不同子空间：</p>
+
+<center>$\hat{x}^i = Attention(Q^i,K^i,V^i) = softmax((W_q^ix)(W_k^ix)^T)W_v^ix$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">这样每个 $\hat{x}^i$ 都表示 $x$ 的一种子空间表示，最后将其 concat 起来，并经过进一步线性投影使得输出的维度保持不变：</p>
+
+<center>$\hat{x} = Concat(\hat{x}_1,...,\hat{x}_h)W_O$</center>
+
