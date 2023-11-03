@@ -93,7 +93,7 @@ $executor$ 首先在 $x$ 上执行 $z_{1:t-1}$ 获得 partial glosses $y_{1:j_{t
 <p style="text-align:justify; text-justify:inter-ideograph;">其中 $P_i$ 表示位置编码，$DecoderLayer(·)$ 表示 Transformer Decoder Block(包括一个 MHA(self)，一个 MHA(cross) 和一个 FFN)，$l'$ 表示第 $l'$ 层。
 注意，这里的 $DecoderLayer(·)$ 的第一个 MHA 不是 mask 的，因为 $y$ 的长度的动态变化性，不能使用常规的 Mask MHA。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">为此，本文在 Decoder 之前添加了一个 <b>editing causal attention</b> 模块替换 Mask MHA，并将 $executor$ 总结的 $g_{1:j_{t-1}}$ 与 $e_{1:t-1}$ 融合进行融合交互。
+<p style="text-align:justify; text-justify:inter-ideograph;">为此，本文在 Decoder 之后(即最后一层 $DecoderLayer(·)$ 之后)添加了一个 <b>editing causal attention</b> 模块替换 Mask MHA，并将 $executor$ 总结的 $g_{1:j_{t-1}}$ 与 $e_{1:t-1}$ 融合进行融合交互。
 editing causal attention 和 Mask MHA 的结构十分类似，唯一的不同在于 Mask MHA 的 mask 是随着预测步骤 $t$ 单调递减的
 (即每预测一步，就会解码出一个元素，即预测序列的长度 $+1$，mask 就 $-1$，表示该步的 ground-truth 已经可见)，
 而对于 editing causal attention 而言，每预测一步只会使得 editing program 的序列长度 $+1$，并不一定会使 $y$ 的序列长度 $+1$，
