@@ -76,7 +76,7 @@ Method
 
 <p style="text-align:justify; text-justify:inter-ideograph;">更进一步地，在 CNN 架构中，模型通过卷积核来关注每个元素自身与其他元素的关系，并通过多个不同参数的卷积核来鼓励模型学习多种不同的关系。
 同样地，这里可以选择通过多个不同 $W_q, W_k, W_v$ 参数的 attention 来鼓励模型学习不同的关系。具体而言，本文提出了 Multi-Head Attention 机制。
-它使用 $h$ 组参数 $W_q^i, W_k^i, W_v^i$ 将输入投射到不同的表示(每组维度仍然是 $d_q, d_k, d_v$)，然后对每组实行 attention 来学习一种关系，以鼓励模型从不同的角度关注输入的不同子空间：</p>
+如上图(Figure 2 right)，它使用 $h$ 组参数 $W_q^i, W_k^i, W_v^i$ 将输入投射到不同的表示(每组维度仍然是 $d_q, d_k, d_v$)，然后对每组实行 attention 来学习一种关系，以鼓励模型从不同的角度关注输入的不同子空间：</p>
 
 <center>$\hat{x}^i = Attention(Q^i,K^i,V^i) = softmax((W_q^ix)(W_k^ix)^T)W_v^ix$</center>
 
@@ -119,6 +119,6 @@ Method
 但是这种方法当在推理时遇到比在训练时遇到的最长序列还长时，就为超出的序列增加位置信息，而正余弦函数可以进行扩展。
 此外，正余弦函数符合相对关系不变(即平移不变性)，即 $PE_{pos+k} \infty PE_{pos}, \forall fixed\ k$。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">总结而言，Transformer 通过将 $x$ 转化为 learned embedding，然后加上 "position encodings" 作为输入进入 Encoder，输出中间表示 $z$。
-然后将已经预测好的输出 $\hat{y}_{1:t}$ 转化为 learned embedding，然后加上 "position encodings" 作为输入和 $z$ 一起进入 Decoder.
-最终输出的第 $t$ 个位置的元素经过线性投影 $L_o$，并使用 softmax 来获得预测概率，使用 cross-entropy 损失进行训练。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">总结而言，Transformer 通过将 $x$ 转化为 learned embedding，加上 "position encodings" 作为输入进入 Encoder，输出中间表示 $z$。
+接着将已经预测好的输出 $\hat{y}_{1:t}$ 转化为 learned embedding，加上 "position encodings" 作为输入和 $z$ 一起进入 Decoder.
+最终输出的第 $t$ 个位置的元素经过线性投影 $L_o$，并使用 softmax 来获得第 $t$ 个位置的元素预测概率，最后使用 cross-entropy 损失进行训练。</p>
