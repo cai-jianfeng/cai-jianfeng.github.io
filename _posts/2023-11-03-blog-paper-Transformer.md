@@ -88,3 +88,10 @@ Method
 同时由于 NLP 的每个 batch 中的数据的长度不一致，无法较好地使用 $BatchNorm(·)$ 进行学习，本文便采用 $LayerNorm(·)$ 对输出进行归一化：</p>
 
 <center>$\hat{x} = LayerNorm(\hat{x} + x)$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在经过了 MHA 的序列元素间的相互学习之后，模型需要对每个元素自身进行进一步总结学习。为此，本文在 MHA 之后添加了一个 $2$ 层全连接网络(FFN)对每个元素进行独立地学习：</p>
+
+<center>$FFN(\hat{x}) = max(0, xW_1 + b)W_2 + b_2$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，激活函数使用简单的 ReLU。同时，也在其后添加了同样的残差连接和层归一化。最后，通过不断堆叠 MHA + FFN (为一个 Encoder Block)来学习输入，获得中间表示 $z$。</p>
+
