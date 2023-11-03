@@ -55,5 +55,23 @@ Method
 它保留了 Encoder-Decoder 的框架，但是实现了 Encoder 编码序列的并行。
 具体而言，如上图，假设输入序列为 $x = (x_1,...,x_n)$，需要将其转化为 $y = (y_1,...,y_m)$。
 对于 Encoder，它需要将输入序列 $x$ 转化为之间表示 $z = (z_1,...,z_n)$。它是由一个个 Encoder Block 组成，每个 Encoder Block 的结构相同。
-在一个 Encoder Block 中，主要由 <b>Multi-Head Attention (MHA)</b>、<b>Feed Forward Network</b> 和 <b>LayerNorm</b> 组成。
-</p>
+每个 Encoder Block 的主要作用是学习输入序列之间的相互关系，因此需要 attention 来不断关注序列中其他元素与自身的关系。
+它主要由 <b>Multi-Head Attention (MHA)</b>、<b>Feed Forward Network</b> 和 <b>LayerNorm</b> 组成。
+对于输入序列的每一个元素 $x_i$，首先将其映射到 $d_q, d_k, d_v$ 维度，分别表示为 $q, k, v$：</p>
+
+<center>$q_i, k_i, v_i = W_qx_i, W_kx_i, W_vx_i$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">然后使用 attention 关注自身与序列中的其他元素的关系来更新自身的表示：</p>
+
+<center>\hat{x}_i = \sum_{i=1}^N{p(q,k_i)v_i}, i=[1,...,n]$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">任意看出，上述的操作可以将 $x$ 视为一个矩阵，使得各个元素同时计算计算，即：</p>
+
+<center>$\hat{x} = Attention(Q,K,V) = softmax(QK^T)V = softmax((W_qx)(W_kx)^T)W_vx$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">由于 $QK^T$ 的数量级 $\approx d_q \times d_k \approx d_k^2$，为防止计算数值过大，本文选择将乘积结果 $\times \frac{1}{\sqrt{d_k}}$ 进行缩放，
+因此，attention 的表达式为：</p>
+
+<center>$\hat{x} = Attention(Q,K,V) = softmax(\dfrac{QK^T}{\sqrt{d_k}})V$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在</p>
