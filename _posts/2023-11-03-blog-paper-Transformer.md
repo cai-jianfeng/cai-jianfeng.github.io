@@ -82,5 +82,9 @@ Method
 
 <p style="text-align:justify; text-justify:inter-ideograph;">这样每个 $\hat{x}^i$ 都表示 $x$ 的一种子空间表示，最后将其 concat 起来，并经过进一步线性投影使得输出的维度保持不变：</p>
 
-<center>$\hat{x} = Concat(\hat{x}_1,...,\hat{x}_h)W_O$</center>
+<center>$\hat{x} = Concat(\hat{x}_1,...,\hat{x}_h)W_O, \hat{x}.shape = x.shape$</center>
 
+<p style="text-align:justify; text-justify:inter-ideograph;">然后，通过借鉴 ResNet 的做法，使用残差连接进行残差建模学习：$\hat{x} = \hat{x} + x$。
+同时由于 NLP 的每个 batch 中的数据的长度不一致，无法较好地使用 $BatchNorm(·)$ 进行学习，本文便采用 $LayerNorm(·)$ 对输出进行归一化：</p>
+
+<center>$\hat{x} = LayerNorm(\hat{x} + x)$</center>
