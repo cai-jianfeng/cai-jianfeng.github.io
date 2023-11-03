@@ -50,7 +50,7 @@ Method
 ![Transformer architecture](/images/paper_Transformer_architecture.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">传统的 recurrent 模型在序列建模的准确率上已经有了很大的改进，但是其最致命的问题是其训练的顺序性，
-导致其训练与推理时长和训练样本的长度成正比，这极大限制了模型可处理的序列长度；而且，只要 recurrent 模型的架构不变，这个问题基本上无法解决(CNN + 隐变量 $h_i$)。
+导致其训练与推理时长和训练样本的长度成正比，这极大限制了模型可处理的序列长度；而且，只要 recurrent 模型的架构不变(CNN + 隐变量 $h_i$)，这个问题基本上无法解决。
 为此，本文放弃了 recurrent 模型的架构，采用了全新的基于 attention 的架构 $Transformer$。
 它保留了 Encoder-Decoder 的框架，但是实现了 Encoder 编码序列的并行。
 具体而言，如上图，假设输入序列为 $x = (x_1,...,x_n)$，需要将其转化为 $y = (y_1,...,y_m)$。
@@ -65,7 +65,7 @@ Method
 
 <center>$\hat{x}_i = \sum_{i=1}^N{p(q,k_i)v_i}, i=[1,...,n]$</center>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">任意看出，上述的操作可以将 $x$ 视为一个矩阵，使得各个元素同时计算计算，即：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">容易看出，上述的操作可以将 $x$ 视为一个矩阵，使得各个元素可以同时进行计算，即：</p>
 
 <center>$\hat{x} = Attention(Q,K,V) = softmax(QK^T)V = softmax((W_qx)(W_kx)^T)W_vx$</center>
 
@@ -89,7 +89,7 @@ Method
 
 <center>$\hat{x} = LayerNorm(\hat{x} + x)$</center>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">在经过了 MHA 的序列元素间的相互学习之后，模型需要对每个元素自身进行进一步总结学习。为此，本文在 MHA 之后添加了一个 $2$ 层全连接网络(FFN)对每个元素进行独立地学习：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">在经过了 MHA 的序列元素间的相互学习之后，模型还需要对每个元素自身进行进一步总结学习。为此，本文在 MHA 之后添加了一个 $2$ 层全连接网络(FFN)对每个元素进行独立地学习：</p>
 
 <center>$FFN(\hat{x}) = max(0, xW_1 + b)W_2 + b_2$</center>
 
@@ -100,9 +100,9 @@ Method
 和 Encoder Block 类似，它主要由 <b>Masked Multi-Head Attention</b>、 <b>Cross Multi-Head Attention</b>、<b>Feed Forward Network</b> 和 <b>LayerNorm</b> 组成。
 其中 Cross MHA 和 MHA 的架构一致，只是其 $K$ 和 $V$ 为 Encoder 的输出 $z$，而 $Q$ 为前一层 Decoder Block 的输出(第一层的 Decoder Block 的 $Q$ 为之前的预测输出 $\hat{y}_{1:t}$)。
 而对于 Masked MHA，由于 Decoder 的解码是顺序性的，即一次解码一个序列元素，然后将预测的输出加入到 Decoder 的输入中($\hat{y}_{1:t}$ 表示已经预测了 $t$ 个)进行进一步预测下一个序列元素 $\hat{y}_{t+1}$；
-而 MHA 机制是全局性的，即任意一个元素都能关注到其他所有元素，使得模型会”偷窥“到当前和之后需要预测的输出 $y_{t+1:m}$。为了避免这个问题，本文使用 Masked MHA 将 $t+1 \sim m$ 之间的元素全部掩码，使得模型无法看到。
+而 MHA 机制是全局性的，即任意一个元素都能关注到其他所有元素，使得模型会”偷窥“到当前和之后还未预测的输出 $y_{t+1:m}$。为了避免这个问题，本文使用 Masked MHA 将 $t+1 \sim m$ 之间的元素全部掩码，使得模型无法看到。
 具体而言， Masked MHA 的整体结构和 MHA 相似，它在计算 softmax(·) 时，将所有 $t+1 \sim m$ 位置的输入都变成 $-\infty$，这
-样在经过 softmax(·) 之后，其对于位置的占比就变成 $0$，就保证了模型不会关注 $t+1 \sim m$ 位置的元素(原文的说法是阻止向左的信息流并保持其自回归特性)。</p>
+样在经过 softmax(·) 之后，其对应位置得到的占比就变成 $0$，就保证了模型不会关注 $t+1 \sim m$ 位置的元素(原文的说法是阻止向左的信息流并保持其自回归特性)。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">最后，对 Decoder 的输出进行线性投影 $L_o$ 来改变维度(变成 vocabulary size)，并使用 softmax 来获得预测的每个元素的概率。
 同时，在 Encoder 和 Decoder 输入时，将 $x_i$ 和 $y_i$ 进行线性投影 $L_i^e$ 和 $L_i^d$ 转化为可学习的 embeddings 以便更好地学习(本文对 $L_o/L_i^e/L_i^d$ 使用同一个矩阵)。</p>
@@ -114,7 +114,11 @@ Method
 <center>$PE_{(pos, 2i)} = sin(pos/1000^{2i/d_{model}})$</center>
 <center>$PE_{(pos, 2i+1)} = cos(pos/1000^{2i/d_{model}})$</center>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中，$pos$ 表示序列的第 $pos$ 个元素($pos = [1,...,n\ or\ m]$)，$i$ 表示序列元素的第 i 个维度($i = [1,...,d_{model}]$)。
-正余弦函数符合相对关系不变(即平移不变性)：$PE_{pos+k} \infty PE_{pos}, \forall fixed\ k$。
-当然，也可以和 Encoder/Decoder 的序列输入一样，直接把每个位置信息都变成一个可学习的 embedding 让模型自己学习。
-但是这种方法当在推理时遇到比在训练时遇到的最长序列还长时，就为超出的序列增加位置信息，而正余弦函数可以进行扩展。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$pos$ 表示序列的第 $pos$ 个元素($pos = [1,...,n\ or\ m]$)，$i$ 表示序列元素的第 $i$ 个维度($i = [1,...,d_{model}]$)。
+当然，也可以和 Encoder/Decoder 的序列输入一样，直接把每个元素的位置信息都变成一个可学习的 embedding 让模型自己学习。
+但是这种方法当在推理时遇到比在训练时遇到的最长序列还长时，就为超出的序列增加位置信息，而正余弦函数可以进行扩展。
+此外，正余弦函数符合相对关系不变(即平移不变性)，即 $PE_{pos+k} \infty PE_{pos}, \forall fixed\ k$。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">总结而言，Transformer 通过将 $x$ 转化为 learned embedding，然后加上 "position encodings" 作为输入进入 Encoder，输出中间表示 $z$。
+然后将已经预测好的输出 $\hat{y}_{1:t}$ 转化为 learned embedding，然后加上 "position encodings" 作为输入和 $z$ 一起进入 Decoder.
+最终输出的第 $t$ 个位置的元素经过线性投影 $L_o$，并使用 softmax 来获得预测概率，使用 cross-entropy 损失进行训练。</p>
