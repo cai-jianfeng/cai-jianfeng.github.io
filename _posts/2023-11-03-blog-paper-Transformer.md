@@ -54,7 +54,7 @@ Method
 为此，本文放弃了 recurrent 模型的架构，采用了全新的基于 attention 的架构 $Transformer$。
 它保留了 Encoder-Decoder 的框架，但是实现了 Encoder 编码序列的并行。
 具体而言，如上图，假设输入序列为 $x = (x_1,...,x_n)$，需要将其转化为 $y = (y_1,...,y_m)$。
-对于 Encoder，它需要将输入序列 $x$ 转化为之间表示 $z = (z_1,...,z_n)$。它是由一个个 Encoder Block 组成，每个 Encoder Block 的结构相同。
+对于 Encoder，它需要将输入序列 $x$ 转化为中间表示 $z = (z_1,...,z_n)$。它是由一个个 Encoder Block 组成，每个 Encoder Block 的结构相同。
 每个 Encoder Block 的主要作用是学习输入序列之间的相互关系，因此需要 attention 来不断关注序列中其他元素与自身的关系。
 它主要由 <b>Multi-Head Attention (MHA)</b>、<b>Feed Forward Network</b> 和 <b>LayerNorm</b> 组成。
 对于输入序列的每一个元素 $x_i$，首先将其映射到 $d_q, d_k, d_v$ 维度，分别表示为 $q, k, v$：</p>
@@ -95,3 +95,11 @@ Method
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，激活函数使用简单的 ReLU。同时，也在其后添加了同样的残差连接和层归一化。最后，通过不断堆叠 MHA + FFN (为一个 Encoder Block)来学习输入，获得中间表示 $z$。</p>
 
+<p style="text-align:justify; text-justify:inter-ideograph;">而对于 Decoder，它需要将中间表示 $z$ 转化为最终输出 $y$。它也是由一个个 Decoder Block 组成，
+每个 Decoder Block 的主要作用是学习输入序列和输出序列之间的相互关系，因此需要 attention 来不断关注两个序列之间的关系。
+和 Encoder Block 类似，它主要由 <b>Masked Multi-Head Attention</b>、 <b>Cross Multi-Head Attention</b>、<b>Feed Forward Network</b> 和 <b>LayerNorm</b> 组成。
+其中 Cross MHA 和 MHA 的架构一致，只是其 $K$ 和 $V$ 为 Encoder 的输出 $z$，而 $Q$ 为前一层 Decoder Block 的输出(第一层的 Decoder Block 的 $Q$ 为之前的预测输出 $\hat{y}_{1:t}$)。
+而对于 Masked MHA，由于 Decoder 的解码是顺序性的，即一次解码一个序列元素，然后将预测的输出加入到 Decoder 的输入中($\hat{y}_{1:t}$ 表示已经预测了 $t$ 个)进行进一步预测下一个序列元素 $\hat{y}_{t+1}$；
+而 MHA 机制是全局性的，即任意一个元素都能关注到其他所有元素，使得模型会”偷窥“到当前和之后需要预测的输出 $y_{t+1:m}$。为了避免这个问题，本文使用 Masked MHA 将 $t+1 \sim m$ 之间的元素全部掩码，使得模型无法看到。
+具体而言， Masked MHA 的整体结构和 MHA 相似，它在计算 softmax(·) 时，将所有 $t+1 \sim m$ 位置的输入都变成 $-\infty$，这
+样在经过 softmax(·) 之后，其对于位置的占比就变成 $0$，就保证了模型不会关注 $t+1 \sim m$ 位置的元素(原文的说法是阻止向左的信息流并保持其自回归特性)。</p>
