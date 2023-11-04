@@ -90,8 +90,8 @@ $executor$ 首先在 $x$ 上执行 $z_{1:t-1}$ 获得 partial glosses $y_{1:j_{t
 
 <center>$e_1^{(l'+1)},...,e_{t-1}^{(l'+1)} = \begin{cases}E_{z_1}+P_1,..., E_{z_{t-1}}+P_{t-1},\ l'=1, \\ DecoderLayer_{l'}(e_1^{(l')},...,e_{t-1}^{(l')},h_1,...,h_m),\ l'>1\end{cases}$</center>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中 $P_i$ 表示位置编码，$DecoderLayer(·)$ 表示 Transformer Decoder Block(包括一个 MHA(self)，一个 MHA(cross) 和一个 FFN)，$l'$ 表示第 $l'$ 层。
-注意，这里的 $DecoderLayer(·)$ 的第一个 MHA 不是 mask 的，因为 $y$ 的长度的动态变化性，不能使用常规的 Mask MHA。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $P_i$ 表示位置编码，$DecoderLayer(·)$ 表示 Transformer Decoder Block(包括一个 masked MHA(self)，一个 MHA(cross) 和一个 FFN)，$l'$ 表示第 $l'$ 层。
+注意，这里的 $DecoderLayer(·)$ 的第一个 MHA 是 masked 的。但是，因为 $y$ 的长度的动态变化性，在将 $g_{1:j_{t-1}}$ 融入到 $e_{1:t-1}$ 时不能使用常规的 Mask MHA。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">为此，本文在 Decoder 之后(即最后一层 $DecoderLayer(·)$ 之后)添加了一个 <b>editing causal attention</b> 模块替换 Mask MHA，并将 $executor$ 总结的 $g_{1:j_{t-1}}$ 与 $e_{1:t-1}$ 融合进行融合交互。
 editing causal attention 和 Mask MHA 的结构十分类似，唯一的不同在于 Mask MHA 的 mask 是随着预测步骤 $t$ 单调递减的
