@@ -63,6 +63,6 @@ Method
 <p style="text-align:justify; text-justify:inter-ideograph;">最终，将这 $5$ 个任务联合起来训练便可获得高性能的 SLTUnet 模型。假设 SLT 数据样本为 $(\mathcal{V}, \mathcal{G}, \mathcal{T})$，MT 的训练样本为 $(S,T)$，
 则训练函数可以表示为：</p>
 
-<center>L^{SLTUNet} = L(\mathcal{G},\mathcal{G}|\mathcal{V}, [2gls]) + L(\mathcal{T},\mathcal{G}|\mathcal{V}, [2txt]) + L(\mathcal{T}|\mathcal{G}, [2txt]) + L(T|S,[2txt])</center>
+<center>$L^{SLTUNet} = L(\mathcal{G},\mathcal{G}|\mathcal{V}, [2gls]) + L(\mathcal{T},\mathcal{G}|\mathcal{V}, [2txt]) + L(\mathcal{T}|\mathcal{G}, [2txt]) + L(T|S,[2txt])$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">注意，这里删除了 $Text2Gloss$ 任务和 $Sign2Gloss$ 任务中的 CTC 损失(因为它们对最终的结果没提点，反而降点)。</p>
