@@ -57,7 +57,7 @@ Method
 为此，本文使用了在多语言数据集上预训练的 sequence-to-sequence 模型(如 mT5)来作为初始化 BT 模型(这样一来 BT 模型在一开始便有了较强的基础知识，后续仅需微调到特定任务即可)。
 然后使用 $D_{g2t}$ 数据集训练 BT 模型，最终训练好的 BT 模型便可用来将生成好的 $\hat{y}^j$ 转化为 glosses $\hat{x}^j$。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">总结而言，首先使用 $D_{g2t}$ 中的 $y^i$ 微调 LLM 模型；
+<p style="text-align:justify; text-justify:inter-ideograph;">总结而言，如上图，首先使用 $D_{g2t}$ 中的 $y^i$ 微调 LLM 模型；
 然后使用 $y^i$ 作为 prompt (本文使用随机选 $k-1$ 个 $y^i$ 并 concat 起来：$[y^{j_1},[SEP],...,y^{j_{k-1}}]$，
 然后引导模型生成第 $k$ 个伪数据 $\hat{y}^{j_k}$，这和微调 LLM 模型的数据组成一致) 来引导 LLM 模型生成大量的伪数据 $\hat{y}^i$；
 接着使用 $D_{g2t}$ 微调预训练好的 BT 模型(mT5)；最后使用训练好的 BT 模型将生成好的 $\hat{y}^j$ 转化为 glosses $\hat{x}^j$。</p>
