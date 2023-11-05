@@ -26,11 +26,11 @@ Preliminary
 (gloss 是手语的一种书面形式，它通常是通过手语视频翻译而来，其中每个词语和手语视频中的每个动作都一一对应。
 通常而言，$gloss$ 会比 sentence (即我们日常说话使用的语句)更加简洁，同时因为它是按手语视频的动作及顺序翻译而来的，因此和 sentence 拥有不同的语法规则，
 但是它拥有和 sentence 相似甚至相同的字典集(即它们所用的词汇表是相似/相同的))。
-然后将 SLT 任务分解成 $2$ 个子任务：$sign\ language\ recognition$ 和 $gloss-to-text\ translation$。
-其中，$sign\ language\ recognition$ 是将手语视频翻译为 $glosses$ 序列(Sign2Gloss)；而 $gloss-to-text\ translation$ 则是将 $glosses$ 序列转化为对应的口语语句。
+然后将 SLT 任务分解成 $2$ 个子任务：sign language recognition 和 gloss-to-text translation。
+其中，sign language recognition 是将手语视频翻译为 $glosses$ 序列(Sign2Gloss)；而 gloss-to-text translation 则是将 $glosses$ 序列转化为对应的口语语句。
 但是 $glosses$ 所表达的意思不完全等同于手语视频，通常会有信息丢失。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">2) $end-to-end$：它直接单个模型将手语视频翻译为对应的口语语句，而不需要多阶段翻译。它存在 $2$ 个问题：一是数据集的缺乏；二是需要建模不同 modality 之间的联系。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">2) $end-to-end$：它直接使用单个模型将手语视频翻译为对应的口语语句，而不需要多阶段翻译。它存在 $2$ 个问题：一是数据集的缺乏；二是需要建模不同 modality 之间的联系。</p>
 
 Method
 ===
@@ -43,7 +43,7 @@ Method
 因此，本文设计了一个统一的模型 SLTUnet，它囊括了 $Sign2Gloss$、$Sign2Text$、$Gloss2Text$、$Text2Gloss$ 和 $Machine\ Translation (MT)$ $5$ 个任务。
 这样不仅可以融合大量的不同任务的数据集帮助训练，缓解数据缺乏问题，还有助于训练模型学习一个统一的特征。
 具体而言，如上图，SLTUnet 包括一个 $Visual\ Encoder$、一个 $Textual\ Encoder$、一个 $Shared\ Encoder$ 和一个 $Shared\ Decoder$。
-假设输入序列特征为 $X \in R^{|X| \times d}$，任务标签为 $tag$ (表示当前正在执行哪个任务，每个任务的 $tag$ 如上图表)，输出序列为 $Y = \{y_1,...,y_|Y|\} \in R^{|Y| \times d$ (Y^I \in R^{|Y| \times d} 表示右移的输出序列，用于 Decoder 的输入)。
+假设输入序列特征为 $X \in R^{|X| \times d}$，任务标签为 $tag$ (表示当前正在执行哪个任务，每个任务的 $tag$ 如上图表)，输出序列为 $Y = \{y_1,...,y_|Y|\} \in R^{|Y| \times d}$ ($Y^I \in R^{|Y| \times d}$ 表示右移的输出序列，用于 Decoder 的输入)。
 首先，SLTUnet 将任务标签 $tag$ 插入到输入序列特征的最前面 $X \in R^{|X| \times d}$ 作为输入 $\bar{X}$。
 然后使用一个模态分离的 Enocder ($Visual\ Encoder/Textual\ Encoder$) 和 模态共享的 Encoder ($Shared\ Encoder$) 将输入 $\bar{X}$ 编码到之间表示 $X^O$。
 最后使用共用 Decoder 模块 ($Shared\ Decoder$) 将之间表示解码为预测输出 $Y^O$：</p>
