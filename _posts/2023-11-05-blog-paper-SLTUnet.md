@@ -45,12 +45,12 @@ Method
 具体而言，如上图，SLTUnet 包括一个 $Visual\ Encoder$、一个 $Textual\ Encoder$、一个 $Shared\ Encoder$ 和一个 $Shared\ Decoder$。
 假设输入序列特征为 $X \in R^{|X| \times d}$，任务标签为 $tag$ (表示当前正在执行哪个任务，每个任务的 $tag$ 如上图表)，输出序列为 $Y = \{y_1,...,y_|Y|\} \in R^{|Y| \times d}$ ($Y^I \in R^{|Y| \times d}$ 表示右移的输出序列，用于 Decoder 的输入)。
 首先，SLTUnet 将任务标签 $tag$ 插入到输入序列特征的最前面 $X \in R^{|X| \times d}$ 作为输入 $\bar{X}$。
-然后使用一个模态分离的 Enocder ($Visual\ Encoder/Textual\ Encoder$) 和 模态共享的 Encoder ($Shared\ Encoder$) 将输入 $\bar{X}$ 编码到之间表示 $X^O$。
-最后使用共用 Decoder 模块 ($Shared\ Decoder$) 将之间表示解码为预测输出 $Y^O$：</p>
+然后使用一个模态分离的 Enocder ($Visual\ Encoder/Textual\ Encoder$) 和 模态共享的 Encoder ($Shared\ Encoder$) 将输入 $\bar{X}$ 编码到潜表示 $X^O$。
+最后使用共用 Decoder 模块 ($Shared\ Decoder$) 将潜表示 $X^O$ 解码为预测输出 $Y^O$：</p>
 
 <center>$X^O = Encoder^S(Encoder^P(X, tag)),\ Y^O = Decoder(Y^I, X^O)$</center>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">对于任务 $Gloss2Text$、$Text2Gloss$ 和 $Machine\ Translation$ 来说，$Encoder^P(·)$ 是 Textual\ Encoder$，而其输入序列特征 $X$ 是由 word embedding 得到的。
+<p style="text-align:justify; text-justify:inter-ideograph;">对于任务 $Gloss2Text$、$Text2Gloss$ 和 $Machine\ Translation$ 来说，$Encoder^P(·)$ 是 $Textual\ Encoder$，而其输入序列特征 $X$ 是由 word embedding 得到的。
 它使用极大似然估计损失(maximum likelihood estimation)进行训练：$L(Y|X, tag) = L^{MLE}(Y|Y^O)$。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">而对于任务 $Sign2Gloss$ 和 $Sign2Text$ 来说，$Encoder^P(·)$ 是 $Visual\ Encoder$，
