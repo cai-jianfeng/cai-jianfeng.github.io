@@ -1,6 +1,6 @@
 ---
 title: 'XmDA'
-date: 23-11-05
+date: 23-11-06
 permalink: /posts/2023/11/blog-paper-xmda/
 tags:
   - 论文阅读
