@@ -78,4 +78,5 @@ Cross-modality Mix-up 通过将 $\mathcal{F}$ 和 $\mathcal{E}$ 结合在一起�
 然后，在训练期间，使用 Cross-modality Mix-up 来生成额外的混合模态 embedding $\mathcal{M}$，并使用 $\mathcal{L}_{JSD}$ 进行 embedding 对齐，
 接着对 embedding $\mathcal{F}$ 使用 $\mathcal{L}_{MLE}$ 和 $\mathcal{L}_{CTC}$ 进行训练，而对 mixed embedding $\mathcal{M}$ 使用 $\mathcal{L}_{MLE}$ 进行训练。
 最后，在推理期间，使用 Sign Embedding 将手语视频 $S$ 编码为 sign embedding $\mathcal{F}$，
-然后输入 Translation Encoder 进行进一步编码，然后输入 Translation Decoder 进行解码输出预测的 sentence $\hat{T}$(没有使用 CTC classifier, Gloss Embedding，gloss-to-text 模型以及 Cross-modality Mix-up & KD)。</p>
+然后输入 Translation Encoder 进行进一步编码输出 contextual embedding $h(S)$，然后将 $h(S)$ 输入 Translation Decoder 进行解码输出预测的 sentence $\hat{T}$ 
+(没有使用 CTC classifier, Gloss Embedding，gloss-to-text 模型以及 Cross-modality Mix-up & KD)。</p>
