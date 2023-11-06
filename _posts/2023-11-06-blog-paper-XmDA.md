@@ -59,7 +59,7 @@ Cross-modality Mix-up 通过将 $\mathcal{F}$ 和 $\mathcal{E}$ 结合在一起�
 
 <p style="text-align:justify; text-justify:inter-ideograph;">在求解得每个 $g_v$ 对应的 $l_v$ 和 $r_v$ 之后，通过一个预定义的阈值 $\lambda$ 来混合 $\mathcal{F}$ 和 $\mathcal{e}$ 以获得 $\mathcal{M}$：</p>
 
-<center>$m_v = \begin{cases}\mathcal{F}[l_v:r_v],\ p \leq \lambda \\ \mathcal{E},\ p > \lambda \end{cases}, p \in \mathcal{N}(0,1);\ \mathcal{M} = [m_1,..m_V]$</center>
+<center>$m_v = \begin{cases}\mathcal{F}[l_v:r_v],\ p \leq \lambda \\ \mathcal{E}[v],\ p > \lambda \end{cases}, p \in \mathcal{N}(0,1);\ \mathcal{M} = [m_1,..m_V]$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">注意，虽然 $\mathcal{M}$ 的下标标记到 $V$，但是其实际上的元素个数为 $Z$，因为其中的一部分 $m_i$ 的元素个数不是 $1$，而是 $(r_v - l_v + 1)$ 个。</p>
 
