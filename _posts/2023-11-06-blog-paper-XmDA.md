@@ -39,4 +39,11 @@ $T_i = \{t_u\}_{u=1}^U$ 表示对应的 sentence。</p>
 <center>$L_{MLE} = -\sum_{u=1}^{|T|}{log\ \mathcal{P}(t_u|t_{<u},h(S))}$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">此外，Sign Language Transformers 还包括 <b>Gloss Embedding</b> 和 <b>CTC Classifer</b> 模块。
-其中， Gloss Embedding</p>
+其中， Gloss Embedding 类似于 word embedding，它使用一个 embedding 矩阵将 $gloss$ token 转化为向量表示。
+而 CTC Classifier 是将 $gloss$ 作为中间的监督信号来训练 Translation Encoder。具体而言，它在 Translation Encoder 上增加了一个线性层和 softmax 函数来预测手语视频每一帧的 gloss 概率分布 $\mathcal{P}(g_z|h(S)), z\in [1,...,Z]$。
+然后通过边缘化 $S$ 到 $G$ 之间的所有有效映射来建模概率分布：</p>
+
+<center>$\mathcal{P}(G^*|h(S)) = \sum_{\pi \in \Pi}{\mathcal{P}(\pi|h(S))}$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$G^*$ 是 ground-truth，$\pi$ 是预测的 $glosses$，而 $\Pi$ 是所有合法的 $glosses$ 集合。最后，CTC 损失函数为 $L_{CTC} = 1 - \mathcal{P}(G^*|h(S))$。</p>
+
