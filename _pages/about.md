@@ -10,9 +10,9 @@ redirect_from:
 
 {% include base_path %}
 
-Incoming Master Student, supervised by <a href="http://staff.ustc.edu.cn/~zhwg/index.html" title="Wenggang Zhou">Prof. Wenggang Zhou</a>,
+<p style="text-align:justify; text-justify:inter-ideograph;">Incoming Master Student, supervised by <a href="http://staff.ustc.edu.cn/~zhwg/index.html" title="Wenggang Zhou">Prof. Wenggang Zhou</a>,
 Microsoft Key Laboratory of Multimedia Computing and Communication Lab, 
-<a href="https://eeis.ustc.edu.cn/main.htm" title="eeis-ustc">Department of Electronic Engineering and Information Science, University of Science and Technology of China</a>
+<a href="https://eeis.ustc.edu.cn/main.htm" title="eeis-ustc">Department of Electronic Engineering and Information Science, University of Science and Technology of China</a></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><a href="https://cai-jianfeng.github.io/publications/" title="publications">Publications</a> | <a href="https://cai-jianfeng.github.io/talks/" title="competitions">Competitions</a> | <a href="https://cai-jianfeng.github.io/teaching/" title="studying">Studying</a> | <a href="https://cai-jianfeng.github.io/year-archive/" title="blog">Blog Posts</a></p>
 
