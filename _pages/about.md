@@ -17,7 +17,8 @@ Microsoft Key Laboratory of Multimedia Computing and Communication Lab,
 <p style="text-align:justify; text-justify:inter-ideograph;"><a href="https://cai-jianfeng.github.io/publications/" title="publications">Publications</a> | <a href="https://cai-jianfeng.github.io/talks/" title="competitions">Competitions</a> | <a href="https://cai-jianfeng.github.io/teaching/" title="studying">Studying</a> | <a href="https://cai-jianfeng.github.io/year-archive/" title="blog">Blog Posts</a></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">If you have any things or questions to discuss, do not hesitate to contact me.</p>
-<p style="text-align:justify; text-justify:inter-ideograph;">Email: jfcai_1@stu.xidian.edu.cn        cjf1622613693@gmail.com</p>
+
+[[Wechat](/images/wechat.jpg)] [[QQ](/images/qq.jpg)] [[school email](jfcai_1@stu.xidian.edu.cn)] [[gmail](cjf1622613693@gmail.com)]
 
 Publications
 ======
