@@ -10,7 +10,9 @@ redirect_from:
 
 {% include base_path %}
 
-**This is the front page of the cai-jianfeng academic personal websites.**
+Incoming Master Student, supervised by <a href="http://staff.ustc.edu.cn/~zhwg/index.html" title="Wenggang Zhou">Prof. Wenggang Zhou</a>,
+Microsoft Key Laboratory of Multimedia Computing and Communication Lab, 
+<a href="https://eeis.ustc.edu.cn/main.htm" title="eeis-ustc">Department of Electronic Engineering and Information Science, University of Science and Technology of China</a>
 
 Publications
 ======
