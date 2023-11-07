@@ -1,6 +1,6 @@
 ---
 permalink: /
-title: <center>Cai-jianfeng Academic Personal Websites</center>
+title: <center><a href="https://cai-jianfeng.github.io/" title="Jianfeng Cai">Jianfeng Cai (蔡建峰)</a></center>
 excerpt: "About me"
 author_profile: true
 redirect_from: 
