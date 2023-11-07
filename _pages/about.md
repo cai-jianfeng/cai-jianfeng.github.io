@@ -18,7 +18,7 @@ Microsoft Key Laboratory of Multimedia Computing and Communication Lab,
 
 <p style="text-align:justify; text-justify:inter-ideograph;">If you have any things or questions to discuss, do not hesitate to contact me.</p>
 
-[[Wechat](/images/wechat.jpg)] [[QQ](/images/qq.jpg)] [[school email](jfcai_1@stu.xidian.edu.cn)] [[gmail](cjf1622613693@gmail.com)]
+[[Wechat](/images/wechat.jpg)] [[QQ](/images/qq.jpg)] [<a href="mailto:jfcai_1@stu.xidian.edu.cn" title="publications">school email</a>] [<a href="mailto:cjf1622613693@gmail.com" title="publications">gmail</a>]
 
 Publications
 ======
