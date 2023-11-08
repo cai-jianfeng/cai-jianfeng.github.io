@@ -79,7 +79,7 @@ $$\begin{aligned} q(x_{t-1}\vert x_t,x_0) & = \dfrac{q(x_{t-1},x_t,x_0)}{q(x_t,x
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$q(x_t|x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1},\beta_t\boldsymbol{I}) \Rightarrow x_t = \sqrt{1 - \beta_t}x_{t-1} + \sqrt{\beta_t}\varepsilon_{t-1}$，$q(x_{t-1}|x_0) = \mathcal{N}(x_{t-1}; \sqrt{\bar{\alpha}_{t-1}}x_0,(1 - \bar{\alpha}_{t-1})\boldsymbol{I})$，$q(x_t|x_0) = \mathcal{N}(x_t; \sqrt{\bar{\alpha}_t}x_0,(1 - \bar{\alpha}_t)\boldsymbol{I})$</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">然后，通过正态分布的概率密度函数 $\mathcal{N}(\mu, \sigma) = \dfrac{1}{\sqrt{2\pi}\sigma}exp(-\dfrac{(x-\mu)^2}{2\sigma^2})$，
-对上式进行进一步化简可得：</p>
+对上式进行进一步化简可得(推导见附录 $A$)：</p>
 
 <center>$q(x_{t-1} \vert  x_t,x_0) = \mathcal{N}(x_{t-1};\tilde{\mu}_t(x_t,x_0), \tilde{\beta}_t\boldsymbol{I})$</center>
 
@@ -118,3 +118,10 @@ $$\begin{aligned} L_{\theta} & = E_{t \in [1,T],x_0,\bar{\varepsilon}_t}[\vert \
 
 <p style="text-align:justify; text-justify:inter-ideograph;">此外，由于 $x_0 = \dfrac{1}{\sqrt{\bar{\alpha}_t}}(x_t - \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0)$，理论上也可以根据预测得到的 $\bar{\varepsilon}_0$，直接一步逆扩散到 $x_0$，但是没人这么做，说明效果很差，所以 DDPM 只在输入时使用一步扩散，而在预测时还是使用 $T$ 步的逆扩散。</p>
 
+附录
+===
+
+1. $q(x_{t-1}\vert x_t,x_0)$ 使用正态分布概率密度函数推导：
+
+$$\begin{aligned} q(x_{t-1}\vert x_t,x_0) & \Rightarrow \dfrac{\dfrac{1}{\sqrt{2\pi}\sigma_1}exp(-\dfrac{(x-\mu_1)^2}{2\sigma_1^2} \times \dfrac{1}{\sqrt{2\pi}\sigma_2}exp(-\dfrac{(x-\mu_2)^2}{2\sigma_2^2})}{\dfrac{1}{\sqrt{2\pi}\sigma_3}exp(-\dfrac{(x-\mu_3)^2}{2\sigma_3^2})} \\
+& \Rightarrow \end{aligned}$$
