@@ -65,6 +65,8 @@ $$\begin{aligned}x_t & = \sqrt{\alpha_t}(\sqrt{\alpha_{t-1}}x_{t-2} + \sqrt{1 - 
 
 <center>$x_t = \sqrt{\alpha_t\alpha_{t-1}}x_{t-2} + \sqrt{1 - \alpha_t\alpha_{t-1}}\bar{\varepsilon}_{t-2}$</center>
 
+
+
 <p style="text-align:justify; text-justify:inter-ideograph;">经过不断展开，最终可得 $x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0, \bar{\varepsilon}_0 \sim \mathcal{N}(0, \boldsymbol{I})$，即 $q(x_t|x_0) = \mathcal{N}(x_t; \sqrt{\bar{\alpha}_t}x_0,(1 - \bar{\alpha}_t)\boldsymbol{I})$</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">由于 $\beta_{t}, t = 1,...,T$ 是固定的，所以我们可以先计算出每个 $\bar{\alpha}_t$，然后对于需要任意的 $t$ 步扩散数据，只需要现场采样一个 $\bar{\varepsilon}_0$，就可以获得 $x_t$：$x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0$</p>
