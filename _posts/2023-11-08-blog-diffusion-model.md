@@ -18,6 +18,12 @@ DM的基本原理
 
 ![DDPM](/images/DDPM.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">具体而言，假设每一步的噪声 $d_t \in \mathcal{N}(0, \beta_t\boldsymbol{I)$，
-则 $q(x_t|x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1},\beta_t\boldsymbol{I}) \Rightarrow x_t = \sqrt{1 - \beta_t}x_{t-1} + \sqrt{\beta_t}\varepsilon_{t-1}, \varepsilon_{t-1} \in \mathcal{N}(0, 1), \beta_1 < ... < \beta_T \Rightarrow x_T \sim \mathcal{N}(0, \boldsymbol{I})$，
-即 $x_{t}^2 \Rightarrow (\sqrt{1-\beta_t}x_{t-1})^2 + {d_t}^2$ \Rightarrow (\sqrt{1-\beta_t}x_{t-1})^2 + {\sqrt{\beta_t}\varepsilon_t}^2$。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">具体而言，假设扩散过程的第 $t$ 步的噪声为 $d_t \in \mathcal{N}(0, \beta_t\boldsymbol{I)$，
+扩散之前的图像为 $x_{t-1}$，扩散之后的图像为 $x_{t}$，则 $x_{t}$ 在已知 $x_{t-1}$ 下的条件概率为 $q(x_t|x_{t-1})$。
+则 $q(x_t|x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1},\beta_t\boldsymbol{I}) \Rightarrow x_t = \sqrt{1 - \beta_t}x_{t-1} + \sqrt{\beta_t}\varepsilon_{t-1}, \varepsilon_{t-1} \in \mathcal{N}(0, 1) \Rightarrow x_T \sim \mathcal{N}(0, \boldsymbol{I})$，
+即 $x_{t}^2 \Rightarrow (\sqrt{1-\beta_t}x_{t-1})^2 + {d_t}^2$ \Rightarrow (\sqrt{1-\beta_t}x_{t-1})^2 + {\sqrt{\beta_t}\varepsilon_t}^2$。
+所以，我们需要提前设置一组方差序列 $\{\beta_{t} \in (0, 1)\}_{t=1}^T$，方差越小则表示噪声扰动越小，对图像的影响也越小。
+因为我们生成图像是逆扩散过程，即 $t\ from\ T\ to\ 1$，我们希望模型在初期时(即 $t \approx T$)能够尽量恢复图像的大体轮廓，
+所以这时期的每一步之间的图像变化要大一些，即 $\beta_t$ 要大一些；而在后期时(即 $t \approx 1$)，模型能够尽量恢复图像的细节部分，
+所以这时期的每一步之间的图像变化要小一点，即 $\beta_t$ 要小一些，因此，方差序列的大致大小为 $\beta_1 < ... < \beta_T$。</p>
+
