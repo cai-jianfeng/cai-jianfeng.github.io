@@ -19,9 +19,11 @@ DM的基本原理
 ![DDPM](/images/DDPM.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">具体而言，假设扩散过程的第 $t$ 步的噪声为 $d_t \in \mathcal{N}(0, \beta_t\boldsymbol{I}$，
-扩散之前的图像为 $x_{t-1}$，扩散之后的图像为 $x_{t}$，$x_{t}$ 在已知 $x_{t-1}$ 下的条件概率为 $q(x_t|x_{t-1})$。
-则 $q(x_t|x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1},\beta_t\boldsymbol{I}) \Rightarrow x_t = \sqrt{1 - \beta_t}x_{t-1} + \sqrt{\beta_t}\varepsilon_{t-1}, \varepsilon_{t-1} \in \mathcal{N}(0, 1) \Rightarrow x_T \sim \mathcal{N}(0, \boldsymbol{I})$，
-即 $x_{t}^2 \Rightarrow (\sqrt{1-\beta_t}x_{t-1})^2 + {d_t}^2$ \Rightarrow (\sqrt{1-\beta_t}x_{t-1})^2 + {\sqrt{\beta_t}\varepsilon_t}^2$。
+扩散之前的图像为 $x_{t-1}$，扩散之后的图像为 $x_{t}$，$x_{t}$ 在已知 $x_{t-1}$ 下的条件概率为 $q(x_t|x_{t-1})$。则 </p>
+
+$\begin{aligned}q(x_t|x_{t-1}) & = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1},\beta_t\boldsymbol{I}) \\ & \Rightarrow x_t = \sqrt{1 - \beta_t}x_{t-1} + \sqrt{\beta_t}\varepsilon_{t-1}, \varepsilon_{t-1} \in \mathcal{N}(0, 1) \\ & \Rightarrow x_T \sim \mathcal{N}(0, \boldsymbol{I})$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">即 $x_{t}^2 \Rightarrow (\sqrt{1-\beta_t}x_{t-1})^2 + {d_t}^2 \Rightarrow (\sqrt{1-\beta_t}x_{t-1})^2 + {\sqrt{\beta_t}\varepsilon_t}^2$。
 所以，我们需要提前设置一组方差序列 $\{\beta_{t} \in (0, 1)\}_{t=1}^T$，方差越小则表示噪声扰动越小，对图像的影响也越小。
 因为我们生成图像是逆扩散过程，即 $t\ from\ T\ to\ 1$，我们希望模型在初期时(即 $t \approx T$)能够尽量恢复图像的大体轮廓，
 所以这时期的每一步之间的图像变化要大一些，即 $\beta_t$ 要大一些；而在后期时(即 $t \approx 1$)，模型能够尽量恢复图像的细节部分，
@@ -40,7 +42,7 @@ DM的基本原理
 这也是虽然 DM 思想很早以前就存在，但是却一直没有人使用的原因(当然还有一部分原因是效果不好)。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">而 DDPM 的第一个贡献是，你不需要中间繁琐的 $\varepsilon_{1:t}$，
-而是用一个 $\blod{\bar{\varepsilon}_0}$ 就可以通过一步扩散从 $x_0^i$ 到 $x_t^i$，即直接获得 $q(x_t^i|x_0^i)$。
+而是用一个 $\bold{\bar{\varepsilon}_0}$ 就可以通过一步扩散从 $x_0^i$ 到 $x_t^i$，即直接获得 $q(x_t^i|x_0^i)$。
 这时你需要训练数据 $x_0^i$ 的 $x_t^i \rightarrow x_{t-1}^i$ 时，不需要 $t$ 步扩散得到 $x_t^i$，而是一步扩散就可以得到 $x_t^i$。
 因此在训练时你也不需要存储 $1B \times 1000$ 个 $\varepsilon_t^i$ 的数据，
 想训练 $x_t^i \rightarrow x_{t-1}^i$，就直接现场采样 $\bar{\varepsilon}_0$ 并加到 $x_0^i$ 上，就可以获得 $x_t^i$。</p>
@@ -53,15 +55,16 @@ DM的基本原理
 正态分布，是我见过的最奇妙的概率分布，无论是多个随机变量的加法还是乘法，都可以融合成一个随机变量。
 这也是为什么扩散模型使用的都是正态分布，而不是其他分布，不仅仅是因为它的常见性，还有它的数学特性，可以帮助简化模型学习。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">展开过程如下：为了方便，令 $\alpha_t = 1 - \beta_t$，$\bar{\alpha}_t = \prod_{i=1}^t{\alpha_i}$。
+<p style="text-align:justify; text-justify:inter-ideograph;">递推式的展开过程如下：为了方便表示，令 $\alpha_t = 1 - \beta_t$，$\bar{\alpha}_t = \prod_{i=1}^t{\alpha_i}$。
 则 $x_t = \sqrt{\alpha_t}x_{t-1} + \sqrt{1 - \alpha_t}\varepsilon_{t-1}$，
 代入 $x_{t-1} = \sqrt{\alpha_{t-1}}x_{t-2} + \sqrt{1 - \alpha_{t-1}}\varepsilon_{t-2}$ 得：</p>
 
-<center>$x_t = \sqrt{\alpha_t}(\sqrt{\alpha_{t-1}}x_{t-2} + \sqrt{1 - \alpha_{t-1}}\varepsilon_{t-2}) + \sqrt{1 - \alpha_t}\varepsilon_{t-1} = \sqrt{\alpha_t\alpha_{t-1}}x_{t-2} + \sqrt{\alpha_t - \alpha_t\alpha_{t-1}}\varepsilon_{t-2} + \sqrt{1 - \alpha_t}\varepsilon_{t-1}$</center>
+$\begin{aligned}x_t & = \sqrt{\alpha_t}(\sqrt{\alpha_{t-1}}x_{t-2} + \sqrt{1 - \alpha_{t-1}}\varepsilon_{t-2}) + \sqrt{1 - \alpha_t}\varepsilon_{t-1} \\ &
+= \sqrt{\alpha_t\alpha_{t-1}}x_{t-2} + \sqrt{\alpha_t - \alpha_t\alpha_{t-1}}\varepsilon_{t-2} + \sqrt{1 - \alpha_t}\varepsilon_{t-1}\end{aligned}$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$\sqrt{\alpha_t - \alpha_t\alpha_{t-1}}\varepsilon_{t-2} \sim \mathcal{N}(0, (\alpha_t - \alpha_t\alpha_{t-1})\boldsymbol{I})$，$\sqrt{1 - \alpha_t}\varepsilon_{t-1} \sim \mathcal{N}(0, (1 - \alpha_t)\boldsymbol{I})$，所以 $\sqrt{\alpha_t - \alpha_t\alpha_{t-1}}\varepsilon_{t-2} + \sqrt{1 - \alpha_t}\varepsilon_{t-1} \sim \mathcal{N}(0, (1 - \alpha_t\alpha_{t-1})\boldsymbol{I})$ 也是一个正态分布，用 $\bar{\varepsilon}_{t-2} \sim \mathcal{N}(0, \boldsymbol{I})$ 表示可得</p>
 
-<center>$x_t = \sqrt{\alpha_t\alpha_{t-1}}x_{t-2} + \sqrt{1 - \alpha_t\alpha_{t-1}}\bar{\varepsilon}_{t-2}$</center>
+$x_t = \sqrt{\alpha_t\alpha_{t-1}}x_{t-2} + \sqrt{1 - \alpha_t\alpha_{t-1}}\bar{\varepsilon}_{t-2}$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">经过不断展开，最终可得 $x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0, \bar{\varepsilon}_0 \sim \mathcal{N}(0, \boldsymbol{I})$，即 $q(x_t|x_0) = \mathcal{N}(x_t; \sqrt{\bar{\alpha}_t}x_0,(1 - \bar{\alpha}_t)\boldsymbol{I})$</p>
 
@@ -83,17 +86,19 @@ $q(x_{t-1} | x_t,x_0) = \mathcal{N}(x_{t-1};\tilde{\mu}_t(x_t,x_0), \tilde{\beta
 代入 $\tilde{\mu}_t(x_t,x_0)$ 可得：
 $\tilde{\mu}_t = \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0)$ </p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">此时，$q(x_{t-1}|x_t)$ 就只依赖 $x_t$ 和 $\bar{\varepsilon}_0$，
-即 $q(x_{t-1}|x_t) = \mathcal{N}(x_{t-1}; \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0), \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t\boldsymbol{I})$ 
-因此，我们只需要设计一个模型 $\varepsilon_{\theta}(x_t,t)$ 来通过输入 $x_t$ 和 $t$ 来预测添加的噪声 $\bar{\varepsilon}_0$，并使用 $MSE\ loss$ 计算损失：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">此时，$q(x_{t-1}|x_t)$ 就只依赖 $x_t$ 和 $\bar{\varepsilon}_0$，即 </p>
 
-<center>$\begin{aligned} L_{\theta} & = E_{t \in [1,T],x_0,\bar{\varepsilon}_t}[||\bar{\varepsilon}_t - \varepsilon_\theta(x_t, t||^2] \\ & =  E_{t \in [1,T],x_0,\bar{\varepsilon}_t}[||\bar{\varepsilon}_t - \varepsilon_\theta( \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0, t||^2] \end{aligned}$</center>
+$q(x_{t-1}|x_t) = \mathcal{N}(x_{t-1}; \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0), \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t\boldsymbol{I})$ 
 
-<p style="text-align:justify; text-justify:inter-ideograph;">就可以实现模型训练。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">因此，我们只需要设计一个模型 $\varepsilon_{\theta}(x_t,t)$ 来通过输入 $x_t$ 和 $t$ 来预测添加的噪声 $\bar{\varepsilon}_0$，并使用 $MSE\ loss$ 计算损失,就可以实现模型训练：</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">在获得了 $\bar{\varepsilon}_0$ 后，想要获得 $x_{t-1}$，
-可以根据 $q(x_{t-1}|x_t) = \mathcal{N}(x_{t-1}; \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0), \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t\boldsymbol{I})$ 
-得到 $x_{t-1} = \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0) + \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t \times z_t, z_t \in \mathcal{N}(0, \boldsymbol{I})$。
+$\begin{aligned} L_{\theta} & = E_{t \in [1,T],x_0,\bar{\varepsilon}_t}[||\bar{\varepsilon}_t - \varepsilon_\theta(x_t, t||^2] \\ & =  E_{t \in [1,T],x_0,\bar{\varepsilon}_t}[||\bar{\varepsilon}_t - \varepsilon_\theta( \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0, t||^2] \end{aligned}$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在获得了 $\bar{\varepsilon}_0$ 后，想要获得 $x_{t-1}$，可以根据 
+
+$q(x_{t-1}|x_t) = \mathcal{N}(x_{t-1}; \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0), \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t\boldsymbol{I})$ 
+
+<p style="text-align:justify; text-justify:inter-ideograph;">得到 $x_{t-1} = \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0) + \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t \times z_t, z_t \in \mathcal{N}(0, \boldsymbol{I})$。
 所以，和直觉不同，再预测得到 $\bar{\varepsilon}_0$ 后，获得 $x_{t-1}$ 仍然需要一次随机采样，
 这就导致预测得到的 $\hat{x}_{t-1}$ 和原始的 $x_{t-1}$ 不完全一致，受 $z_t$ 的随机性影响。这是一个不好的结果？
 恰恰相反，这才是让 DM 模型比 GAN 模型多样性强的原因。因为每次随机的不同 $z_t$，导致 DM 模型即使是输入相同的原始各向同性的标准正态分布噪声，也会获得不同的图像。</p>
