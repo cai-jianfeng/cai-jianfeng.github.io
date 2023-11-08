@@ -42,7 +42,7 @@ $\begin{aligned}q(x_t|x_{t-1}) & = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1},\bet
 这也是虽然 DM 思想很早以前就存在，但是却一直没有人使用的原因(当然还有一部分原因是效果不好)。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">而 DDPM 的第一个贡献是，你不需要中间繁琐的 $\varepsilon_{1:t}$，
-而是用一个 $\bold{\bar{\varepsilon}_0}$ 就可以通过一步扩散从 $x_0^i$ 到 $x_t^i$，即直接获得 $q(x_t^i|x_0^i)$。
+而是用一个 $\bar{\varepsilon}_0$ 就可以通过一步扩散从 $x_0^i$ 到 $x_t^i$，即直接获得 $q(x_t^i|x_0^i)$。
 这时你需要训练数据 $x_0^i$ 的 $x_t^i \rightarrow x_{t-1}^i$ 时，不需要 $t$ 步扩散得到 $x_t^i$，而是一步扩散就可以得到 $x_t^i$。
 因此在训练时你也不需要存储 $1B \times 1000$ 个 $\varepsilon_t^i$ 的数据，
 想训练 $x_t^i \rightarrow x_{t-1}^i$，就直接现场采样 $\bar{\varepsilon}_0$ 并加到 $x_0^i$ 上，就可以获得 $x_t^i$。</p>
@@ -59,12 +59,11 @@ $\begin{aligned}q(x_t|x_{t-1}) & = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1},\bet
 则 $x_t = \sqrt{\alpha_t}x_{t-1} + \sqrt{1 - \alpha_t}\varepsilon_{t-1}$，
 代入 $x_{t-1} = \sqrt{\alpha_{t-1}}x_{t-2} + \sqrt{1 - \alpha_{t-1}}\varepsilon_{t-2}$ 得：</p>
 
-$\begin{aligned}x_t & = \sqrt{\alpha_t}(\sqrt{\alpha_{t-1}}x_{t-2} + \sqrt{1 - \alpha_{t-1}}\varepsilon_{t-2}) + \sqrt{1 - \alpha_t}\varepsilon_{t-1} \\ &
-= \sqrt{\alpha_t\alpha_{t-1}}x_{t-2} + \sqrt{\alpha_t - \alpha_t\alpha_{t-1}}\varepsilon_{t-2} + \sqrt{1 - \alpha_t}\varepsilon_{t-1}\end{aligned}$
+$\begin{aligned}x_t & = \sqrt{\alpha_t}(\sqrt{\alpha_{t-1}}x_{t-2} + \sqrt{1 - \alpha_{t-1}}\varepsilon_{t-2}) + \sqrt{1 - \alpha_t}\varepsilon_{t-1} \\ & = \sqrt{\alpha_t\alpha_{t-1}}x_{t-2} + \sqrt{\alpha_t - \alpha_t\alpha_{t-1}}\varepsilon_{t-2} + \sqrt{1 - \alpha_t}\varepsilon_{t-1}\end{aligned}$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$\sqrt{\alpha_t - \alpha_t\alpha_{t-1}}\varepsilon_{t-2} \sim \mathcal{N}(0, (\alpha_t - \alpha_t\alpha_{t-1})\boldsymbol{I})$，$\sqrt{1 - \alpha_t}\varepsilon_{t-1} \sim \mathcal{N}(0, (1 - \alpha_t)\boldsymbol{I})$，所以 $\sqrt{\alpha_t - \alpha_t\alpha_{t-1}}\varepsilon_{t-2} + \sqrt{1 - \alpha_t}\varepsilon_{t-1} \sim \mathcal{N}(0, (1 - \alpha_t\alpha_{t-1})\boldsymbol{I})$ 也是一个正态分布，用 $\bar{\varepsilon}_{t-2} \sim \mathcal{N}(0, \boldsymbol{I})$ 表示可得</p>
 
-$x_t = \sqrt{\alpha_t\alpha_{t-1}}x_{t-2} + \sqrt{1 - \alpha_t\alpha_{t-1}}\bar{\varepsilon}_{t-2}$
+<center>$x_t = \sqrt{\alpha_t\alpha_{t-1}}x_{t-2} + \sqrt{1 - \alpha_t\alpha_{t-1}}\bar{\varepsilon}_{t-2}$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">经过不断展开，最终可得 $x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0, \bar{\varepsilon}_0 \sim \mathcal{N}(0, \boldsymbol{I})$，即 $q(x_t|x_0) = \mathcal{N}(x_t; \sqrt{\bar{\alpha}_t}x_0,(1 - \bar{\alpha}_t)\boldsymbol{I})$</p>
 
@@ -94,7 +93,7 @@ $q(x_{t-1}|x_t) = \mathcal{N}(x_{t-1}; \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1
 
 $\begin{aligned} L_{\theta} & = E_{t \in [1,T],x_0,\bar{\varepsilon}_t}[||\bar{\varepsilon}_t - \varepsilon_\theta(x_t, t||^2] \\ & =  E_{t \in [1,T],x_0,\bar{\varepsilon}_t}[||\bar{\varepsilon}_t - \varepsilon_\theta( \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0, t||^2] \end{aligned}$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">在获得了 $\bar{\varepsilon}_0$ 后，想要获得 $x_{t-1}$，可以根据 
+<p style="text-align:justify; text-justify:inter-ideograph;">在获得了 $\bar{\varepsilon}_0$ 后，想要通过 $\bar{\varepsilon}_0$ 和 $x_t$ 获得 $x_{t-1}$，可以根据 
 
 $q(x_{t-1}|x_t) = \mathcal{N}(x_{t-1}; \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0), \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t\boldsymbol{I})$ 
 
