@@ -21,7 +21,7 @@ DM的基本原理
 <p style="text-align:justify; text-justify:inter-ideograph;">具体而言，假设扩散过程的第 $t$ 步的噪声为 $d_t \in \mathcal{N}(0, \beta_t\boldsymbol{I}$，
 扩散之前的图像为 $x_{t-1}$，扩散之后的图像为 $x_{t}$，$x_{t}$ 在已知 $x_{t-1}$ 下的条件概率为 $q(x_t|x_{t-1})$。则 </p>
 
-$\begin{aligned}q(x_t|x_{t-1}) & = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1},\beta_t\boldsymbol{I}) \\ & \Rightarrow x_t = \sqrt{1 - \beta_t}x_{t-1} + \sqrt{\beta_t}\varepsilon_{t-1}, \varepsilon_{t-1} \in \mathcal{N}(0, 1) \\ & \Rightarrow x_T \sim \mathcal{N}(0, \boldsymbol{I})$
+$\begin{aligned}q(x_t\vert x_{t-1}) & = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1},\beta_t\boldsymbol{I}) \\ & \Rightarrow x_t = \sqrt{1 - \beta_t}x_{t-1} + \sqrt{\beta_t}\varepsilon_{t-1}, \varepsilon_{t-1} \in \mathcal{N}(0, 1) \\ & \Rightarrow x_T \sim \mathcal{N}(0, \boldsymbol{I})$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">即 $x_{t}^2 \Rightarrow (\sqrt{1-\beta_t}x_{t-1})^2 + {d_t}^2 \Rightarrow (\sqrt{1-\beta_t}x_{t-1})^2 + {\sqrt{\beta_t}\varepsilon_t}^2$。
 所以，我们需要提前设置一组方差序列 $\{\beta_{t} \in (0, 1)\}_{t=1}^T$，方差越小则表示噪声扰动越小，对图像的影响也越小。
@@ -72,14 +72,14 @@ $$\begin{aligned}x_t & = \sqrt{\alpha_t}(\sqrt{\alpha_{t-1}}x_{t-2} + \sqrt{1 - 
 <p style="text-align:justify; text-justify:inter-ideograph;">接下来还有一个问题，我们是逆扩散 $x_t \rightarrow x_{t-1}$，预测结果为 $\varepsilon_t$，而不是 $\bar{\varepsilon}_0$，因此还需要进一步将模型转化到预测 $\bar{\varepsilon}_0$。
 再回看 $q(x_{t-1}|x_t$，因为 $x_{t-1}$ 与 $x_0$ 无关，所以可以写成 $q(x_{t-1}|x_t,x_0)$，通过贝叶斯公式分解可得</p>
 
-$\begin{aligned} q(x_{t-1}|x_t,x_0) & = \dfrac{q(x_{t-1},x_t,x_0)}{q(x_t,x_0)} = \dfrac{q(x_t|x_{t-1},x_0) \times q(x_{t-1},x_0)}{q(x_t,x_0)} \\ & = \dfrac{q(x_t|x_{t-1},x_0) \times q(x_{t-1},x_0) / q_{x_0}}{q(x_t,x_0) / q(x_0)} = \dfrac{q(x_t|x_{t-1},x_0) \times q(x_{t-1}|x_0)}{q(x_t|x_0)} \\ & = \dfrac{q(x_t|x_{t-1}) \times q(x_{t-1}|x_0)}{q(x_t|x_0)} \end{aligned}$
+$\begin{aligned} q(x_{t-1}\vert x_t,x_0) & = \dfrac{q(x_{t-1},x_t,x_0)}{q(x_t,x_0)} = \dfrac{q(x_t\vert x_{t-1},x_0) \times q(x_{t-1},x_0)}{q(x_t,x_0)} \\ & = \dfrac{q(x_t\vert x_{t-1},x_0) \times q(x_{t-1},x_0) / q_{x_0}}{q(x_t,x_0) / q(x_0)} = \dfrac{q(x_t\vert x_{t-1},x_0) \times q(x_{t-1}\vert x_0)}{q(x_t\vert x_0)} \\ & = \dfrac{q(x_t\vert x_{t-1}) \times q(x_{t-1}\vert x_0)}{q(x_t\vert x_0)} \end{aligned}$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$q(x_t|x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1},\beta_t\boldsymbol{I}) \Rightarrow x_t = \sqrt{1 - \beta_t}x_{t-1} + \sqrt{\beta_t}\varepsilon_{t-1}$，$q(x_{t-1}|x_0) = \mathcal{N}(x_{t-1}; \sqrt{\bar{\alpha}_{t-1}}x_0,(1 - \bar{\alpha}_{t-1})\boldsymbol{I})$，$q(x_t|x_0) = \mathcal{N}(x_t; \sqrt{\bar{\alpha}_t}x_0,(1 - \bar{\alpha}_t)\boldsymbol{I})$</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">然后，通过正态分布的概率密度函数 $\mathcal{N}(\mu, \sigma) = \dfrac{1}{\sqrt{2\pi}\sigma}exp(-\dfrac{(x-\mu)^2}{2\sigma^2})$，
 对上式进行进一步化简可得：</p>
 
-$q(x_{t-1} | x_t,x_0) = \mathcal{N}(x_{t-1};\tilde{\mu}_t(x_t,x_0), \tilde{\beta}_t\boldsymbol{I}), \tilde{\mu}_t(x_t,x_0) = \dfrac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1 - \bar{\alpha}_{t}}x_t + \dfrac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t}x_0,\ \tilde{\beta}_t = \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t
+$q(x_{t-1} \vert  x_t,x_0) = \mathcal{N}(x_{t-1};\tilde{\mu}_t(x_t,x_0), \tilde{\beta}_t\boldsymbol{I}), \tilde{\mu}_t(x_t,x_0) = \dfrac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1 - \bar{\alpha}_{t}}x_t + \dfrac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t}x_0,\ \tilde{\beta}_t = \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t
 
 <p style="text-align:justify; text-justify:inter-ideograph;">将 $x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0 \Rightarrow x_0 = \dfrac{1}{\sqrt{\bar{\alpha}_t}}(x_t - \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0)$ 
 代入 $\tilde{\mu}_t(x_t,x_0)$ 可得：
@@ -87,15 +87,15 @@ $\tilde{\mu}_t = \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 -
 
 <p style="text-align:justify; text-justify:inter-ideograph;">此时，$q(x_{t-1}|x_t)$ 就只依赖 $x_t$ 和 $\bar{\varepsilon}_0$，即 </p>
 
-$q(x_{t-1}|x_t) = \mathcal{N}(x_{t-1}; \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0), \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t\boldsymbol{I})$ 
+$q(x_{t-1}\vert x_t) = \mathcal{N}(x_{t-1}; \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0), \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t\boldsymbol{I})$ 
 
 <p style="text-align:justify; text-justify:inter-ideograph;">因此，我们只需要设计一个模型 $\varepsilon_{\theta}(x_t,t)$ 来通过输入 $x_t$ 和 $t$ 来预测添加的噪声 $\bar{\varepsilon}_0$，并使用 $MSE\ loss$ 计算损失,就可以实现模型训练：</p>
 
-$\begin{aligned} L_{\theta} & = E_{t \in [1,T],x_0,\bar{\varepsilon}_t}[||\bar{\varepsilon}_t - \varepsilon_\theta(x_t, t||^2] \\ & =  E_{t \in [1,T],x_0,\bar{\varepsilon}_t}[||\bar{\varepsilon}_t - \varepsilon_\theta( \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0, t||^2] \end{aligned}$
+$\begin{aligned} L_{\theta} & = E_{t \in [1,T],x_0,\bar{\varepsilon}_t}[\vert \vert \bar{\varepsilon}_t - \varepsilon_\theta(x_t, t\vert \vert ^2] \\ & =  E_{t \in [1,T],x_0,\bar{\varepsilon}_t}[\vert \vert \bar{\varepsilon}_t - \varepsilon_\theta( \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0, t\vert \vert ^2] \end{aligned}$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">在获得了 $\bar{\varepsilon}_0$ 后，想要通过 $\bar{\varepsilon}_0$ 和 $x_t$ 获得 $x_{t-1}$，可以根据 
 
-$q(x_{t-1}|x_t) = \mathcal{N}(x_{t-1}; \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0), \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t\boldsymbol{I})$ 
+$q(x_{t-1}\vert x_t) = \mathcal{N}(x_{t-1}; \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0), \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t\boldsymbol{I})$ 
 
 <p style="text-align:justify; text-justify:inter-ideograph;">得到 $x_{t-1} = \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0) + \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t \times z_t, z_t \in \mathcal{N}(0, \boldsymbol{I})$。
 所以，和直觉不同，再预测得到 $\bar{\varepsilon}_0$ 后，获得 $x_{t-1}$ 仍然需要一次随机采样，
