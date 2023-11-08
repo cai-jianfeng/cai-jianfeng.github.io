@@ -79,7 +79,9 @@ $$\begin{aligned} q(x_{t-1}\vert x_t,x_0) & = \dfrac{q(x_{t-1},x_t,x_0)}{q(x_t,x
 <p style="text-align:justify; text-justify:inter-ideograph;">然后，通过正态分布的概率密度函数 $\mathcal{N}(\mu, \sigma) = \dfrac{1}{\sqrt{2\pi}\sigma}exp(-\dfrac{(x-\mu)^2}{2\sigma^2})$，
 对上式进行进一步化简可得：</p>
 
-$$q(x_{t-1} \vert  x_t,x_0) = \mathcal{N}(x_{t-1};\tilde{\mu}_t(x_t,x_0), \tilde{\beta}_t\boldsymbol{I}), \tilde{\mu}_t(x_t,x_0) = \dfrac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1 - \bar{\alpha}_{t}}x_t + \dfrac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t}x_0,\ \tilde{\beta}_t = \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t$$
+<center>$q(x_{t-1} \vert  x_t,x_0) = \mathcal{N}(x_{t-1};\tilde{\mu}_t(x_t,x_0)$</center>
+
+<center>$\tilde{\beta}_t\boldsymbol{I}), \tilde{\mu}_t(x_t,x_0) = \dfrac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1 - \bar{\alpha}_{t}}x_t + \dfrac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t}x_0,\ \tilde{\beta}_t = \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t \end{aligned}$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">将 $x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0 \Rightarrow x_0 = \dfrac{1}{\sqrt{\bar{\alpha}_t}}(x_t - \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0)$ 
 代入 $\tilde{\mu}_t(x_t,x_0)$ 可得：
@@ -87,7 +89,7 @@ $\tilde{\mu}_t = \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 -
 
 <p style="text-align:justify; text-justify:inter-ideograph;">此时，$q(x_{t-1}|x_t)$ 就只依赖 $x_t$ 和 $\bar{\varepsilon}_0$，即 </p>
 
-$$q(x_{t-1}\vert x_t) = \mathcal{N}(x_{t-1}; \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0), \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t\boldsymbol{I})$$ 
+<center>$q(x_{t-1}\vert x_t) = \mathcal{N}(x_{t-1}; \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0), \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t\boldsymbol{I})$</center> 
 
 <p style="text-align:justify; text-justify:inter-ideograph;">因此，我们只需要设计一个模型 $\varepsilon_{\theta}(x_t,t)$ 来通过输入 $x_t$ 和 $t$ 来预测添加的噪声 $\bar{\varepsilon}_0$，并使用 $MSE\ loss$ 计算损失,就可以实现模型训练：</p>
 
