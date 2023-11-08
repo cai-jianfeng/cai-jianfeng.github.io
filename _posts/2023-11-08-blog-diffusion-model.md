@@ -118,7 +118,7 @@ $$\begin{aligned} L_{\theta} & = E_{t \in [1,T],x_0,\bar{\varepsilon}_0}[\vert \
 
 <p style="text-align:justify; text-justify:inter-ideograph;">此外，由于 $x_0 = \dfrac{1}{\sqrt{\bar{\alpha}_t}}(x_t - \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0)$，理论上也可以根据预测得到的 $\bar{\varepsilon}_0$，直接一步逆扩散到 $x_0$，但是没人这么做，说明效果很差，所以 DDPM 只在输入时使用一步扩散，而在预测时还是使用 $T$ 步的逆扩散。</p>
 
-<h3>附录</h3>
+<h1>附录</h1>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>A.</b> $q(x_{t-1}\vert x_t,x_0)$ 使用正态分布概率密度函数推导：</p>
 
