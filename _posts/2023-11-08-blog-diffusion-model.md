@@ -123,6 +123,10 @@ $$\begin{aligned} L_{\theta} & = E_{t \in [1,T],x_0,\bar{\varepsilon}_t}[\vert \
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>A.</b> $q(x_{t-1}\vert x_t,x_0)$ 使用正态分布概率密度函数推导：</p>
 
+$$\begin{aligned}\mu_1 & = \sqrt{1 - \beta_t}x_{t-1};&\ \sigma_1^2 & = \beta_t &\\
+\mu_2 & = \sqrt{\bar{\alpha}_{t-1}}x_0;&\ \sigma_2^2 & = 1 - \bar{\alpha}_{t-1} &\\
+\mu_3 & = \sqrt{\bar{\alpha}_{t}}x_0;&\ \sigma_3^2 & = 1 - \bar{\alpha}_{t} &\end{aligned}$$
+
 $$\begin{aligned} q(x_{t-1}\vert x_t,x_0) & \Rightarrow \dfrac{\dfrac{1}{\sqrt{2\pi}\sigma_1}exp(-\dfrac{(x-\mu_1)^2}{2\sigma_1^2}) \times \dfrac{1}{\sqrt{2\pi}\sigma_2}exp(-\dfrac{(x-\mu_2)^2}{2\sigma_2^2})}{\dfrac{1}{\sqrt{2\pi}\sigma_3}exp(-\dfrac{(x-\mu_3)^2}{2\sigma_3^2})} \\
 & \Rightarrow \dfrac{1}{\sqrt{2\pi}\dfrac{\sigma_1\sigma_2}{\sigma_3}}exp(-\dfrac{(x-\mu_1)^2}{2\sigma_1^2}-\dfrac{(x-\mu_2)^2}{2\sigma_2^2}+\dfrac{(x-\mu_3)^2}{2\sigma_3^2})\end{aligned} \\
 & \Rightarrow \sigma = \dfrac{\sigma_1\sigma_2}{\sigma_3} = \dfrac{\beta_t(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} \\
