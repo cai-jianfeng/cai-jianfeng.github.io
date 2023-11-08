@@ -65,7 +65,7 @@ $$\begin{aligned}x_t & = \sqrt{\alpha_t}(\sqrt{\alpha_{t-1}}x_{t-2} + \sqrt{1 - 
 
 <center>$x_t = \sqrt{\alpha_t\alpha_{t-1}}x_{t-2} + \sqrt{1 - \alpha_t\alpha_{t-1}}\bar{\varepsilon}_{t-2}$</center>
 
-
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">经过不断展开，最终可得 $x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0, \bar{\varepsilon}_0 \sim \mathcal{N}(0, \boldsymbol{I})$，即 $q(x_t|x_0) = \mathcal{N}(x_t; \sqrt{\bar{\alpha}_t}x_0,(1 - \bar{\alpha}_t)\boldsymbol{I})$</p>
 
@@ -83,16 +83,24 @@ $$\begin{aligned} q(x_{t-1}\vert x_t,x_0) & = \dfrac{q(x_{t-1},x_t,x_0)}{q(x_t,x
 
 <center>$q(x_{t-1} \vert  x_t,x_0) = \mathcal{N}(x_{t-1};\tilde{\mu}_t(x_t,x_0), \tilde{\beta}_t\boldsymbol{I})$</center>
 
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
 <center>$\tilde{\mu}_t(x_t,x_0) = \dfrac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1 - \bar{\alpha}_{t}}x_t + \dfrac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t}x_0,\ \tilde{\beta}_t = \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">将 $x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0 \Rightarrow x_0 = \dfrac{1}{\sqrt{\bar{\alpha}_t}}(x_t - \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0)$ 
 代入 $\tilde{\mu}_t(x_t,x_0)$ 可得：</p>
 
-<center>$\tilde{\mu}_t = \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0)$</center> 
+<center>$\tilde{\mu}_t = \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0)$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">此时，$q(x_{t-1}|x_t)$ 就只依赖 $x_t$ 和 $\bar{\varepsilon}_0$，即 </p>
 
 <center>$q(x_{t-1}\vert x_t) = \mathcal{N}(x_{t-1}; \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0), \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t\boldsymbol{I})$</center> 
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">因此，我们只需要设计一个模型 $\varepsilon_{\theta}(x_t,t)$ 来通过输入 $x_t$ 和 $t$ 来预测添加的噪声 $\bar{\varepsilon}_0$，并使用 $MSE\ loss$ 计算损失,就可以实现模型训练：</p>
 
@@ -105,6 +113,8 @@ $$\begin{aligned} L_{\theta} & = E_{t \in [1,T],x_0,\bar{\varepsilon}_t}[\vert \
 <p style="text-align:justify; text-justify:inter-ideograph;">得到 $x_{t-1} = \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0) + \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t \times z_t, z_t \in \mathcal{N}(0, \boldsymbol{I})$。
 所以，和直觉不同，在预测得到 $\bar{\varepsilon}_0$ 后，获得 $x_{t-1}$ 仍然需要一次随机采样，
 这就导致预测得到的 $\hat{x}_{t-1}$ 和原始的 $x_{t-1}$ 不完全一致，受 $z_t$ 的随机性影响。这是一个不好的结果？
-恰恰相反，这才是让 DM 模型比 GAN 模型多样性强的原因。因为每次随机的不同 $z_t$，导致 DM 模型即使是输入相同的原始各向同性的标准正态分布噪声，也会获得不同的图像。</p>
+恰恰相反，这才是让 DM 模型比 GAN 模型多样性强的原因。因为每次随机的不同 $z_t$，导致 DM 模型即使是输入相同的原始各向同性的标准正态分布噪声，也会获得不同的图像，即保证了生成的图像的<b>多样性</b>。
+同时，由于有原始的 $x_{t-1}$ 作为指导，使得每次预测的结果都和 $x^{t-1}$ 较为接近，即保证了生成的图像的<b>逼真性</b>。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">此外，由于 $x_0 = \dfrac{1}{\sqrt{\bar{\alpha}_t}}(x_t - \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0)$，理论上也可以根据预测得到的 $\bar{\varepsilon}_0$，直接一步逆扩散到 $x_0$，但是没人这么做，说明效果很差，所以 DDPM 只在输入时使用一步扩散，而在预测时还是使用 $T$ 步的逆扩散。</p>
+
