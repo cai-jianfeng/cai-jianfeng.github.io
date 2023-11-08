@@ -18,7 +18,7 @@ DM的基本原理
 
 ![DDPM](/images/DDPM.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">具体而言，假设扩散过程的第 $t$ 步的噪声为 $d_t \in \mathcal{N}(0, \beta_t\boldsymbol{I)$，
+<p style="text-align:justify; text-justify:inter-ideograph;">具体而言，假设扩散过程的第 $t$ 步的噪声为 $d_t \in \mathcal{N}(0, \beta_t\boldsymbol{I}$，
 扩散之前的图像为 $x_{t-1}$，扩散之后的图像为 $x_{t}$，$x_{t}$ 在已知 $x_{t-1}$ 下的条件概率为 $q(x_t|x_{t-1})$。
 则 $q(x_t|x_{t-1}) = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1},\beta_t\boldsymbol{I}) \Rightarrow x_t = \sqrt{1 - \beta_t}x_{t-1} + \sqrt{\beta_t}\varepsilon_{t-1}, \varepsilon_{t-1} \in \mathcal{N}(0, 1) \Rightarrow x_T \sim \mathcal{N}(0, \boldsymbol{I})$，
 即 $x_{t}^2 \Rightarrow (\sqrt{1-\beta_t}x_{t-1})^2 + {d_t}^2$ \Rightarrow (\sqrt{1-\beta_t}x_{t-1})^2 + {\sqrt{\beta_t}\varepsilon_t}^2$。
