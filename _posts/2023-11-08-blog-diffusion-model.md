@@ -21,7 +21,7 @@ DM的基本原理
 <p style="text-align:justify; text-justify:inter-ideograph;">具体而言，假设扩散过程的第 $t$ 步的噪声为 $d_t \in \mathcal{N}(0, \beta_t\boldsymbol{I})$，
 扩散之前的图像为 $x_{t-1}$，扩散之后的图像为 $x_{t}$，$x_{t}$ 在已知 $x_{t-1}$ 下的条件概率为 $q(x_t|x_{t-1})$。则 </p>
 
-$$\begin{aligned}q(x_t\vert x_{t-1}) & = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1},\beta_t\boldsymbol{I}) \\ & \Rightarrow x_t = \sqrt{1 - \beta_t}x_{t-1} + \sqrt{\beta_t}\varepsilon_{t-1}, \varepsilon_{t-1} \in \mathcal{N}(0, 1) \\ & \Rightarrow x_T \sim \mathcal{N}(0, \boldsymbol{I}) \end{aligned}$$
+$$\begin{aligned}q(x_t\vert x_{t-1}) & = \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1},\beta_t\boldsymbol{I}) \\ & \Rightarrow x_t = \sqrt{1 - \beta_t}x_{t-1} + \sqrt{\beta_t}\varepsilon_{t-1}, \varepsilon_{t-1} \in \mathcal{N}(0, \boldsymbol{I}) \\ & \Rightarrow x_T \sim \mathcal{N}(0, \boldsymbol{I}) \end{aligned}$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">即 $x_{t}^2 \Rightarrow (\sqrt{1-\beta_t}x_{t-1})^2 + {d_t}^2 \Rightarrow (\sqrt{1-\beta_t}x_{t-1})^2 + ({\sqrt{\beta_t}\varepsilon_t})^2$。
 所以，我们需要提前设置一组方差序列 $\{\beta_{t} \in (0, 1)\}_{t=1}^T$，方差越小则表示噪声扰动越小，对图像的影响也越小。
@@ -118,7 +118,7 @@ $$\begin{aligned} L_{\theta} & = E_{t \in [1,T],x_0,\bar{\varepsilon}_0}[\vert \
 
 <p style="text-align:justify; text-justify:inter-ideograph;">此外，由于 $x_0 = \dfrac{1}{\sqrt{\bar{\alpha}_t}}(x_t - \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0)$，理论上也可以根据预测得到的 $\bar{\varepsilon}_0$，直接一步逆扩散到 $x_0$，但是没人这么做，说明效果很差，所以 DDPM 只在输入时使用一步扩散，而在预测时还是使用 $T$ 步的逆扩散。</p>
 
-### 附录
+<h3>附录</h3>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>A.</b> $q(x_{t-1}\vert x_t,x_0)$ 使用正态分布概率密度函数推导：</p>
 
@@ -143,4 +143,4 @@ $$\begin{aligned} q(x_{t-1}\vert x_t,x_0) & \Rightarrow \dfrac{\dfrac{1}{\sqrt{2
 接着使用公式 $\hat{x}_{t-1} = \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\hat{\varepsilon}_0) + \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t \times z_t$
 生成预测的 $\hat{x_{T-1}}$，循环迭代，直到 $t = 0$ 时结束，最终的 $\hat{x}_0$ 即为模型生成的图像。下图展示了模型的训练的推理过程：</p>
 
-![DDPM algrithms](/images/DDPM_algorithms.png)
+<img src="/images/DDPM_algorithms.png" />
