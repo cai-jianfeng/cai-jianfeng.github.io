@@ -118,8 +118,7 @@ $$\begin{aligned} L_{\theta} & = E_{t \in [1,T],x_0,\bar{\varepsilon}_0}[\vert \
 
 <p style="text-align:justify; text-justify:inter-ideograph;">此外，由于 $x_0 = \dfrac{1}{\sqrt{\bar{\alpha}_t}}(x_t - \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0)$，理论上也可以根据预测得到的 $\bar{\varepsilon}_0$，直接一步逆扩散到 $x_0$，但是没人这么做，说明效果很差，所以 DDPM 只在输入时使用一步扩散，而在预测时还是使用 $T$ 步的逆扩散。</p>
 
-附录
-===
+### 附录
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>A.</b> $q(x_{t-1}\vert x_t,x_0)$ 使用正态分布概率密度函数推导：</p>
 
@@ -134,14 +133,14 @@ $$\begin{aligned} q(x_{t-1}\vert x_t,x_0) & \Rightarrow \dfrac{\dfrac{1}{\sqrt{2
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>B.</b> 代码框架：在<b>训练</b>时，首先，你需要预设置方差序列 $\{\beta_{t} \in (0, 1)\}_{t=1}^T$ 并计算 $\bar{\alpha}_{1:T}$。
 然后，在 $1\sim T$ 中随机选择一个数字 $t$，并使用正态分布随机函数生成 $\bar{\varepsilon}_0$ (注意，这里生成的正态分布随机变量 $\bar{\varepsilon}_0$ 的维度为 $H \times W \times 3$，和原始图像 $x_0$ 一致)；
-通过公式 $x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0$ 计算 $x_t$，其维度也为 $H \times \W \times 3$；
+通过公式 $x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0$ 计算 $x_t$，其维度也为 $H \times W \times 3$；
 接着构造一个模型，输入 $x_t$ 和 $t$ (通常 $t$ 需要转化成 embedding，类似 Transformer，可以选择正弦函数这种确定的方式，也可以选择 learnable embedding parameter 让模型学习)，
 输出和图像 $x_t$ 维度相同的噪声 $\varepsilon_\theta(x_t,t)$，因此一般选择 U-net 架构模型。
 最后计算 $MSE$ 损失进行训练：$L_\theta =  E_{t \in [1,T],x_0,\bar{\varepsilon}_0}[||\bar{\varepsilon}_0 - \varepsilon_\theta( \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0, t||^2]$。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">而在<b>推理</b>时，首先使用正态分布随机函数生成 $\hat{x}^T$，维度为 $H \times W \times 3$，然后
 将 $t=T$ 一起输入训练好的模型，预测输出 $\hat{\varepsilon}_0$，并使用正态分布随机函数生成 $z_t$，维度为 $H \times W \times 3$，
-接着使用公式 $x_{t-1} = \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0) + \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t \times z_t$
+接着使用公式 $\hat{x}_{t-1} = \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\hat{\varepsilon}_0) + \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t \times z_t$
 生成预测的 $\hat{x_{T-1}}$，循环迭代，直到 $t = 0$ 时结束，最终的 $\hat{x}_0$ 即为模型生成的图像。下图展示了模型的训练的推理过程：</p>
 
 ![DDPM algrithms](/images/DDPM_algorithms.png)
