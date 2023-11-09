@@ -1,0 +1,57 @@
+---
+title: 'TIN-SLT'
+date: 23-11-09
+permalink: /posts/2023/11/blog-paper-tin-slt/
+tags:
+  - 论文阅读
+---
+
+<p style="text-align:justify; text-justify:inter-ideograph;"> 论文题目：<a href="https://aclanthology.org/2022.findings-naacl.205/" target="_blank" title="Multi-modality with Context">Explore More Guidance: A Task-aware Instruction Network for Sign Language Translation Enhanced with Data Augmentation</a></p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">发表会议：North American Chapter of the Association for Computational Linguistics (NAACL 2022)</p>
+
+第一作者：Yong Cao (PhD in HUST)
+
+Question
+===
+
+<p style="text-align:justify; text-justify:inter-ideograph;">如何解决 Sign Language Gloss Translation (SLGT) 的数据缺乏和 gloss 与 sentence 的表征空间不同的问题</p>
+
+
+Method
+===
+
+![TIN-SLT architecture](/images/paper_TIN-SLT.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在如今大模型的时代下，最常见，也是最有效的解决数据缺乏的方法之一便是借助预训练的大模型。
+如上图，本文便是将大模型编码得到的 embeddings 作为辅助信息使得模型能够学习到大模型的编码性能。
+同时，为了解决表征空间差异问题，本文使用简单的上采样方法进行数据增强将 gloss 对齐到 sentence 空间。</p>
+
+![TIN-SLT encoder and decoder](/images/paper_TIN-SLT-encoder-decoder.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">具体而言，如上图，本文使用的整体框架是 Transformer 的 Encoder-Decoder 框架。
+假设输入为 $\mathcal{G} = \{g_1,...,g_L\}$，输出为 $\mathcal{S} = \{\mathcal{w}_1,...,\mathcal{w}_M\}$。
+为了将大模型的编码性能迁移到自身模型，本文提出了一个 <b>Target-aware Instruction (TIM)</b>模块嵌入 Encoder 和 Decoder 来帮助模型更好地学习。
+TIM 的整体框架如图，包括一个 Original-Attention，一个 PTM-Attention，一个 Adaptive Layer 和一个 $\alpha$ 融合策略。
+它包括 $3$ 个输入 $H_1$，$H_2$ 和 $H_3$，其中，$H_1$ 和 $H_2$ 是模型内部学习到的特征，经过 Original-Attention，
+是一个 Cross-Attention 进行交叉学习更新：$\hat{h}_t^1 = Attn_O(h_t^1,H_2,H_2), H_1 = [h_1^1,...,h_T^1], \hat{H}_1 = [\hat{h}_1^1,...,\hat{h}_T^1]$。
+而 $H_3$ 是外部的辅助信息(即大模型编码生成的 embeddings)，经过 PTM-Attention，
+也就是一个 Cross-Attention 进行交叉学习更新，然后使用 Adaptive Layer (本文使用一个线性层) 对更新后的特征进行微调，
+使其学习到 target-aware：$\hat{h}_t^3 = \sigma(Attn_P(h_t^1,H_3,H_3)), \hat{H}_3 = [\hat{h}_1^3,...,\hat{h}_T^3]$。
+最后使用 $\alpha$ 融合策略将二者进行融合输出更新的 $\bar{H}_1$：$\bar{H}_1 = (1 - \alpha) \times \hat{H}_1 + \alpha \times \hat{H}_3$。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在 Encoder 中，假设 $H_I$ 为大模型编码生成的 embeddings，$H_E$ 和 $H_E'$ 分别为 Encoder 的输入和输出。
+这本文将原本的 MHA 替换成了 TIM，且 TIM 中的 $H_1 = H_E, H_2 = H_E, H_3 = H_I$ (即Encoder 的 TIM 的 Original-Attention 是 Self-Attention)，
+然后 TIM 输出得到的 $\bar{H}_1$ 再经过一个 FFN 和 两次 Add & Norm 生成输出 $H_E'$：$H_E' = LayerNorm(FFN(LayerNorm(\bar{H}_1 + H_E)) + LayerNorm(\bar{H}_1 + H_E))$。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在 Decoder 中，假设 $S_D$ 和 $S_D'$ 分别为 Decoder 的输入和输出。
+这本文将原本的 cross-MHA 替换成了 TIM。首先，输入 $S_D$ 经过一个 Mask-MHA，生成 $\tilde{S}_D$：</p>
+
+<center>$\tilde{s}_t = Attn_D(s_t,s_{0:t-1},s_{0:t-1}), S_D = [s_1,...,s_{T'}], \tilde{S}_D = [\tilde{s}_1,...,\tilde{s}_{T'}]$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">然后经过 TIM，TIM 中的 $H_1 = \tilde{S}_D, H_2 = H_E', H_3 = H_I$。
+接着 TIM 输出得到的 $\bar{H}_1$ 再经过一个 FFN 和 两次 Add & Norm 生成输出 $S_D'$：$S_D' = LayerNorm(FFN(LayerNorm(\bar{H}_1 + \tilde{S}_D)) + LayerNorm(\bar{H}_1 + \tilde{S}_D))$。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">对于融合系数 $\alpha$</p>
