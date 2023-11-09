@@ -57,15 +57,14 @@ TIM 的整体框架如图，包括一个 Original-Attention，一个 PTM-Attenti
 <p style="text-align:justify; text-justify:inter-ideograph;">如上图右边代码，对于融合系数 $\alpha$，本文采用模型自我学习的方式，即将 $\alpha$ 设置为<b>可学习的</b>参数，随着模型的训练逐步更新。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">为了解决表征空间差异问题，本文使用上采样进行数据增强，并实现将 gloss 对齐到 sentence 空间。
-即设置一个阈值 $\Phi_{upsamp}$，使用概率选择生成一个新数据集 $D_n$：</p>
+即设置一个阈值 $\Phi_{upsamp}$，使用概率选择在优质候选数据集 $\mathcal{C}$ 中进行随机选择，生成一个新数据集 $D_n$：</p>
 
-$$D_n^i = \begin{cases}\{\mathcal{S}^i, \mathcal{S}^i\}, & p < \Phi_{upsamp} \\ \{\}, & p > \Phi_{upsamp} \end{cases}, p \in [0, 1]$$
+$$D_n^i = \begin{cases}\{\mathcal{S}^i, \mathcal{S}^i\}, & p < \Phi_{upsamp} \\ \{\}, & p > \Phi_{upsamp} \end{cases}, p \in [0, 1], S^i in \mathcal{C}$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">同时综合考虑数据集 $D_o$、数据 $\mathcal{G}^i/\mathcal{S}^i$ 和数据元素 $g_i/\mathcal{w}_i$ 的差异来选择合适的阈值 $\Phi_{upsamp}$。
 具体而言，本文考虑了四方面的因素：</p>
 
-<ul>
-<li><p style="text-align:justify; text-justify:inter-ideograph;">Token Level 1：Vocabulary Difference Ratio (VDR, $\phi_v$)，用来测量 gloss 和 sentence 的字典空间的差异性：</p>
+<ul><li><p style="text-align:justify; text-justify:inter-ideograph;">Token Level 1：Vocabulary Difference Ratio (VDR, $\phi_v$)，用来测量 gloss 和 sentence 的字典空间的差异性：</p>
 
 <center>$\phi_v = 1 - \dfrac{|W_\mathcal{G}|}{|W_\mathcal{G} \bigcup W_\mathcal{S}|}$</center>
 
@@ -73,4 +72,29 @@ $$D_n^i = \begin{cases}\{\mathcal{S}^i, \mathcal{S}^i\}, & p < \Phi_{upsamp} \\ 
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$W_\mathcal{G}$ 和 $W_\mathcal{S}$ 分别表示 gloss 和 sentence 的字典集。$|·|$ 表示大小。</p></li>
 
-</ul>
+<li><p style="text-align:justify; text-justify:inter-ideograph;">Token Level 2：Rare Vocabulary Ratio (RVR, $\phi_r$)，用来测量 gloss 中的生僻词的比例：</p>
+
+<center>$\phi_r = 1 - \dfrac{\sum_{\mathcal{G} \in W_{\mathcal{G}}} #(Counter(\mathcal{G}) < \tau_r)}{|W_\mathcal{G} \bigcup W_\mathcal{S}|}$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$#(·)$ 表示 $1$ 如果内部表达式为真，反之则为 $0$。$Counter(\mathcal{G})$ 表示 $\mathcal{G}$ 的出现频率。</p></li>
+
+<li><p style="text-align:justify; text-justify:inter-ideograph;">Sentence Level 1：Sentence Cover Ratio (SCR, $\phi_s$)，用来测量总体 gloss-sentence 对的相似性：</p>
+
+<center>$\r_i = \dfrac{|\mathcal{G}_i \bigcap \mathcal{S}_i|}{|\mathcal{S}_i|},\ \phi_s = 1 - \dfrac{1}{N}\sum_{i, r_i > \tau_c}r_i$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$r_i$ 表示 gloss-sentence 对 $\{\mathcal{G}_i, \mathcal{S}_i\}$ 的相似性。
+$\tau_c$ 表示 相似度阈值。此外，我们将所有相似度大于阈值 $\tau_c$ 的数据作为上采样的候选数据 $\mathcal{C}$</p></li>
+
+<li><p style="text-align:justify; text-justify:inter-ideograph;">Dataset Level 1：Dataset Length-difference Ratio (DLR, $\phi_d$)，用来测量总体 gloss-sentence 对的长度差异：</p>
+
+<center>$\phi_d = 1 - \dfrac{\sum_i{|\mathcal{G}_i|}}{\sum_i{\mathcal{S}_i}}$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p></li></ul>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">最后，使用不同的比例 $\theta = [0.1,0.1,0.6,0.2]$ 来对这 $4$ 个指标进行加权，
+生成最后的阈值 $\Phi_{upsamp} = \theta * [\phi_v,\phi_r,\phi_s,\phi_d]$，并使用上采样算法对 $\mathcal{C}$ 进行采样生成数据集 $D_n$。
+最后将原始数据集 $D_o$ 和生成数据集 $D_n$ 进行合并，一起作为数据集对模型进行训练。</p>
