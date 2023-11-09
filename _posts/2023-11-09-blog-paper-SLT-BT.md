@@ -75,24 +75,26 @@ Method
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">最后，便可获得每个 $g_i^j$ 对应的 $f_{l_i:r_i}^j$。
+<p style="text-align:justify; text-justify:inter-ideograph;">通过最佳路径的对应关系便可获得每个 $g_i^j$ 对应的 $f_{l_i:r_i}^j$。
 最后将原始数据集 $D_{origin}^{(1:M)}$ 的所有 $\mathbf{g}^i = \{g_1^i,...,g_{V_i}^i\}$ 中的每一个 $g_j^i$ 和对应的 $f_{l_j:r_j}^i$ 组成一张表，
 称为 <b>Sign Bank</b>(由于有的 $g_i^j$ 在多个 $\mathbf{g}^j$ 中出现，所以 $g_i^j$ 和 $f_{l_i:r_i}^j$ 在 Sign Bank 中是一对多关系)。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">总结而言，首先使用原数据集 $D_{origin}^{(1:M)}$ 训练一个 CTC classifier 和一个 text-to-gloss 模型。
-然后根据 CTC classifier 对源数据集的所有 $gloss$ 元素 $g$ 分割出对应的 sign video clip embedding $f$，组成 Sign Bank 表。
+然后根据 CTC classifier 对原数据集的所有 $gloss$ 元素 $g$ 分割出对应的 sign video clip embedding $f$，组成 Sign Bank 表。
 接着使用大量额外的 sentence $\hat{\mathbf{y}}^j$，将其输入到 text-to-gloss 模型获得预测的 $glosses\ \hat{\mathbf{g}}^j$，
-并根据 $\hat{\mathbf{g}}^j$ 中的每个 $\hat{g}_i^j$ 在 Sign Bank 表中选择对应的 sign video clip embedding $\hat{f}_i^j$ 并进行 concat
+并根据 $\hat{\mathbf{g}}^j$ 中的每个 $\hat{g}_i^j$ 在 Sign Bank 表中选择对应的 sign video clip embedding $\hat{f}_i^j$ 进行 concat
 (如果有多个对应的 $f_i^j$ 就随机选择一个)，
 就获得了 $\hat{\mathbf{g}}^j$ 对应的 sign video embedding  $\hat{\mathbf{f}}^j$。
 这样便生成了伪数据集 $D_{synth} = \{\hat{\mathbf{f}}^j,\hat{\mathbf{y}}^j\}_{j=1}^N$。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">而在训练 SLT 模型时，本文使用 Transformer Encoder-Decoder 模型，
 将原始数据集 $D_{origin}^{(1:M)} = \{\mathbf{x}^i, \mathbf{y}^i\}^{(1:M)}$ 中的手语视频 $\mathbf{x}^i$ 输入到 Sign Embedding Layer $\Omega_\theta(·)$ 生成
-sign video embedding $\mathbf{f}^i$，并和对应的 $\mathbf{x}^i$ 组成预处理后的数据集 $\bar{D}_{origin}^{(1:M)} = \{\mathbf{f}^i, \mathbf{y}^i\}^{(1:M)}$，
+sign video embedding $\mathbf{f}^i$，并和对应的 $\mathbf{y}^i$ 组成预处理后的数据集 $\bar{D}_{origin}^{(1:M)} = \{\mathbf{f}^i, \mathbf{y}^i\}^{(1:M)}$，
 然后与伪数据集 $D_{synth} = \{\hat{\mathbf{f}}^j,\hat{\mathbf{y}}^j\}_{j=1}^N$ 组成一个更大的数据集 $D_{new}$。
 最后 SLT 模型便使用该数据集进行训练，输入 $\mathbf{f}$，输出 $\mathbf{y}$，使用 cross-entropy 损失：</p>
 
 <center>$p(\mathbf{y}|\mathbf{x}) = \prod_{u=1}^U{p(y_u|y_{1:u-1},\mathbf{x})} = \prod_{u=1}^U{p(y_u|y_{1:u-1},\mathbf{f})}$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 <center>$L_{SLT} = -ln\ p(\mathbf{y}|\mathbf{x})$</center>
