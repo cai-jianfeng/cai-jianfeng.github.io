@@ -6,7 +6,7 @@ tags:
   - 论文阅读
 ---
 
-<p style="text-align:justify; text-justify:inter-ideograph;"> 论文题目：<a href="https://aclanthology.org/2022.findings-naacl.205/" target="_blank" title="Multi-modality with Context">Explore More Guidance: A Task-aware Instruction Network for Sign Language Translation Enhanced with Data Augmentation</a></p>
+<p style="text-align:justify; text-justify:inter-ideograph;"> 论文题目：<a href="https://aclanthology.org/2022.findings-naacl.205/" target="_blank" title="TIN-SLT">Explore More Guidance: A Task-aware Instruction Network for Sign Language Translation Enhanced with Data Augmentation</a></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">发表会议：North American Chapter of the Association for Computational Linguistics (NAACL 2022)</p>
 
