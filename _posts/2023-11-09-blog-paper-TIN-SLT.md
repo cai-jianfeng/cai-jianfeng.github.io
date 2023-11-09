@@ -107,5 +107,5 @@ $\tau_c$ 表示 相似度阈值。此外，我们将所有相似度大于阈值 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p></li></ul>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">最后，使用不同的比例 $\theta = [0.1,0.1,0.6,0.2]$ 来对这 $4$ 个指标进行加权，
-生成最后的阈值 $\Phi_{upsamp} = \theta * [\phi_v,\phi_r,\phi_s,\phi_d]$，并使用上采样算法对 $\mathcal{C}$ 进行采样生成数据集 $D_n$。
+生成最后的阈值 $\Phi_{upsamp} = \theta * [\phi_v,\phi_r,\phi_s,\phi_d]$，并使用上采样算法(公式 $(1)$)对 $\mathcal{C}$ 进行采样生成数据集 $D_n$。
 最后将原始数据集 $D_o$ 和生成数据集 $D_n$ 进行合并，一起作为数据集对模型进行训练。</p>
