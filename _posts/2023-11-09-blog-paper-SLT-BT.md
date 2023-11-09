@@ -45,8 +45,8 @@ Method
 ![SLT-BT-CTC](/images/paper_SLT-BT-2.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">而在 <b>gloss-to-sign</b> 阶段，由于 $glosses$ 和 video 的 modal gap 仍然存在，因此不能直接训练模型生成伪数据。
-但是，相比于 text-to-sign，$glosses$ 的好处是它和 sign video 具有单调性，手语视频中的每个动作都对应一个 $gloss$，且在时间顺序上和 $glosses$ 的序列顺序一致，
-即假设 $x_{t_1:t_2}$ 对应 $g_i$，$x_{t_3:t_4}$ 对应 $g_j$，若 $i < j$，则 $t_1 < t_2 < t_3 < t_4$。
+但是，相比于 text-to-sign，$glosses$ 的好处是它和 sign video 具有单调性，即手语视频中的每个动作都对应一个 $gloss$，且在时间顺序上和 $glosses$ 的序列顺序一致，
+数学上表示为：假设 $x_{t_1:t_2}$ 对应 $g_i$，$x_{t_3:t_4}$ 对应 $g_j$，若 $i < j$，则 $t_1 < t_2 < t_3 < t_4$。
 若是能够确定每个 $gloss\ g_i$ 所对应的 sign video 片段 $x_{t_l:t_r}$，则可以建立一个 gloss-to-sign 的对应表，将每个 $gloss_i$ 对应的 sign video 片段 $c_i$ 都存储起来。
 那么对于 text-to-gloss 阶段生成的每一个 $\hat{\mathbf{g}}^j$，就可以按顺序将每一个 $\hat{g}_i^j$ 替换为表中相对应的 sign video 片段 $c_{i}^j$，这样就可以生成伪 sign video $\hat{\mathbf{v}}^j$。
 因此，对于原始数据集 $D_{origin}^{(1:M)}$ 的 $\mathbf{v}^i$，
@@ -57,40 +57,42 @@ Method
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">接着，使用 CTC classifier 来获得每个 $gloss$ 对应的 $f_n$：首先将 embeddings $\mathbf{f}$ 输入到 transformer encoder 进行进一步编码，
-然后使用线性层和 softmax 函数获得每个 $f_n$ 所属的 $gloss$ 的概率 $p(g_n|\mathbf{f})$，便根据每条可行路径的概率之和来计算总体概率 $p(\mathbf{g}|\mahtbf{x})$：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">接着，使用 CTC classifier 来获得每个 $f_n$ 对应的 $gloss$：如下图(Figure 3)，首先将 embeddings $\mathbf{f}$ 输入到 transformer encoder 进行进一步编码，
+然后使用线性层和 softmax 函数获得每个 $f_n$ 所属的 $gloss$ 的概率 $p(g_n|\mathbf{f})$，这样便可以根据每条可行路径的概率之和来计算总体概率 $p(\mathbf{g}|\mathbf{x})$：</p>
 
-<center>$p(\mathbf{g}|\mahtbf{x}) = p(\mathbf{g}|\mahtbf{f}) = \sum_{\pi \in \mathcal{B}^-1(\mathbf{g})}{p(\pi|\mathbf{f})}$</center>
+<center>$p(\mathbf{g}|\mathbf{x}) = p(\mathbf{g}|\mathbf{f}) = \sum_{\pi \in \mathcal{B}^{-1}(\mathbf{g})}{p(\pi|\mathbf{f})}$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$\pi$ 表示 sign-to-gloss 的一条可行的对齐路径(如上图 Figure 3 右下角)，$\mathcal{B}$ 表示所有可行路径集。
-最终将总体概率转化为 CTC loss：$L_{ctc} = -ln\ p(\mathbf{g}|\mathbf{x})$。</p>
+最终将总体概率转化为 CTC loss：$L_{ctc} = -ln\ p(\mathbf{g}|\mathbf{x})$ 进行训练。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">在训练完 CTC classifier 后，对于通过 $\Omega_\theta$ 得到的 $\mathbf{f} = \{f_n\}_{n=1}^N$ 和 $\mathbf{g} = \{g_v\}_{v=1}^V$，
 便可以通过将 $\mathbf{f}$ 输入 transformer encoder 和 CTC classifier 获得概率 $p(g_n|\mathbf{f})$。
-然后使用 Viterbi 算法在所有合法路径集 $\hat{\mathcal{B}}^{-1}(\mathbf{g})$ 中计算出一条最佳的路径：</p>
+然后使用 <b>Viterbi 算法</b>在所有合法路径集 $\hat{\mathcal{B}}^{-1}(\mathbf{g})$ 中计算出一条最佳的路径：</p>
 
-<center>$\hat{\pi} = \underset{\pi \in \hat{\mathcal{B}}^{-1}(\mathbf{g})}{arg}\ max\ p(\pi|\mathbf{f})</center>
+<center>$\hat{\pi} = \underset{\pi \in \hat{\mathcal{B}}^{-1}(\mathbf{g})}{arg}\ max\ p(\pi|\mathbf{f})$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">最后，便可获得每个 $g_i^j$ 对应的 $f_{l_i:r_i}^j$。
-则将原始数据集 $D_{origin}^{(1:M)}$ 的所有 $\mathbf{g}^i = \{g_1^i,...,g_{V_i}^i\}$ 和对应的 $f_{l_i:r_i}^j$ 组成一张表，称为 <b>Sign Bank</b>
-(由于有的 $g_i^j$ 在多个 $\mathbf{g}^i$ 中出现，所以 $g_i^j$ 和 $f_{l_i:r_i}^j$ 在 Sign Bank 中是一对多关系)。</p>
+最后将原始数据集 $D_{origin}^{(1:M)}$ 的所有 $\mathbf{g}^i = \{g_1^i,...,g_{V_i}^i\}$ 中的每一个 $g_j^i$ 和对应的 $f_{l_j:r_j}^i$ 组成一张表，
+称为 <b>Sign Bank</b>(由于有的 $g_i^j$ 在多个 $\mathbf{g}^j$ 中出现，所以 $g_i^j$ 和 $f_{l_i:r_i}^j$ 在 Sign Bank 中是一对多关系)。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">总结而言，首先使用原数据集 $D_{origin}^{(1:M)}$ 训练一个 CTC classifier 和一个 text-to-gloss 模型。
 然后根据 CTC classifier 对源数据集的所有 $gloss$ 元素 $g$ 分割出对应的 sign video clip embedding $f$，组成 Sign Bank 表。
 接着使用大量额外的 sentence $\hat{\mathbf{y}}^j$，将其输入到 text-to-gloss 模型获得预测的 $glosses\ \hat{\mathbf{g}}^j$，
-并根据 $\hat{\mathbf{g}}^j$ 中的每个 $\hat{g}_i^j$ 在 Sign Bank 表中选择对应的 sign video clip embedding $f_i^j$ 并进行 concat
+并根据 $\hat{\mathbf{g}}^j$ 中的每个 $\hat{g}_i^j$ 在 Sign Bank 表中选择对应的 sign video clip embedding $\hat{f}_i^j$ 并进行 concat
 (如果有多个对应的 $f_i^j$ 就随机选择一个)，
 就获得了 $\hat{\mathbf{g}}^j$ 对应的 sign video embedding  $\hat{\mathbf{f}}^j$。
-这样便生成了伪数据集 $D_{synth} = \{\hat{\mathbf{f}}^j,\hat{\mathbf{y}}^j\}_{j=1}^M$。</p>
+这样便生成了伪数据集 $D_{synth} = \{\hat{\mathbf{f}}^j,\hat{\mathbf{y}}^j\}_{j=1}^N$。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">而在训练 SLT 模型时，本文使用 Transformer Encoder-Decoder 模型，
-将原始数据集 $D_{origin}^{(1:M)} = \{\mathbf{x}, \mathbf{y}\}^{(1:M)}$ 中的手语视频 $\mathbf{x}$ 输入到 Sign Embedding Layer $\Omega_\theta(·)$ 生成
-sign video embedding $\mathbf{f}$，并和对应的 $\mathbf{x}$ 组成预处理后的数据集 $\bar{D}_{origin}^{(1:M)} = \{\mathbf{f}, \mathbf{y}\}^{(1:M)}$，
-然后与伪数据集 $D_{synth} = \{\hat{\mathbf{f}}^j,\hat{\mathbf{y}}^j\}_{j=1}^M$ 组成一个更大的数据集 $D_{new}$。
-接着 SLT 模型便使用该数据集进行训练，输入 $\mathbf{f}$，输出 $\mathbf{y}$：</p>
+将原始数据集 $D_{origin}^{(1:M)} = \{\mathbf{x}^i, \mathbf{y}^i\}^{(1:M)}$ 中的手语视频 $\mathbf{x}^i$ 输入到 Sign Embedding Layer $\Omega_\theta(·)$ 生成
+sign video embedding $\mathbf{f}^i$，并和对应的 $\mathbf{x}^i$ 组成预处理后的数据集 $\bar{D}_{origin}^{(1:M)} = \{\mathbf{f}^i, \mathbf{y}^i\}^{(1:M)}$，
+然后与伪数据集 $D_{synth} = \{\hat{\mathbf{f}}^j,\hat{\mathbf{y}}^j\}_{j=1}^N$ 组成一个更大的数据集 $D_{new}$。
+最后 SLT 模型便使用该数据集进行训练，输入 $\mathbf{f}$，输出 $\mathbf{y}$，使用 cross-entropy 损失：</p>
 
-<center>$p(\mathbf{y}|\mathbf{x}) = \prod_{u=1}^U{p(y_u|y_{1:u-1},\mathbf{x})} = \prod_{u=1}^U{p(y_u|y_{1:u-1},\mathbf{f})},\ L_{SLT} = -ln\ p(\mathbf{y}|\mathbf{x})$</center>
+<center>$p(\mathbf{y}|\mathbf{x}) = \prod_{u=1}^U{p(y_u|y_{1:u-1},\mathbf{x})} = \prod_{u=1}^U{p(y_u|y_{1:u-1},\mathbf{f})}$</center>
+
+<center>$L_{SLT} = -ln\ p(\mathbf{y}|\mathbf{x})$</center>
