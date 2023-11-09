@@ -29,7 +29,7 @@ Method
 最直接的方法是先用现有的数据集 $D_{origin}^{1:M}$ 训练一个 text-to-sign 模型(输入 sentence，输出 sign video)，
 然后使用额外收集的 sentence 集合 $\hat{\mathbf{y}}^j, j = [1,...,N]$ 输入到训练好的 text-to-sign 模型中，输出预测的手语视频 $\hat{\mathbf{x}}^j$。
 这样生成的 $\{\hat{\hat{\mathbf{x}}^j,\mathbf{y}}^j\}$ 便可以作为伪数据集加入到原始数据集 $D_{origin}^{1:M}$ 一起训练一个 SLT 模型。
-但是由于 sentence 和 video 的 modal gap，导致使用原始的小数据集训练出来的 text-to-sign 模型效果不好，继而影响生成的伪数据 $\hat{\hat{\mathbf{x}}^j$ 的质量。
+但是由于 sentence 和 video 的 modal gap，导致使用原始的小数据集训练出来的 text-to-sign 模型效果不好，继而影响生成的伪数据 $\hat{\mathbf{x}}^j$ 的质量。
 因此，本文采用了两阶段的 back-translation 方法，在 text-to-gloss 阶段，由于 sentence 和 $glosses$ 的 modal 相似性，
 本文直接训练了一个 text-to-gloss 的模型来将 sentence 翻译为 $glosses$；
 而在 gloss-to-sign 阶段，由于仍然存在 $glosses$ 和 video 的 modal gap，
@@ -42,9 +42,25 @@ Method
 输入训练好的模型 $\boldsymbol{M}_{BT}(·)$ 中，
 并输出预测的 $glosses\ \hat{\mathbf{g}}^j$，则生成的 $\{\hat{\mathbf{y}}^j, \hat{\mathbf{g}}^j\}$ 对就可以作为 gloss-to-text 的伪数据集。</p>
 
+![SLT-BT-CTC](/images/paper_SLT-BT-2.png)
+
 <p style="text-align:justify; text-justify:inter-ideograph;">而在 <b>gloss-to-sign</b> 阶段，由于 $glosses$ 和 video 的 modal gap 仍然存在，因此不能直接训练模型生成伪数据。
 但是，相比于 text-to-sign，$glosses$ 的好处是它和 sign video 具有单调性，手语视频中的每个动作都对应一个 $gloss$，且在时间顺序上和 $glosses$ 的序列顺序一致，
 即假设 $x_{t_1:t_2}$ 对应 $g_i$，$x_{t_3:t_4}$ 对应 $g_j$，若 $i < j$，则 $t_1 < t_2 < t_3 < t_4$。
 若是能够确定每个 $gloss\ g_i$ 所对应的 sign video 片段 $x_{t_l:t_r}$，则可以建立一个 gloss-to-sign 的对应表，将每个 $gloss_i$ 对应的 sign video 片段 $c_i$ 都存储起来。
 那么对于 text-to-gloss 阶段生成的每一个 $\hat{\mathbf{g}}^j$，就可以按顺序将每一个 $\hat{g}_i^j$ 替换为表中相对应的 sign video 片段 $c_{i}^j$，这样就可以生成伪 sign video $\hat{\mathbf{v}}^j$。
-因此，</p>
+因此，对于原始数据集 $D_{origin}^{1:M}$ 的 $\mathbf{v}^i$，
+本文首先将其分割为 $N$ 个长度为 $\mathcal{w}$ 的相互重叠的小片段 $\mathbf{c} = \{c_n\}_{n=1}^N$ (stride $= s$，则 $N = \lceil \dfrac{T}{s} \rceil$)，
+然后使用 Sign Embedding Layer $\Omega_\theta(·)$ 将其编码为 embeddings $\mathbf{f} = \{f_n\}_{n=1}^N$：</p>
+
+<center>$f_n = SignEmbedding(c_n) = \Omega_\theta(c_n)$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">接着，使用 CTC classifier 来获得每个 $gloss$ 对应的 $f_n$：首先将 embeddings $\mathbf{f}$ 输入到 transformer encoder 进行进一步编码，
+然后使用线性层和 softmax 函数获得每个 $f_n$ 所属的 $gloss$ 的概率 $p(g_n|\mathbf{f})$，便根据每条可行路径的概率之和来计算总体概率 $p(\mathbf{g}|\mahtbf{x})$：</p>
+
+<center>$p(\mathbf{g}|\mahtbf{x}) = p(\mathbf{g}|\mahtbf{f}) = \sum_{\pi \in \mathcal{B}^-1(\mathbf{g})}{p(\pi|\mathbf{f})}$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$\pi$ 表示 sign-to-gloss 的一条可行的对齐路径(如上图 Figure 3 右下角)，$\mathcal{B}$ 表示所有可行路径集。
+最终将总体概率转化为 CTC loss：$L_{ctc} = -ln\ p(\mathbf{g}|\mathbf{x})$。</p>
