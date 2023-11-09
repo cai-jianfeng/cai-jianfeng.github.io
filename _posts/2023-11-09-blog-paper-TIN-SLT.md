@@ -69,7 +69,7 @@ TIM 的整体框架如图，包括一个 Original-Attention，一个 PTM-Attenti
 <p style="text-align:justify; text-justify:inter-ideograph;">为了解决表征空间差异问题，本文使用上采样进行数据增强，并实现将 gloss 对齐到 sentence 空间。
 具体而言，如上图代码，本文通过设置一个阈值 $\Phi_{upsamp}$，使用概率选择在优质候选数据集 $\mathcal{C}$ 中进行随机选择，生成一个新数据集 $D_n$：</p>
 
-$D_n^i = \begin{cases}\{\mathcal{S}_{1:\vert \mathcal{S}\vert -2}^i, \mathcal{S}^i\}, & p < \Phi_{upsamp} \\ \{\}, & p > \Phi_{upsamp} \end{cases}, p \in [0, 1], S^i \in \mathcal{C}$
+<center>$$D_n^i = \begin{cases}\{\mathcal{S}_{1:|\mathcal{S}|-2}^i, \mathcal{S}^i\}, & p < \Phi_{upsamp} \\ \{\}, & p > \Phi_{upsamp} \end{cases}, p \in [0, 1], S^i \in \mathcal{C}$$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">该新数据集中的输入和输出数据均为 sentence，则就使得模型学习 gloss 和 sentence 的空间对齐。
 同时为了获得合适的阈值 $\Phi_{upsamp}$，本文综合考虑数据集 $D_o$、数据 $\mathcal{G}^i/\mathcal{S}^i$ 和数据元素 $g_i/\mathcal{w}_i$ 的差异来进行抉择。
