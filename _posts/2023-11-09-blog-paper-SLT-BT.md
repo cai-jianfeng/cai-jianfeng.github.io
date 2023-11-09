@@ -34,7 +34,7 @@ Method
 本文直接训练了一个 text-to-gloss 的模型来将 sentence 翻译为 $glosses$；
 而在 gloss-to-sign 阶段，由于仍然存在 $glosses$ 和 video 的 modal gap，
 本文便放弃了使用模型直接生成的方式，而是充分采用了 $gloss$ 和 sign video 的单调性，使用分割的方式获得伪 video。
-最终生成伪数据集 $\{\hat{\hat{\mathbf{x}}^j,\mathbf{y}}^j\}$。</p>
+最终生成伪数据集 $\{\hat{\mathbf{x}}^j,\hat{\mathbf{y}}^j\}$。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">具体而言，如上图 (Figure 2)，在 <b>text-to-gloss</b> 阶段，
 本文首先使用原始数据集 $D_{origin}^{(1:M)}$ 的 $\{\mathbf{y}^i, \mathbf{g}^i\}, i = [1,...,M]$ 训练了一个 text-to-gloss 的模型 $\boldsymbol{M}_{BT}(·)$。
@@ -82,7 +82,8 @@ Method
 <p style="text-align:justify; text-justify:inter-ideograph;">总结而言，首先使用原数据集 $D_{origin}^{(1:M)}$ 训练一个 CTC classifier 和一个 text-to-gloss 模型。
 然后根据 CTC classifier 对源数据集的所有 $gloss$ 元素 $g$ 分割出对应的 sign video clip embedding $f$，组成 Sign Bank 表。
 接着使用大量额外的 sentence $\hat{\mathbf{y}}^j$，将其输入到 text-to-gloss 模型获得预测的 $glosses\ \hat{\mathbf{g}}^j$，
-并根据 $\hat{\mathbf{g}}^j$ 中的每个 $\hat{g}_i^j$ 在 Sign Bank 表中选择对应的 sign video clip embedding $f_i^j$ 进行 concat，
+并根据 $\hat{\mathbf{g}}^j$ 中的每个 $\hat{g}_i^j$ 在 Sign Bank 表中选择对应的 sign video clip embedding $f_i^j$ 并进行 concat
+(如果有多个对应的 $f_i^j$ 就随机选择一个)，
 就获得了 $\hat{\mathbf{g}}^j$ 对应的 sign video embedding  $\hat{\mathbf{f}}^j$。
 这样便生成了伪数据集 $D_{synth} = \{\hat{\mathbf{f}}^j,\hat{\mathbf{y}}^j\}_{j=1}^M$。</p>
 
