@@ -30,7 +30,7 @@ Method
 ![TIN-SLT encoder and decoder](/images/paper_TIN-SLT-encoder-decoder.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">具体而言，如上图，本文使用的整体框架是 Transformer 的 Encoder-Decoder 框架。
-假设输入为 $\mathcal{G} = \{g_1,...,g_L\}$，输出为 $\mathcal{S} = \{\mathcal{w}_1,...,\mathcal{w}_M\}$。
+假设数据集为 $D_o$，其中输入为 $\mathcal{G} = \{g_1,...,g_L\}$，输出为 $\mathcal{S} = \{\mathcal{w}_1,...,\mathcal{w}_M\}$。
 为了将大模型的编码性能迁移到自身模型，本文提出了一个 <b>Target-aware Instruction (TIM)</b>模块嵌入 Encoder 和 Decoder 来帮助模型更好地学习。
 TIM 的整体框架如图，包括一个 Original-Attention，一个 PTM-Attention，一个 Adaptive Layer 和一个 $\alpha$ 融合策略。
 它包括 $3$ 个输入 $H_1$，$H_2$ 和 $H_3$，其中，$H_1$ 和 $H_2$ 是模型内部学习到的特征，经过 Original-Attention，
@@ -54,4 +54,23 @@ TIM 的整体框架如图，包括一个 Original-Attention，一个 PTM-Attenti
 <p style="text-align:justify; text-justify:inter-ideograph;">然后经过 TIM，TIM 中的 $H_1 = \tilde{S}_D, H_2 = H_E', H_3 = H_I$。
 接着 TIM 输出得到的 $\bar{H}_1$ 再经过一个 FFN 和 两次 Add & Norm 生成输出 $S_D'$：$S_D' = LayerNorm(FFN(LayerNorm(\bar{H}_1 + \tilde{S}_D)) + LayerNorm(\bar{H}_1 + \tilde{S}_D))$。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">对于融合系数 $\alpha$</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">如上图右边代码，对于融合系数 $\alpha$，本文采用模型自我学习的方式，即将 $\alpha$ 设置为<b>可学习的</b>参数，随着模型的训练逐步更新。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">为了解决表征空间差异问题，本文使用上采样进行数据增强，并实现将 gloss 对齐到 sentence 空间。
+即设置一个阈值 $\Phi_{upsamp}$，使用概率选择生成一个新数据集 $D_n$：</p>
+
+$$D_n^i = \begin{cases}\{\mathcal{S}^i, \mathcal{S}^i\}, & p < \Phi_{upsamp} \\ \{\}, & p > \Phi_{upsamp} \end{cases}, p \in [0, 1]$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">同时综合考虑数据集 $D_o$、数据 $\mathcal{G}^i/\mathcal{S}^i$ 和数据元素 $g_i/\mathcal{w}_i$ 的差异来选择合适的阈值 $\Phi_{upsamp}$。
+具体而言，本文考虑了四方面的因素：</p>
+
+<ul>
+<li><p style="text-align:justify; text-justify:inter-ideograph;">Token Level 1：Vocabulary Difference Ratio (VDR, $\phi_v$)，用来测量 gloss 和 sentence 的字典空间的差异性：</p>
+
+<center>$\phi_v = 1 - \dfrac{|W_\mathcal{G}|}{|W_\mathcal{G} \bigcup W_\mathcal{S}|}$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$W_\mathcal{G}$ 和 $W_\mathcal{S}$ 分别表示 gloss 和 sentence 的字典集。$|·|$ 表示大小。</p></li>
+
+</ul>
