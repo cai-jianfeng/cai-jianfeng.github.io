@@ -82,10 +82,16 @@ Method
 $\mathbf{f_\theta}(x_t,t) = \mathbf{f_\theta}(x_{t'},t'), \forall t,t' \in [\epsilon, T]$ 
 (对于任意在相同 PF ODE 解轨迹上的输入对 $(x_t,t)$，其输出一致，都是 $x_\epsilon$)。
 这就使得模型具有一定的限制。其中最主要的限制便是 boundary condition：$\mathbf{f_\theta}(x_\epsilon,\epsilon) = x_\epsilon$，即 $\mathbf{f_\theta}(·,\epsilon)$ 是一个 identity function (恒等函数)。
-为了尽可能减少它对模型的限制(包括输入输出，结构等)，本文提出 $2$ 种方法来构建 consistency model：</p>
+为了尽可能减少它对模型的限制(包括输入输出，结构等)，本文提出 $2$ 种方法来构建 consistency model，称为 parameterization (参数化)：</p>
 
 $$\mathbf{f_\theta}(x,t) = \begin{cases} x, & t = \epsilon \\ F_\theta(x,t), & t \in (\epsilon, T]\end{cases}$$
 
 $$\mathbf{f_\theta}(x,t) = c_{skip}(t)x + c_{out}(t)F_\theta(x,t)$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$F_\theta(x,t)$ 是free-form 的深度神经网络；
+第 $2$ 种方法的 $c_{skip}(t)$ 和 $c_{out}(t)$ 都是可微函数(differentiable)，且满足 $c_{skip}(\epsilon)=1, c_{out}(\epsilon)=0$。
+由于第 $2$ 种方法和 DM 模型相似(DM 模型是将噪声 $\varepsilon$ 分离出来实现参数化，即 $f_\theta(x) = x + \varepsilon_theta(x)$)，
+许多流行的 DM 模型架构都可以直接使用，因此本文选择第 $2$ 种方法参数化模型。
+</p>
 
 ![Comsistency Model Algorithm](/images/paper_Consistency_Model_Algorithm.png)
