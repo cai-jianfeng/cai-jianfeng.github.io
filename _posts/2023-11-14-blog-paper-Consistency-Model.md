@@ -46,6 +46,21 @@ Method
 其中很大一部分原因是因为在没有其他条件的帮助下，直接让模型建模 $\mathcal{p}(x_0|x_T)/\mathcal{p}(\varepsilon_T|x_T)$ 的难度太大。
 为此本文提出通过使用 probability flow (PF) ordinary differential equation (ODE) (概率流常微分方程) 的轨迹来帮助模型学习。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">如上图(Figure 1)，</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">如上图(Figure 1)，DM 模型的数学过程是一个 stochastic differential equation (SDE，随机微分方程)：</p>
+
+<center>$dx_t = \mu(x_t,t)dt + \sigma(t) dw_t$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$\{w_t\}_{t \in [0,T]}$ 是 standard Brownain motion (标准布朗运动)。
+假设 $x_t$ 的概率分布为 $\mathcal{p}_t(x) \Rightarrow p_0(x) = p_{data}(x), p_T(x) = \pi(x)$，SDE 有一个重要的性质：它存在一个 ODE 称为 PF ODE。
+在本文的 DM 模型中，其 SDE 所对应 PF ODE 解轨迹(solution trajectory) 如下：</p>
+
+<center>$dx_t = [\mu(x_t,t)dt - \dfrac{1}{2} \sigma(t)^2 \triangledown log\mathcal{p}_t(x_t)]dt$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$\triangledown log\mathcal{p}_t(x_t)$ 是 $\mathcal{p}_t(x_t)$ 的 score function。
+本文将方程进行简化：$\mathcal{p}_t(x_t) = 0, \mathcal{p}_t(x_t) = \sqrt(2t), p_t(x) = p_{data}(x) \bigtimes \mathcal{N}(0, T^2\mathbf{I}$。
+为了实现对 PF ODE 解轨迹的求解，本文首先通过 score match 训练一个 score model $s_{\Phi}(x_t,t) \approx \triangledown logp_t(x_t)$。
+然后将其代入方程，将方程简化为常系数一阶微分方程(称为 empirical PF ODE)：</p>
+
+<center>$\dfrac{dx}{dt} = -ts_{\Phi}(x_t,t)$</center>
 
 ![Comsistency Model Algorithm](/images/paper_Consistency_Model_Algorithm.png)
