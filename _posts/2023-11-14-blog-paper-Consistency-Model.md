@@ -124,7 +124,7 @@ $$\mathbf{f_\theta}(x,t) = c_{skip}(t)x + c_{out}(t)F_\theta(x,t)$$
 同时，由于前述 SDE 和 PF ODE 的关联性，可以通过先采样 $x \sim \mathcal{p}_data$，然后向 $x$ 添加高斯噪声，接着沿着 ODE 轨迹的分布进行采样。
 具体而言，给定 $x$，首先使用 SDE 的过渡密度分布 $\mathcal{N}(x,t^2_{n+1}\boldsymbol{I})$ 采样得到 $x_{t_{n+1}}$；然后使用 numerical ODE solver 计算 $\hat{x}^{\mathcal{\Phi}}_{t_n}$，
 与 $x_{t_{n+1}}$ 组成 adjacent data points $(\hat{x}^{\mathcal{\Phi}}_{t_n}, x_{t_{n+1}})$。
-最后，通过最小化数据对 $(\hat{x}^{\mathcal{\Phi}}_{t_n}, x_{t_{n+1}})$ 的输出差异性来训练 consistency model：</p>
+最后，通过最小化数据对 $(\hat{x}^{\mathcal{\Phi}}_{t_n}, x_{t_{n+1}})$ 的输出差异性(consistency distillation loss)来训练 consistency model：</p>
 
 $$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\mathcal{\Phi}):=E[\lambda(t_n)d(\boldsymbol{f_\theta}(x_{t_{n+1}},t_{n+1}), \boldsymbol{f_{\theta^-}}(\hat{x}^{\mathcal{\Phi}}_{t_n}, t_n))]$$
 
@@ -135,6 +135,16 @@ $$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\mathcal{\Phi}):=E[\lambda(
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$\lambda(·) \in R^+$ 表示正值权重函数；$\boldsymbol{\theta}^-$ 表示 $\boldsymbol{\theta}$ 的 EMA (指数移动平均)：
 $\boldsymbol{\theta}^- \leftarrow stopgrad(\mu\boldsymbol{\theta}^- + (1-\mu)\boldsymbol{\theta})$；
 $d(·,·)$ 表示度量函数，满足 $\forall x,y: d(x,y) \geq 0$ and $d(x,y)=0$ if and only if $x=y$。
-本文使用 $\lambda(t_n) \equiv 1$，$d(x,y) = \mathcal{l}_2:||x-y||_2^2/\mathcal{l}_1:||x-y||_1/LPIPS$。</p>
+本文使用 $\lambda(t_n) \equiv 1$，$d(x,y) = \mathcal{l}_2:||x-y||_2^2/\mathcal{l}_1:||x-y||_1/LPIPS$。具体算法如下图(Algorithm 2)。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">第二种是 <b>Isolation</b>，即不需要任何额外的预训练模型，从头开始训练。回顾上述的 Distillation，
+它将预训练好的 score model  近似为 $\triangledown log\mathcal{p}_t(x_t)$。
+只需要找到不依赖 $s_{\mathcal{\Phi}}(x,t)$ 的 $\triangledown log\mathcal{p}_t(x_t)$ 函数即可实现 Isolation 训练。
+为此，本文找到了一个 unbiased estimator $\triangledown log\mathcal{p}_t(x_t) = -E[\dfrac{x_t-x}{t^2}|x_t]$。
+然后便可使用相似的 consistency training loss 来训练 consistency model：</p>
+
+$$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\mathcal{\Phi})=L_{CT}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-)=E[\lambda(t_n)d(\boldsymbol{f_\theta}(x + t_{n+1}z,t_{n+1}), \boldsymbol{f_\theta^-}(x + t_nz,t_{n}))]$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$z \sim \mathcal{N}(0,\boldsymbol{I})。具体算法如下图(Algorithm 3)。$
 
 ![Comsistency Model Algorithm](/images/paper_Consistency_Model_Algorithm.png)
