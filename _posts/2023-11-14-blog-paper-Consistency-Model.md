@@ -63,7 +63,7 @@ Method
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$\triangledown log\mathcal{p}_t(x_t)$ 是 $\mathcal{p}_t(x_t)$ 的 score function。
-本文将方程进行简化：$\mathcal{p}_t(x_t) = 0, \mathcal{p}_t(x_t) = \sqrt(2t), p_t(x) = p_{data}(x) \otimes \mathcal{N}(0, T^2\mathbf{I}$。
+本文将方程进行简化：$\mathcal{p}_t(x_t) = 0, \mathcal{p}_t(x_t) = \sqrt{2t}, p_t(x) = p_{data}(x) \otimes \mathcal{N}(0, T^2\mathbf{I}$。
 为了实现对 PF ODE 解轨迹的求解，本文首先通过 score match 训练一个 score model $s_{\Phi}(x_t,t) \approx \triangledown logp_t(x_t)$。
 然后将其代入方程，将方程简化为常系数微分方程(称为 empirical PF ODE)：</p>
 
@@ -74,7 +74,7 @@ Method
 <p style="text-align:justify; text-justify:inter-ideograph;">然后，采样 $\hat{x}_T \sim \pi = \mathcal{N}(0,T^2\mathbf{I})$ 初始化方程，
 然后使用 numerical ODE solver (数值常微分方程求解器，例如 Euler/Heun solver)求解方程，从而获得整个解轨迹 $\{\hat{x}_t\}_{t \in [0,T]}$，
 其中 $\hat{x}_0$ 可以近似为在数据分布 $\mathcal{p}_{data}(x)$ 中的采样。
-为了数值稳定性，通常当 $t = \epsilon, \epsilon \in R^+\ &\ \epsilon \rightarrow 0$时就停止计算，并将最终的 $\hat{x}_\epsilon$ 作为 $\hat{x}_0$ 的近似，
+为了数值稳定性，通常当 $t = \epsilon, \epsilon \in R^+\ and\ \epsilon \rightarrow 0$时就停止计算，并将最终的 $\hat{x}_\epsilon$ 作为 $\hat{x}_0$ 的近似，
 则整个解轨迹就变成 $\{\hat{x}_t\}_{t \in [\epsilon,T]}$。本文中使用 $T = 80, \epsilon = 0.002$。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">有了解轨迹，本文便提出了 consistency model 来利用它进行一步 inference 的学习。
@@ -82,6 +82,10 @@ Method
 $\mathbf{f_\theta}(x_t,t) = \mathbf{f_\theta}(x_{t'},t'), \forall t,t' \in [\epsilon, T]$ 
 (对于任意在相同 PF ODE 解轨迹上的输入对 $(x_t,t)$，其输出一致，都是 $x_\epsilon$)。
 这就使得模型具有一定的限制。其中最主要的限制便是 boundary condition：$\mathbf{f_\theta}(x_\epsilon,\epsilon) = x_\epsilon$，即 $\mathbf{f_\theta}(·,\epsilon)$ 是一个 identity function (恒等函数)。
-</p>
+为了尽可能减少它对模型的限制(包括输入输出，结构等)，本文提出 $2$ 种方法来构建 consistency model：</p>
+
+$$\mathbf{f_\theta}(x,t) = \begin{cases} x, & t = \epsilon \\ F_\theta(x,t), & t \in (\epsilon, T]\end{cases}$$
+
+$$\mathbf{f_\theta}(x,t) = c_{skip}(t)x + c_{out}(t)F_\theta(x,t),$$
 
 ![Comsistency Model Algorithm](/images/paper_Consistency_Model_Algorithm.png)
