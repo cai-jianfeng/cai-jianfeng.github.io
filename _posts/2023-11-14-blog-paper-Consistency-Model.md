@@ -59,13 +59,13 @@ $\{w_t\}_{t \in [0,T]}$ 是 standard Brownain motion (标准布朗运动)。
 SDE 有一个重要的性质：它存在一个 ODE 形式的方程，称为 PF ODE。
 在本文的 DM 模型中，其 SDE 所对应 PF ODE 方程如下：</p>
 
-<center>$dx_t = [\mu(x_t,t)dt - \dfrac{1}{2} \sigma(t)^2 \triangledown log\mathcal{p}_t(x_t)]dt$</center>
+<center>$dx_t = [\mu(x_t,t)dt - \dfrac{1}{2} \sigma(t)^2 \triangledown log\ \mathcal{p}_t(x_t)]dt$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中，$\triangledown log\mathcal{p}_t(x_t)$ 是 $\mathcal{p}_t(x_t)$ 的 score function。
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$\triangledown log\ \mathcal{p}_t(x_t)$ 是 $\mathcal{p}_t(x_t)$ 的 score function。
 为了方便建模，本文将方程进行简化：令 $\mu(x_t,t) = 0,\ \sigma(t) = \sqrt{2t},\ p_t(x) = p_{data}(x) \otimes \mathcal{N}(0, T^2\boldsymbol{I})$。
-为了实现对 PF ODE 解轨迹的求解，本文首先通过 score match 训练一个 score model $s_{\phi}(x_t,t) \approx \triangledown logp_t(x_t)$。
+为了实现对 PF ODE 解轨迹的求解，本文首先通过 score match 训练一个 score model $s_{\phi}(x_t,t) \approx \triangledown log\ p_t(x_t)$。
 然后将其代入方程，将方程简化为常系数微分方程(称为 empirical PF ODE)：</p>
 
 <center>$\dfrac{dx}{dt} = -ts_{\phi}(x_t,t)$</center>
@@ -145,12 +145,12 @@ $$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\phi):=E[\lambda(t_n)d(\bol
 本文使用 $\lambda(t_n) \equiv 1$，$d(x,y) = \mathcal{l}_2:||x-y||_2^2/\mathcal{l}_1:||x-y||_1/LPIPS$。具体算法如下图(Algorithm 2)。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">第二种是 <b>Isolation</b>，即不需要任何额外的预训练模型，从头开始训练。回顾上述的 Distillation，
-它将预训练好的 score model  近似为 $\triangledown log\mathcal{p}_t(x_t)$。
-只需要找到不依赖 $s_{\mathcal{\Phi}}(x,t)$ 的 $\triangledown log\mathcal{p}_t(x_t)$ 函数即可实现 Isolation 训练。
-为此，本文找到了一个 unbiased estimator $\triangledown log\mathcal{p}_t(x_t) = -E[\dfrac{x_t-x}{t^2}|x_t]$。
+它将预训练好的 score model  近似为 $\triangledown log\ \mathcal{p}_t(x_t)$。
+只需要找到不依赖 $s_{\phi}(x,t)$ 的 $\triangledown log\ \mathcal{p}_t(x_t)$ 函数即可实现 Isolation 训练。
+为此，本文找到了一个 unbiased estimator (无偏估计器) $\triangledown log\ \mathcal{p}_t(x_t) = -E[\dfrac{x_t-x}{t^2}|x_t]$。
 然后便可使用相似的 consistency training loss 来训练 consistency model：</p>
 
-$$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\mathcal{\Phi})=L_{CT}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-)=E[\lambda(t_n)d(\boldsymbol{f_\theta}(x + t_{n+1}z,t_{n+1}), \boldsymbol{f_\theta^-}(x + t_nz,t_{n}))]$$
+$$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\phi)=L_{CT}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-)=E[\lambda(t_n)d(\boldsymbol{f_\theta}(x + t_{n+1}z,t_{n+1}), \boldsymbol{f_\theta^-}(x + t_nz,t_{n}))]$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$z \sim \mathcal{N}(0,\boldsymbol{I})$。具体算法如下图(Algorithm 3)。</p>
 
