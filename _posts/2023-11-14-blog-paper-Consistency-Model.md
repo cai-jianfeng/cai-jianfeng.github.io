@@ -65,22 +65,22 @@ SDE 有一个重要的性质：它存在一个 ODE 形式的方程，称为 PF O
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$\triangledown log\mathcal{p}_t(x_t)$ 是 $\mathcal{p}_t(x_t)$ 的 score function。
 为了方便建模，本文将方程进行简化：令 $\mu(x_t,t) = 0,\ \sigma(t) = \sqrt{2t},\ p_t(x) = p_{data}(x) \otimes \mathcal{N}(0, T^2\boldsymbol{I})$。
-为了实现对 PF ODE 解轨迹的求解，本文首先通过 score match 训练一个 score model $s_{\boldsymbol{\Phi}}(x_t,t) \approx \triangledown logp_t(x_t)$。
+为了实现对 PF ODE 解轨迹的求解，本文首先通过 score match 训练一个 score model $s_{\phi}(x_t,t) \approx \triangledown logp_t(x_t)$。
 然后将其代入方程，将方程简化为常系数微分方程(称为 empirical PF ODE)：</p>
 
-<center>$\dfrac{dx}{dt} = -ts_{\boldsymbol{\Phi}}(x_t,t)$</center>
+<center>$\dfrac{dx}{dt} = -ts_{\phi}(x_t,t)$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">然后，采样 $\hat{x}_T \sim \pi = \mathcal{N}(0,T^2\boldsymbol{I})$ 初始化方程，
 然后使用 numerical ODE solver (数值常微分方程求解器，例如 Euler/Heun solver)求解方程，从而获得整个解轨迹 $\{\hat{x}_t\}_{t \in [0,T]}$，
 其中 $\hat{x}_0$ 可以近似为在数据分布 $\mathcal{p}_{data}(x)$ 中的采样。
-为了数值稳定性，通常当 $t = \epsilon, \epsilon \in R^+\ and\ \epsilon \rightarrow 0$时就停止计算，并将最终的 $\hat{x}_\epsilon$ 作为 $\hat{x}_0$ 的近似，
+为了数值稳定性，通常当 $t = \epsilon, \epsilon \in R^+\ and\ \epsilon \rightarrow 0$ 时就停止计算，并将最终的 $\hat{x}_\epsilon$ 作为 $\hat{x}_0$ 的近似，
 则整个解轨迹就变成 $\{\hat{x}_t\}_{t \in [\epsilon,T]}$。本文中使用 $T = 80, \epsilon = 0.002$。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">有了解轨迹，本文便提出了 <b>consistency model</b> 来利用它进行一步 inference 的学习。
 具体而言，定义 consistency model 为 $\boldsymbol{f_\theta}:(x_t,t) \mapsto x_\epsilon$。它具有 self-consistency (自一致)的性质：
-$\boldsymbol{f_\theta}(x_t,t) = \boldsymbol{f_\theta}(x_{t'},t'), \forall t,t' \in [\epsilon, T]$ 
+即 $\boldsymbol{f_\theta}(x_t,t) = \boldsymbol{f_\theta}(x_{t'},t'), \forall t,t' \in [\epsilon, T]$ 
 (对于任意在相同 PF ODE 解轨迹上的输入对 $(x_t,t)$，其输出一致，都是 $x_\epsilon$)。
 这就使得模型具有一定的限制。其中最主要的限制便是 boundary condition：$\boldsymbol{f_\theta}(x_\epsilon,\epsilon) = x_\epsilon$，即 $\boldsymbol{f_\theta}(·,\epsilon)$ 是一个 identity function (恒等函数)。
 为了尽可能减少它对模型的限制(包括输入输出，结构等)，本文提出 $2$ 种方法来构建 consistency model，称为 <b>parameterization (参数化)</b>：</p>
@@ -91,7 +91,7 @@ $$\boldsymbol{f_\theta}(x,t) = c_{skip}(t)x + c_{out}(t)F_\theta(x,t)$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$F_\theta(x,t)$ 是 free-form 的深度神经网络；
 第 $2$ 种方法的 $c_{skip}(t)$ 和 $c_{out}(t)$ 都是可微函数(differentiable)，且满足 $c_{skip}(\epsilon)=1, c_{out}(\epsilon)=0$。
-由于第 $2$ 种方法和 DM 模型相似(DM 模型是将噪声 $\varepsilon$ 分离出来实现参数化，即 $f_\theta(x) = x + \varepsilon_theta(x)$)，
+由于第 $2$ 种方法和 DM 模型相似(DM 模型是将噪声 $\varepsilon$ 分离出来实现参数化，即 $f_\theta(x) = x + \varepsilon_\theta(x)$)，
 许多流行的 DM 模型架构都可以直接使用，因此本文选择第 $2$ 种方法参数化模型。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">而在训练完成后，模型可以进行<b>一步 inference </b>实现图像生成。
@@ -99,7 +99,7 @@ $$\boldsymbol{f_\theta}(x,t) = c_{skip}(t)x + c_{out}(t)F_\theta(x,t)$$
 然后通过模型生成最终的图像 $\hat{x}_\epsilon = \boldsymbol{f_\theta}(\hat{x}_T,T)$。
 更重要的是，模型也可以进行<b>多步 inference</b> 提高图像的生成质量。它通过多次交替去噪(denoise)和噪声注入(noise)步骤来使用 consistence model 精细化图像。具体算法如下图(Algorithm 1)。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">接下来便是模型架构和训练问题。对于模型架构，如前述，，$F_\theta(x,t)$ 可以使用主流的 DM 模型(如 U-net)；
+<p style="text-align:justify; text-justify:inter-ideograph;">接下来便是模型架构和训练问题。对于模型架构，如前述，$F_\theta(x,t)$ 可以使用主流的 DM 模型(如 U-net)；
 而对于 $c_{skip}(t)$ 和 $c_{out}(t)$，满足 $c_{skip}(\epsilon)=1, c_{out}(\epsilon)=0$ 的函数也有很多，本文遵循 EDM 的方式，使用：</p>
 
 <center>$c_{skip}(t) = \dfrac{\sigma_{data}^2}{(t - \epsilon)^2 + \sigma_{data}^2}, c_{out}(t) = \dfrac{\sigma_{data}(t - \epsilon)}{\sqrt{\sigma_{data}^2 + t^2}}, \sigma_{data} = 0.5$</center>
