@@ -106,36 +106,42 @@ $$\boldsymbol{f_\theta}(x,t) = c_{skip}(t)x + c_{out}(t)F_\theta(x,t)$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">而对于训练问题，本文提出了 $2$ 种训练方法。第一种是 <b>Distillation</b>，它通过 distill 一个预训练好的 score model $s_\Theta(x,t)$ 来训练 consistency model。
+<p style="text-align:justify; text-justify:inter-ideograph;">而对于训练问题，本文提出了 $2$ 种训练方法。第一种是 <b>Distillation</b>，
+它通过 distill 一个预训练好的 score model $s_\phi(x,t)$ 来训练 consistency model。
 具体而言，首先将区间(time horizon) $[\epsilon, T]$ 划分为 $N - 1$ 个子区间：</p>
 
 <center>$[t_1,t_2],...,[t_{N-1},t_N], t_1 = \epsilon < t_2 <...<t_N = T$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
-<center>$t_i = (\epsilon^{\dfrac{1}{\rho}} + \dfrac{i-1}{N-1}(T^{\dfrac{1}{\rho}} - \epsilon^{\dfrac{1}{\rho}}))^{\rho}, \rho = 7$</center>
+<center>$t_i = (\epsilon^{\frac{1}{\rho}} + \dfrac{i-1}{N-1}(T^{\frac{1}{\rho}} - \epsilon^{\frac{1}{\rho}}))^{\rho}, \rho = 7$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">然后使用 numerical ODE solver 求解 empirical PF ODE，得到 $\hat{x}^{\mathcal{\Phi}}_{t_n}$：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">然后使用 numerical ODE solver 求解 empirical PF ODE，得到 $\hat{x}^{\phi}_{t_n}$：</p>
 
-<center>$\hat{x}^{\mathcal{\Phi}}_{t_n}:=x_{t_{n+1}} + (t_n - t_{n+1} \Phi(x_{t_{n+1}}, t_{n+1}; \mathcal{\Phi}))$</center>
+<center>$\hat{x}^{\phi}_{t_n}:=x_{t_{n+1}} + (t_n - t_{n+1} \Phi(x_{t_{n+1}}, t_{n+1}; \phi))$</center>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中 $\Phi(...; \mathcal{\Phi}))$ 表示 ODE solver 的更新函数(update function)。例如，如果使用 Euler solver，$\Phi(x,t; \mathcal{\Phi})) = -ts_\mathcal{\Phi}(x,t)$。
-同时，由于前述 SDE 和 PF ODE 的关联性，可以通过先采样 $x \sim \mathcal{p}_data$，然后向 $x$ 添加高斯噪声，接着沿着 ODE 轨迹的分布进行采样。
-具体而言，给定 $x$，首先使用 SDE 的过渡密度分布 $\mathcal{N}(x,t^2_{n+1}\boldsymbol{I})$ 采样得到 $x_{t_{n+1}}$；然后使用 numerical ODE solver 计算 $\hat{x}^{\mathcal{\Phi}}_{t_n}$，
-与 $x_{t_{n+1}}$ 组成 adjacent data points $(\hat{x}^{\mathcal{\Phi}}_{t_n}, x_{t_{n+1}})$。
-最后，通过最小化数据对 $(\hat{x}^{\mathcal{\Phi}}_{t_n}, x_{t_{n+1}})$ 的输出差异性(consistency distillation loss)来训练 consistency model：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
-$$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\mathcal{\Phi}):=E[\lambda(t_n)d(\boldsymbol{f_\theta}(x_{t_{n+1}},t_{n+1}), \boldsymbol{f_{\theta^-}}(\hat{x}^{\mathcal{\Phi}}_{t_n}, t_n))]$$
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $\Phi(...; \phi)$ 表示 ODE solver 的更新函数(update function)。例如，如果使用 Euler solver，$\Phi(x,t; \phi)) = -ts_\phi(x,t)$。
+同时，由于前述 SDE 和 PF ODE 的关联性，可以通过先采样 $x \sim \mathcal{p}_{data}$，然后向 $x$ 添加高斯噪声，接着沿着 ODE 轨迹的分布进行采样。
+具体而言，给定 $x$，首先使用 SDE 的过渡密度分布 $\mathcal{N}(x,t^2_{n+1}\boldsymbol{I})$ 采样得到 $x_{t_{n+1}}$；
+然后使用 numerical ODE solver 计算 $\hat{x}^{\phi}_{t_n}$，
+与 $x_{t_{n+1}}$ 组成 adjacent data points $(\hat{x}^{\phi}_{t_n}, x_{t_{n+1}})$。
+最后，通过最小化数据对 $(\hat{x}^{\phi}_{t_n}, x_{t_{n+1}})$ 的输出差异性(consistency distillation loss)来训练 consistency model：</p>
+
+$$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\phi):=E[\lambda(t_n)d(\boldsymbol{f_\theta}(x_{t_{n+1}},t_{n+1}), \boldsymbol{f_{\theta^-}}(\hat{x}^{\phi}_{t_n}, t_n))]$$
 
 <center>$x \sim p_{data}, n \sim \mathcal{U}[1,N-1],x \sim \mathcal{N}(x;t^2_{n+1}\boldsymbol{I})$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中，$\lambda(·) \in R^+$ 表示正值权重函数；$\boldsymbol{\theta}^-$ 表示 $\boldsymbol{\theta}$ 的 EMA (指数移动平均)：
-$\boldsymbol{\theta}^- \leftarrow stopgrad(\mu\boldsymbol{\theta}^- + (1-\mu)\boldsymbol{\theta})$；
-$d(·,·)$ 表示度量函数，满足 $\forall x,y: d(x,y) \geq 0$ and $d(x,y)=0$ if and only if $x=y$。
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$\lambda(·) \in R^+$ 表示正值权重函数；$\boldsymbol{\theta}^-$ 表示 $\boldsymbol{\theta}$ 的 EMA (指数移动平均)：</p>
+
+<center>$\boldsymbol{\theta}^- \leftarrow stopgrad(\mu\boldsymbol{\theta}^- + (1-\mu)\boldsymbol{\theta})$；</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">$d(·,·)$ 表示度量函数，满足 $\forall x,y: d(x,y) \geq 0$ and $d(x,y)=0$ if and only if $x=y$。
 本文使用 $\lambda(t_n) \equiv 1$，$d(x,y) = \mathcal{l}_2:||x-y||_2^2/\mathcal{l}_1:||x-y||_1/LPIPS$。具体算法如下图(Algorithm 2)。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">第二种是 <b>Isolation</b>，即不需要任何额外的预训练模型，从头开始训练。回顾上述的 Distillation，
