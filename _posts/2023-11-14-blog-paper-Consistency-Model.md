@@ -86,6 +86,6 @@ $\mathbf{f_\theta}(x_t,t) = \mathbf{f_\theta}(x_{t'},t'), \forall t,t' \in [\eps
 
 $$\mathbf{f_\theta}(x,t) = \begin{cases} x, & t = \epsilon \\ F_\theta(x,t), & t \in (\epsilon, T]\end{cases}$$
 
-$$\mathbf{f_\theta}(x,t) = c_{skip}(t)x + c_{out}(t)F_\theta(x,t),$$
+$$\mathbf{f_\theta}(x,t) = c_{skip}(t)x + c_{out}(t)F_\theta(x,t)$$
 
 ![Comsistency Model Algorithm](/images/paper_Consistency_Model_Algorithm.png)
