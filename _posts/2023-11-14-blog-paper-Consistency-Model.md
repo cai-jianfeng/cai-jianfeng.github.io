@@ -95,6 +95,19 @@ $$\mathbf{f_\theta}(x,t) = c_{skip}(t)x + c_{out}(t)F_\theta(x,t)$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">而在训练完成后，模型可以进行<b>一步 inference </b>实现图像生成。
 具体而言，给定一个训练好的 consistency model $\mathbf{f_\theta}(·,·)$，从高斯分布空间中随机采样一个噪声 $\hat{x}_T \sim \mathcal{N}(0,T^2\boldsymbol{I})$，
-然后通过模型生成最终的图像 $\hat{x}_\epsilon = \boldsymbol{f_\theta}(\hat{x}_T,T)$。</p>
+然后通过模型生成最终的图像 $\hat{x}_\epsilon = \boldsymbol{f_\theta}(\hat{x}_T,T)$。
+更重要的是，模型也可以进行<b>多步 inference</b> 提高图像的生成质量。它通过多次交替去噪(denoise)和噪声注入(noise)步骤来使用 consistence model 精细化图像。具体算法如下图(Algorithm 1)。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">接下来便是模型架构和训练问题。对于模型架构，如前述，，$F_\theta(x,t)$ 可以使用主流的 DM 模型(如 U-net)；
+而对于 $c_{skip}(t)$ 和 $c_{out}(t)$，满足 $c_{skip}(\epsilon)=1, c_{out}(\epsilon)=0$ 的函数也有很多，本文遵循 EDM 的方式，使用：</p>
+
+<center>$c_{skip}(t) = \dfrac{\sigma_{data}^2}{(t - \epsilon)^2 + \sigma_{data}^2}, c_{out}(t) = \dfrac{\sigma_{data}(t - \epsilon)}{\sqrt{\sigma_{data}^2 + t^2}}, \sigma_{data} = 0.5$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">而对于训练问题，本文提出了 $2$ 种训练方法。第一种是 <b>Distillation</b>，它通过 distill 一个预训练好的 score model $s_\Theta(x,t)$ 来训练 consistency model。
+具体而言，首先将区间(time horizon) $[\epsilon, T]$ 划分为 $N - 1$ 个子区间：</p>
+
+<center>$[t_1,t_2],...,[t_{N-1},t_N], t_1 = \epsilon < t_2 <...<t_N = T, t_i = (\epsilon^{\dfrac{1}{\rou}} + \dfrac{i-1}{N-1}(T^{\dfrac{1}{\rou}} - \epsilon^{\dfrac{1}{\rou}}))^{\rou}, \rou = 7$</center>
 
 ![Comsistency Model Algorithm](/images/paper_Consistency_Model_Algorithm.png)
