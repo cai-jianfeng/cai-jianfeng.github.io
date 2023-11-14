@@ -145,6 +145,6 @@ $d(·,·)$ 表示度量函数，满足 $\forall x,y: d(x,y) \geq 0$ and $d(x,y)=
 
 $$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\mathcal{\Phi})=L_{CT}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-)=E[\lambda(t_n)d(\boldsymbol{f_\theta}(x + t_{n+1}z,t_{n+1}), \boldsymbol{f_\theta^-}(x + t_nz,t_{n}))]$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中，$z \sim \mathcal{N}(0,\boldsymbol{I})。具体算法如下图(Algorithm 3)。$
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$z \sim \mathcal{N}(0,\boldsymbol{I})$。具体算法如下图(Algorithm 3)。</p>
 
 ![Comsistency Model Algorithm](/images/paper_Consistency_Model_Algorithm.png)
