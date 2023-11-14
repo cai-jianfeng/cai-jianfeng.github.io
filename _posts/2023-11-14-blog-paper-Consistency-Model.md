@@ -20,7 +20,7 @@ Question
 Preliminary
 ===
 
-<p style="text-align:justify; text-justify:inter-ideograph;">Diffusion Model (DM)：如下图(Figure 1)，扩散模型是近年来最热的图像生成思想。
+<p style="text-align:justify; text-justify:inter-ideograph;">Diffusion Model (DM dispersed)：如下图(Figure 1)，扩散模型是近年来最热的图像生成思想。
 将任意一张图像 $I_0$ 进行噪声添加，每次添加一个服从 $N(0,1)$ 分布的随机噪声 $\epsilon_t$，获得含有噪声的图像 $I_t$，则进行了无数次后，原本的图像就会变成一个各向同性的随机高斯噪声。
 按照这个理论，我们对一个各向同性的随机高斯噪声每次添加一个特定的服从 $N(0,1)$ 分布的噪声 $\epsilon_t'$，获得噪声量减少的图像 $I_t'$，则经过足够多次后便可获得一张逼真的图像 $I_0'$。
 为此，我们可以选择任意一个图像生成模型 $M_G$ (例如 U-net 等)，第 t 次时输入第 t-1 次生成的图像 $I_{t-1}'$，输出生成的图像 $I_t'$。
@@ -30,6 +30,8 @@ Preliminary
 因此可以更换为每次输入 $I_{t-1}$，模型预测第 $t$ 次所加的噪声 $\epsilon_t$。所以损失函数为 $L = E_{z_0, t, c_t, \epsilon \sim N(0,1)}[||\epsilon - \epsilon_{\theta}(z_t, t, c_t)||_2^2]$。
 其中 $z_0$ 是原始噪声(即一开始输入的图像)，而 $z_t$ 是第 $t$ 步输出的图像, $\epsilon_{\theta}(z_t, t, c_t)$ 为模型预测的第 $t$ 步所加的噪声。
 更加详细的介绍推理可以参考 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-diffusion-model/">The Basic Knowledge of Diffusion Model (DM)</a>。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">Diffusion Model (DM continuous)：</p>
 
 Method
 ===
@@ -44,9 +46,9 @@ Method
 预测出 $x_T$ 所加的噪声 $\varepsilon_T$ 来获得原始图像 $\hat{x}_0 = \dfrac{1}{\sqrt{\bar{\alpha}_T}}(x_T - \sqrt{1 - \bar{\alpha}_T}\bar{\varepsilon}_T)$。
 但是这 $2$ 种方法的最大缺陷是性能不足，生成的图像的逼真度不够。
 其中很大一部分原因是因为在没有其他条件的帮助下，直接让模型建模 $\mathcal{p}(x_0|x_T)/\mathcal{p}(\varepsilon_T|x_T)$ 的难度太大。
-为此本文提出通过使用 probability flow (PF) ordinary differential equation (ODE) (概率流常微分方程) 的轨迹来帮助模型学习。</p>
+为此本文提出通过使用 probability flow (PF) ordinary differential equation (ODE) (概率流常微分方程) 的解轨迹(solution trajectory)来帮助模型学习。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">如上图(Figure 1)，DM 模型的数学过程是一个 stochastic differential equation (SDE，随机微分方程)：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">如上图(Figure 1)，DM (continuous) 模型的数学过程是一个 stochastic differential equation (SDE，随机微分方程)：</p>
 
 <center>$dx_t = \mu(x_t,t)dt + \sigma(t) dw_t$</center>
 
@@ -54,7 +56,7 @@ Method
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$\{w_t\}_{t \in [0,T]}$ 是 standard Brownain motion (标准布朗运动)。
 假设 $x_t$ 的概率分布为 $\mathcal{p}_t(x) \Rightarrow p_0(x) = p_{data}(x), p_T(x) = \pi(x)$，SDE 有一个重要的性质：它存在一个 ODE 称为 PF ODE。
-在本文的 DM 模型中，其 SDE 所对应 PF ODE 解轨迹(solution trajectory) 如下：</p>
+在本文的 DM 模型中，其 SDE 所对应 PF ODE 解轨迹如下：</p>
 
 <center>$dx_t = [\mu(x_t,t)dt - \dfrac{1}{2} \sigma(t)^2 \triangledown log\mathcal{p}_t(x_t)]dt$</center>
 
@@ -72,8 +74,14 @@ Method
 <p style="text-align:justify; text-justify:inter-ideograph;">然后，采样 $\hat{x}_T \sim \pi = \mathcal{N}(0,T^2\mathbf{I})$ 初始化方程，
 然后使用 numerical ODE solver (数值常微分方程求解器，例如 Euler/Heun solver)求解方程，从而获得整个解轨迹 $\{\hat{x}_t\}_{t \in [0,T]}$，
 其中 $\hat{x}_0$ 可以近似为在数据分布 $\mathcal{p}_{data}(x)$ 中的采样。
-为了数值稳定性，通常当 $t = \epsilon, \epsilon \in R^+\ &\ \epsilon \rightarrow 0$时就停止计算，并将最终的 $\hat{x}_\epsilon$ 作为 $\hat{x}_0$ 的近似。</p>
+为了数值稳定性，通常当 $t = \epsilon, \epsilon \in R^+\ &\ \epsilon \rightarrow 0$时就停止计算，并将最终的 $\hat{x}_\epsilon$ 作为 $\hat{x}_0$ 的近似，
+则整个解轨迹就变成 $\{\hat{x}_t\}_{t \in [\epsilon,T]}$。本文中使用 $T = 80, \epsilon = 0.002$。</p>
 
-
+<p style="text-align:justify; text-justify:inter-ideograph;">有了解轨迹，本文便提出了 consistency model 来利用它进行一步 inference 的学习。
+具体而言，定义 consistency model 为 $\mathbf{f_\theta}:(x_t,t) \mapsto x_\epsilon$。它具有 self-consistency (自一致)的性质：
+$\mathbf{f_\theta}(x_t,t) = \mathbf{f_\theta}(x_{t'},t'), \forall t,t' \in [\epsilon, T]$ 
+(对于任意在相同 PF ODE 解轨迹上的输入对 $(x_t,t)$，其输出一致，都是 $x_\epsilon$)。
+这就使得模型具有一定的限制。其中最主要的限制便是 boundary condition：$\mathbf{f_\theta}(x_\epsilon,\epsilon) = x_\epsilon$，即 $\mathbf{f_\theta}(·,\epsilon)$ 是一个 identity function (恒等函数)。
+</p>
 
 ![Comsistency Model Algorithm](/images/paper_Consistency_Model_Algorithm.png)
