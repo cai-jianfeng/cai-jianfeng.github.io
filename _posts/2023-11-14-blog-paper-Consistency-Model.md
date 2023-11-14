@@ -110,4 +110,12 @@ $$\mathbf{f_\theta}(x,t) = c_{skip}(t)x + c_{out}(t)F_\theta(x,t)$$
 
 <center>$[t_1,t_2],...,[t_{N-1},t_N], t_1 = \epsilon < t_2 <...<t_N = T, t_i = (\epsilon^{\dfrac{1}{\rou}} + \dfrac{i-1}{N-1}(T^{\dfrac{1}{\rou}} - \epsilon^{\dfrac{1}{\rou}}))^{\rou}, \rou = 7$</center>
 
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">然后使用 numerical ODE solver 求解 empirical PF ODE，得到 $\hat{x}^{\Phi}_{t_n}$：</p>
+
+<center>$\hat{x}^{\mathcal{\Phi}}_{t_n}:=x_{t_{n+1}} + (t_n - t_{n+1} \Phi(x_{t_{n+1}}, t_{n+1}; \mathcal{\Phi}))$</center>
+
+
+
 ![Comsistency Model Algorithm](/images/paper_Consistency_Model_Algorithm.png)
