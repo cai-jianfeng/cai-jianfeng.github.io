@@ -58,4 +58,9 @@ $$\begin{align}L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) - s_\thet
 
 <p style="text-align:justify; text-justify:inter-ideograph;">在训练完成后，由于我们不是直接使用模型训练来拟合 $p(x)$，因此不能对模型进行直接采样生成数据。
 本文采用了一个迭代过程，称为 <b>Langevin dynamics</b> 来使用模型 $s_\theta(x)approx \triangledown_xlog\ p_{\theta}(x)$ 进行采样生成数据。
-具体而言，Langevin dynamics 提供了一个 MCMC 迭代过程，使得可以仅使用一个分布 $p(x)$ 的得分函数 $\triangledown_xlog\ p(x)$ 就可以实现数据的采样。</p>
+具体而言，Langevin dynamics 提供了一个 MCMC 迭代过程(链式迭代)，使得可以仅使用一个分布 $p(x)$ 的得分函数 $\triangledown_xlog\ p(x)$ 就可以实现数据的采样。
+在迭代开始前，它从任意的先验分布 $x_0 \sim \pi(x)$ 初始化链，然后使用如下的迭代方程进行数据 $x$ 的更新：</p>
+
+<center>$$x_{i+1} \underset{\Downarrow}{\leftarrow} x_i + \epsilon \triangledown_xlog\ p(x) + \sqrt{2\epsilon} z_i, i = 0,1,...,K, z_i \sim \mathcal{N}(0,I) \\ x_{i+1} \leftarrow x_i + \epsilon s_\theta(x) + \sqrt{2\epsilon} z_i$$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
