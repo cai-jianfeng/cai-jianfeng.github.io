@@ -206,6 +206,8 @@ $$\begin{align}Final:\ L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) -
 (在 score-based generative model 是使用离散(高斯)噪声 + Langevin dynamics 迭代采样；而在 DM 模型中是使用离散(高斯)噪声 + 正态分布迭代采样)，
 这样就将 score-based generative model 和 DM 模型连接到一个统一的框架中。</p>
 
+<h1>代码实现(Pytorch)</h1>
+
 <h1>附录</h1>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">1. 常见的生成模型可以分成 $2$ 个类别：<b>likelihood-based models</b> 和 <b>implicit generative models</b>。
@@ -219,7 +221,7 @@ $$\begin{align}Final:\ L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) -
 likelihood-based models 要么需要对模型架构进行严格的限制，以确保似然计算的可处理的 normalizing constant，要么必须依赖代理目标来近似最大似然训练。
 而 implicit generative models 通常需要对抗性训练，众所周知，这种训练是不稳定的，并可能导致模型坍塌。
 
-<p style="text-align:justify; text-justify:inter-ideograph;">使用 score-based generative models with multiple noise perturbations 的实用建议：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">2. 使用 score-based generative models with multiple noise perturbations 的实用建议：</p>
 
 <ul><li>
 <p style="text-align:justify; text-justify:inter-ideograph;">选择 $\sigma_1 < ... < \sigma_L$ 作为几何级数，并且 $\sigma_1$ 足够小，$\sigma_L$ 可与所有训练数据点之间的最大成对距离相比较。$L$ 通常是几百或几千的数量级。</p>
@@ -251,5 +253,11 @@ likelihood-based models 要么需要对模型架构进行严格的限制，以�
 具体来说，本文提出了预测-校正采样器(Predictor-Corrector samplers)。
 其中，Predictor 可以是任意的 numerical SDE solver，它从现存的样本 $x(t) \sim p_t(x)$ 预测 $x(t+\triangle t) \sim p_{t+\triangle t}(x)$，例如 Euler solver。
 而 Corrector 可以是任意的完全依赖于 score function 的 MCMC 过程，例如离散情况下的 Langevin dynamics。
-在 Predictor-Corrector samplers 的每一步，我们首先使用 Predictor 选择合适的步长 $\triangle t < 0$，然后基于当前样本 $x(t)$ 预测 $x(t+\triangle t)$。
-接下来，我们运行几个 Corrector 步骤，根据score-based model $s_\theta(x,t +\triangle t) $改进样本 $x(t+\triangle t)$，使 $x(t+\triangle t)$ 成为 $p_{t+\triangle t}(x)$ 的高质量样本。</p>
+在 Predictor-Corrector samplers 的每一步，我们首先使用 Predictor 选择合适的步长 $\triangle t < 0$，然后基于当前样本 $x(t)$ 预测 $x(t+\triangle t)$：</p>
+
+<center>$$\triangle x \rightarrow [f(x,t) - g^2(t)s_\theta(x,t)]\triangle t + g(t) \sqrt{|\triangle t|}z_t, x \rightarrow x + \triangle x, t \rightarrow t + \triangle t$$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">接下来，我们运行几个 Corrector 步骤，根据score-based model $s_\theta(x,t +\triangle t) $改进样本 $x(t+\triangle t)$，
+使 $x(t+\triangle t)$ 成为 $p_{t+\triangle t}(x)$ 的高质量样本。</p>
+
+<center>$x(t+\triangle t) \leftarrow x(t+\triangle t) + \epsilon \triangledown_xlog\ p_\theta_{t +\triangle t}(x) + \sqrt{2\epsilon} z, z \sim \mathcal{N}(0,I) \\ \\ x(t+\triangle t) \leftarrow x(t+\triangle t) + \epsilon s_\theta(x, t+\triangle t) + \sqrt{2\epsilon} z$</center>
