@@ -207,3 +207,6 @@ $$\begin{align}Final:\ L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) -
 但是本质上，通过将噪声的数量扩展到无穷大(即 SDE 情况/ ODE 情况下)，可以证明 score-based generative model 和 DM 模型都可视为由 score function 确定的 SDE 的离散形式
 (在 score-based generative model 是使用离散(高斯)噪声 + Langevin dynamics 迭代采样；而在 DM 模型中是使用离散(高斯)噪声 + 正态分布迭代采样)，
 这样就将 score-based generative model 和 DM 模型连接到一个统一的框架中。</p>
+
+附录
+===
