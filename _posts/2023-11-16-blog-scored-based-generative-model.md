@@ -255,7 +255,7 @@ likelihood-based models 要么需要对模型架构进行严格的限制，以�
 而 Corrector 可以是任意的完全依赖于 score function 的 MCMC 过程，例如离散情况下的 Langevin dynamics。
 在 Predictor-Corrector samplers 的每一步，我们首先使用 Predictor 选择合适的步长 $\triangle t < 0$，然后基于当前样本 $x(t)$ 预测 $x(t+\triangle t)$：</p>
 
-<center>$$\triangle x \rightarrow [f(x,t) - g^2(t)s_\theta(x,t)]\triangle t + g(t) \sqrt{|\triangle t|}z_t, x \rightarrow x + \triangle x, t \rightarrow t + \triangle t$$</center>
+<center>$$\triangle x \rightarrow [f(x,t) - g^2(t)s_\theta(x,t)]\triangle t + g(t) \sqrt{|\triangle t|}z_t, x(t+\triangle t) \rightarrow x + \triangle x$$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">接下来，我们运行几个 Corrector 步骤，根据score-based model $s_\theta(x,t +\triangle t) $改进样本 $x(t+\triangle t)$，
 使 $x(t+\triangle t)$ 成为 $p_{t+\triangle t}(x)$ 的高质量样本。</p>
