@@ -27,10 +27,33 @@ Score-Based Generative Model 的基本原理
 
 <center>$\triangledown_xlog\ p_\theta(x) = \triangledown_xlog \dfrac{e^{-f_\theta(x)}}{Z_\theta} = -\triangledown_xf_\theta(x) -\underset{=0}{\underbrace{ \triangledown_xlog\ Z_\theta}} = -\triangledown_xf_\theta(x)$</center>
 
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
 <p style="text-align:justify; text-justify:inter-ideograph;">可以看到，$\triangledown_xlog\ p(x)$ 中没有包含 $Z_\theta$。那么我们只需要训练一个模型 $s_\theta(x)$ 拟合 $\triangledown_xlog\ p(x)$ 就可以了，
 即 $\boldsymbol{s_\theta(x) \approx \triangledown_xlog\ p(x)}$，其中的拟合模型 $s_\theta(x)$ 称为 score-based model。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">而在训练方面，由于 $\triangledown_xlog\ p(x)$ 仍然是一个密度分布，则可以使用常见的 minimize <b>**Fisher divergence</b> 来训练：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">而在训练方面，由于 $\triangledown_xlog\ p(x)$ 仍然是一个密度分布，则可以使用常见的 minimize <b>Fisher divergence</b> 来训练，即：</p>
 
-<center>$\mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) - s_\theta(x)||_2^2]$</center>
+<center>$L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) - s_\theta(x)||_2^2]$</center>
 
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">(注意，由于 $\triangledown_xlog\ p(x)$ 已经不是一个概率密度函数，因此不能使用最大似然进行训练。)
+但是，由于我们不知道 ground truth $\triangledown_xlog\ p(x)$，导致损失函数 $L_\theta$ 无法直接计算。
+本文便采用了 <b>score matching</b> 的方法将损失函数进行转化，使得其不包含 $\triangledown_xlog\ p(x)$。
+经过 score matching 转化后的损失函数<b>无需使用对抗学习优化</b>就可以直接在数据集 $D$ 上进行估计，并使用随机梯度下降进行优化，
+类似于训练基于似然的模型的对数似然损失函数(具有已知的 normalizing constant $Z_\theta$)。
+具体的推导转化如下：</p>
+
+$$\begin{align}\mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) - s_\theta(x)||_2^2]  & = 2 * \dfrac{1}{2} \mathbb{E}_{p_{data}(x)}[||\triangledown_xlog\ p_{data}(x) - \triangledown_xlog\ p_\theta(x)||_2^2] \\ &  = 2 * \dfrac{1}{2} \mathbb{E}_{p_{data}(x)}[(\triangledown_xlog\ p_{data}(x) - \triangledown_xlog\ p_\theta(x))^2] \\ & = 2 * \dfrac{1}{2} \int p_{data}(x)(\triangledown_xlog\ p_{data}(x) - \triangledown_xlog\ p_\theta(x))^2 dx \\ & = 2  *(\underset{const}{\underbrace{\int \dfrac{1}{2} p_{data}(x)(\triangledown_xlog\ p_{data}(x))^2 dx}} + \int \dfrac{1}{2} p_{data}(x)(\triangledown_xlog\ p_{\theta}(x))^2 dx - \int p_{data}(x)\triangledown_xlog\ p_{\theta}(x)\triangledown_xlog\ p_{data}(x) dx) \end{align}$$
+
+$$\int \dfrac{1}{2} p_{data}(x)(\triangledown_xlog\ p_{\theta}(x))^2 dx = \dfrac{1}{2} \mathbb{E}_{p_{data}}[(\triangledown_xlog\ p_{\theta}(x))^2]$$
+
+
+
+$$\begin{align} (分部积分) & - \int p_{data}(x)\triangledown_xlog\ p_{\theta}(x)\triangledown_xlog\ p_{data}(x) dx \\ = & - \int \triangledown_xlog\ p_{\theta}(x)\triangledown_x\ p_{data}(x) dx \\ = & -p_{data}(x)\triangledown_xlog\ p_{\theta}(x)|^\infty_{-\infty} + \int p_{data}(x)\triangledown_x^2log\ p_{\theta}(x)dx \\ \overset{(i)}{=} &\ \mathbb{E}_{p_{data}}[\triangledown_x^2log\ p_{\theta}(x)] \Leftarrow |x| \rightarrow 0, p_{data}(x) \rightarrow 0 \end{align}$$
+
+
+$$\begin{align}\mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) - s_\theta(x)||_2^2]  = 2\ \mathbb{E}_{p_{data}}[\triangledown_x^2log\ p_{\theta}(x)] + \mathbb{E}_{p_{data}}[(\triangledown_xlog\ p_{\theta}(x))^2] + const\end{align}$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
