@@ -124,4 +124,29 @@ $$\begin{align}L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) - s_\thet
 <center>$dx = f(x,t)dt + g(t)dw, f(·，t):\mathbb{R}^d \rightarrow \mathbb{R}^d, g(t) \in \mathbb{R} \Rightarrow dx = e^tdw$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$f(·，t)$ 称为 drift coefficient, $g(t)$ 称为 diffusion coefficient, $w$ 表示一个 standard Brownian motion(标准布朗运动)。
-而 SDE 的解是一个数据变量的连续集合 $\{x(t)\}_{t \in [0,T]}$。</p>
+而 SDE 的解是一个数据变量的连续集合 $\{x(t)\}_{t \in [0,T]}$。这些随机变量是沿着时间 index $t$ 从开始时间 $0$ 增长到结束时间 $T$ 的随机轨迹。
+这里我们使用 $p_t(x)$ 表示 $x(t)$ 的(边际)概率密度函数，则 $p_0(x) = p(x), p_T(x) \approx \pi(x)$ 称为 prior distribution (和离散情况的 $p_{\sigma_L}(x)$ 相似)。
+和离散的情况不同(离散情况是通过间接设计 $\sigma_i$ 来控制噪声)，SDE 是通过直接设计等式方程 $dx = f(x,t)dt + g(t)dw$ 来控制噪声。
+例如，方程 $\boldsymbol{dx = e^tdw}$ 表示使用均值 $\mu=0$ 且方差 $\sigma^2$ 指数增长的高斯噪声扰动数据，(即 $f(x,t) = 0, g(t) = e^t$)。
+注意，这里 SDE 的等式方程是和离散情况的 $x_{\sigma_i} = x + \sigma_iz$ 类似，表示对数据进行加噪。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">而在有了噪声数据后，和离散情况类似，我们可以训练模型预测分布 $p_t(x)$ 的 score function 来进行训练：$s_\theta(x,t) \approx \triangledown_xlog\ p_t(x)$，称为 <b>Time-Dependent Score-Based Model</b>。
+不同的是，这里使用的模型 $s_\theta(x,t)$ 的输入 $t$ 是实数，即 $t \in \mathbb{R}^+$。而训练损失函数则也是 Fisher divergences 的加权和：</p>
+
+<center>$$\begin{align} & \mathbb{E}_{t \sim \mathcal{U}(0,T)}\mathbb{E}_{p_t(x)}[\lambda(t)||\triangledown_xlog\ p_t(x) - s_\theta(x,t)||_2^2], \lambda: \mathbb{R} \rightarrow \mathbb{R}_{>0}, \lambda(t) \propto \dfrac{1}{\mathbb{E}[||\triangle_{x(t)log\ p(x(t))|x(0)}||_2^2]} \\ = & \mathbb{E}_{t \sim \mathcal{U}(0,T)} 2\ \mathbb{E}_{p_{t}(x)}[tr(\triangledown_x^2log\ p_t(x)) + \dfrac{1}{2}||\triangledown_xlog\ p_t(x)||_2^2] +const \\ = & 2\ \mathbb{E}_{t \sim \mathcal{U}(0,T)}\mathbb{E}_{p_{t}(x)}[tr(\triangledown_xs_{\theta}(x, t)) + \dfrac{1}{2}||s_{\theta}(x, t)||_2^2] + const \end{align}$$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$\mathcal{U}(0,T)$ 表示时间间隔 $[0,T]$ 上的均匀分布，而 $\lambda(t) \propto \dfrac{1}{\mathbb{E}[||\triangle_{x(t)log\ p(x(t))|x(0)}||_2^2]}$ 平衡不同 score matching 的损失的大小。
+然后将其转化为 score matching 进行训练。而在完成训练后，在离散情况下是使用 annealed Langevin dynamics 进行迭代采样，而在 SDE 下，本文使用 使用 <b>reverse SDE</b> 来反向样本生成的扰动过程，
+即首先初始化 $x(T) \sim \pi$，然后使用 reversal SDE 迭代得到 $x(0)$。值得注意的是，每一个 SDE 都存在对应的 reversal SDE，其方程形式如下：</p>
+
+<center>$dx = [f(x,t) - g^2(t)\triangledown_xlog\ p_t(x)]dt + g(t)dw \approx [f(x,t) - g^2(t)s_\theta(x,t)]dt + g(t)dw$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$dt$ 表示<b>负的</b>无穷小时间步长，且 reversal SDE 的迭代过程是从大到小的，即从 $t=T$ 到 $t=0$。
+在迭代过程的具体实现上，通过用 numerical SDE solver 求解预测的 reversal SDE，可以模拟样本生成的反向随机过程。例如对于 Euler solver (Euler-Maruyama)，它使用有限时间步长和小高斯噪声来将 SDE 离散化。
+它选择一个较小的负时间步长 $t \apporx 0$，并初始化 $t = T, x = x(T) \sim \pi$，然后使用如下迭代更新公式，直到 $t=0$：</p>
+
+<center>$$\triangle x \rightarrow [f(x,t) - g^2(t)s_\theta(x,t)]\triangle t + g(t) \sqrt{|\triangle t|}z_t, x \rightarrow x + \triangle x, t \rightarrow t + \triangle t, \triangle t < 0, \triangle t \approx 0, z_t \sim \mathcal{N}(0,I)$$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">可以看到，Euler-Maruyama 方法类似于 Langevin dynamics，都是通过使用高斯噪声扰动的 score function 来更新 $x$。</p>
+
+
