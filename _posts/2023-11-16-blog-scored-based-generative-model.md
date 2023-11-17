@@ -226,8 +226,17 @@ likelihood-based models 要么需要对模型架构进行严格的限制，以�
 <p style="text-align:justify; text-justify:inter-ideograph;">选择 $\sigma_1 < ... < \sigma_L$ 作为几何级数，并且 $\sigma_1$ 足够小，$\sigma_L$ 可与所有训练数据点之间的最大成对距离相比较。$L$ 通常是几百或几千的数量级。</p>
 </li>
 <li>
-使用 U-Net skip connections 对  score-based model $s_\theta(x,i)$ 进行参数化，也就是使用 U-Net with skip connections 作为 $s_\theta(x,i)$。
+<p style="text-align:justify; text-justify:inter-ideograph;">使用 U-Net skip connections 对  score-based model $s_\theta(x,i)$ 进行参数化，也就是使用 U-Net with skip connections 作为 $s_\theta(x,i)$。</p>
 </li>
 <li>
-在测试时，对 score-based model 的权重应用指数移动平均(EMA)。
+<p style="text-align:justify; text-justify:inter-ideograph;">在测试时，对 score-based model 的权重应用指数移动平均(EMA)。</p>
 </li></ul>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">3. 在 reverse SDE 的情况下，当 $\lambda(t) = g^2(t)$ 时，在一定的正则条件下，Fisher divergences 的加权组合与 $p_0$ 和 $p_\theta$ KL divergence 有重要的联系：</p>
+
+<center>$$\lambda(t) = g^2(t) \Rightarrow KL(p_0(x)||p_\theta(x)) \leq \dfrac{T}{2} \mathbb{E}_{t \sim \mathcal{U}(0,T)}\mathbb{E}_{p_t(x)}[\lambda(t)||\triangledown_xlog\ p_t(x) - s_\theta(x,t)||_2^2] + KL(p_T|| \pi)$$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">由于这种与 KL divergence 的特殊联系，以及最小化 KL divergence 和最大化似然之间的等价性，我们称 $\lambda(t) = g^2(t)$ 为似然加权函数。
+使用这个似然加权函数，我们可以训练基于分数的生成模型，以实现非常高的似然，与 SOTA 的 autoregressive models 相当甚至更好。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">4. reverse SDE 的进一步改进</p>
