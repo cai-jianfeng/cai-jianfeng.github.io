@@ -260,4 +260,4 @@ likelihood-based models 要么需要对模型架构进行严格的限制，以�
 <p style="text-align:justify; text-justify:inter-ideograph;">接下来，我们运行几个 Corrector 步骤，根据score-based model $s_\theta(x,t +\triangle t) $改进样本 $x(t+\triangle t)$，
 使 $x(t+\triangle t)$ 成为 $p_{t+\triangle t}(x)$ 的高质量样本。</p>
 
-<center>$x(t+\triangle t) \leftarrow x(t+\triangle t) + \epsilon \triangledown_xlog\ p_\theta_{t +\triangle t}(x) + \sqrt{2\epsilon} z, z \sim \mathcal{N}(0,I) \\ \\ x(t+\triangle t) \leftarrow x(t+\triangle t) + \epsilon s_\theta(x, t+\triangle t) + \sqrt{2\epsilon} z$</center>
+<center>$$x(t+\triangle t) \leftarrow x(t+\triangle t) + \epsilon \triangledown_xlog\ p_\theta_{t +\triangle t}(x) + \sqrt{2\epsilon} z, z \sim \mathcal{N}(0,I) \\ \\ x(t+\triangle t) \leftarrow x(t+\triangle t) + \epsilon s_\theta(x, t+\triangle t) + \sqrt{2\epsilon} z$$</center>
