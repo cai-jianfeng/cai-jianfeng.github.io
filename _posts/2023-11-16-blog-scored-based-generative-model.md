@@ -45,7 +45,7 @@ Score-Based Generative Model 的基本原理
 类似于训练基于似然的模型的对数似然损失函数(具有已知的 normalizing constant $Z_\theta$)。
 具体的推导转化如下：</p>
 
-$\begin{align}L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) - s_\theta(x)||_2^2]  & = 2 * \dfrac{1}{2} \mathbb{E}_{p_{data}(x)}[||\triangledown_xlog\ p_{data}(x) - \triangledown_xlog\ p_\theta(x)||_2^2] \\ &  = 2 * \dfrac{1}{2} \mathbb{E}_{p_{data}(x)}[(\triangledown_xlog\ p_{data}(x) - \triangledown_xlog\ p_\theta(x))^2] \\ & = 2 * \dfrac{1}{2} \int p_{data}(x)(\triangledown_xlog\ p_{data}(x) - \triangledown_xlog\ p_\theta(x))^2 dx \\ & = 2  *(\underset{const}{\underbrace{\int \dfrac{1}{2} p_{data}(x)(\triangledown_xlog\ p_{data}(x))^2 dx}} + \int \dfrac{1}{2} p_{data}(x)(\triangledown_xlog\ p_{\theta}(x))^2 dx - \int p_{data}(x)\triangledown_xlog\ p_{\theta}(x)\triangledown_xlog\ p_{data}(x) dx) \end{align}$
+$$\begin{align}L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) - s_\theta(x)||_2^2]  & = 2 * \dfrac{1}{2} \mathbb{E}_{p_{data}(x)}[||\triangledown_xlog\ p_{data}(x) - \triangledown_xlog\ p_\theta(x)||_2^2] \\ &  = 2 * \dfrac{1}{2} \mathbb{E}_{p_{data}(x)}[(\triangledown_xlog\ p_{data}(x) - \triangledown_xlog\ p_\theta(x))^2] \\ & = 2 * \dfrac{1}{2} \int p_{data}(x)(\triangledown_xlog\ p_{data}(x) - \triangledown_xlog\ p_\theta(x))^2 dx \\ & = 2  *(\underset{const}{\underbrace{\int \dfrac{1}{2} p_{data}(x)(\triangledown_xlog\ p_{data}(x))^2 dx}} + \int \dfrac{1}{2} p_{data}(x)(\triangledown_xlog\ p_{\theta}(x))^2 dx - \int p_{data}(x)\triangledown_xlog\ p_{\theta}(x)\triangledown_xlog\ p_{data}(x) dx) \end{align}$$
 
 $$\int \dfrac{1}{2} p_{data}(x)(\triangledown_xlog\ p_{\theta}(x))^2 dx = \dfrac{1}{2} \mathbb{E}_{p_{data}}[(\triangledown_xlog\ p_{\theta}(x))^2]$$
 
@@ -53,4 +53,9 @@ $$\begin{align} (分部积分) & - \int p_{data}(x)\triangledown_xlog\ p_{\theta
 
 $$\begin{align}L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) - s_\theta(x)||_2^2]  = 2\ \mathbb{E}_{p_{data}}[\triangledown_x^2log\ p_{\theta}(x)] + \mathbb{E}_{p_{data}}[(\triangledown_xlog\ p_{\theta}(x))^2] + const\end{align}$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+<p style="text-align:justify; text-justify:inter-ideograph;">可以看到，此时的损失函数 $L_\theta$ 不包含 $\triangledown_xlog\ p(x)$。因此可以使用数据集 $D$ 对模型 $s_\theta(x)approx \triangledown_xlog\ p_{\theta}(x)$ 进行训练
+(注意：$\triangledown_x^2log\ p_{\theta}(x) \approx \triangledown_xs_{\theta}(x)$)。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在训练完成后，由于我们不是直接使用模型训练来拟合 $p(x)$，因此不能对模型进行直接采样生成数据。
+本文采用了一个迭代过程，称为 <b>Langevin dynamics</b> 来使用模型 $s_\theta(x)approx \triangledown_xlog\ p_{\theta}(x)$ 进行采样生成数据。
+具体而言，Langevin dynamics 提供了一个 MCMC 迭代过程，使得可以仅使用一个分布 $p(x)$ 的得分函数 $\triangledown_xlog\ p(x)$ 就可以实现数据的采样。</p>
