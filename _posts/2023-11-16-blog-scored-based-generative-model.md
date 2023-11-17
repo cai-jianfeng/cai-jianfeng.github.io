@@ -61,6 +61,9 @@ $$\begin{align}L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) - s_\thet
 具体而言，Langevin dynamics 提供了一个 MCMC 迭代过程(链式迭代)，使得可以仅使用一个分布 $p(x)$ 的得分函数 $\triangledown_xlog\ p(x)$ 就可以实现数据的采样。
 在迭代开始前，它从任意的先验分布 $x_0 \sim \pi(x)$ 初始化链，然后使用如下的迭代方程进行数据 $x$ 的更新：</p>
 
-<center>$$x_{i+1} \underset{\Downarrow}{\leftarrow} x_i + \epsilon \triangledown_xlog\ p(x) + \sqrt{2\epsilon} z_i, i = 0,1,...,K, z_i \sim \mathcal{N}(0,I) \\ x_{i+1} \leftarrow x_i + \epsilon s_\theta(x) + \sqrt{2\epsilon} z_i$$</center>
+<center>$$x_{i+1} \leftarrow x_i + \epsilon \triangledown_xlog\ p(x) + \sqrt{2\epsilon} z_i\underset{\Downarrow}{,} i = 0,1,...,K, z_i \sim \mathcal{N}(0,I) \\ x_{i+1} \leftarrow x_i + \epsilon s_\theta(x) + \sqrt{2\epsilon} z_i$$</center>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+<p style="text-align:justify; text-justify:inter-ideograph;">当 $\epsilon \rightarrow 0$，$K \rightarrow \infty$ 时, 迭代更新得到的 $x_K$ 收敛为 $p(x)$ 的某个采样数据。
+而在具体实践中，只要 $\epsilon$ 很小，$K$ 很大，则生成的 $x_K$ 与真实采样数据(也就是 $\epsilon \rightarrow 0$，$K \rightarrow \infty$ 的理论采样数据)的误差就可以忽略不计。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">
