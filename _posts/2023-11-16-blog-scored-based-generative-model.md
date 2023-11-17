@@ -206,8 +206,7 @@ $$\begin{align}Final:\ L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) -
 (在 score-based generative model 是使用离散(高斯)噪声 + Langevin dynamics 迭代采样；而在 DM 模型中是使用离散(高斯)噪声 + 正态分布迭代采样)，
 这样就将 score-based generative model 和 DM 模型连接到一个统一的框架中。</p>
 
-附录
-===
+<h1>附录</h1>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">1. 常见的生成模型可以分成 $2$ 个类别：<b>likelihood-based models</b> 和 <b>implicit generative models</b>。
 其中 likelihood-based models 通过(近似)最大似然的目标函数直接学习分布的概率密度(或质量)函数。
@@ -239,4 +238,18 @@ likelihood-based models 要么需要对模型架构进行严格的限制，以�
 <p style="text-align:justify; text-justify:inter-ideograph;">由于这种与 KL divergence 的特殊联系，以及最小化 KL divergence 和最大化似然之间的等价性，我们称 $\lambda(t) = g^2(t)$ 为似然加权函数。
 使用这个似然加权函数，我们可以训练基于分数的生成模型，以实现非常高的似然，与 SOTA 的 autoregressive models 相当甚至更好。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">4. reverse SDE 的进一步改进</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">4. reverse SDE 的进一步改进：reverse SDE 有两个特殊的特性，能够更灵活的采样方法：</p>
+
+<ul><li>
+<p style="text-align:justify; text-justify:inter-ideograph;">我们通过 time-dependent score-based model $s_\theta(x,t)$ 来估计 $\triangledown_xlog\ p_t(x)$。</p>
+</li>
+<li>
+<p style="text-align:justify; text-justify:inter-ideograph;">我们只关心从每个边缘分布 $p_t(x)$ 中采样。在不同时间步长的样本可以具有任意的相关性，而不必形成从 reverse SDE 中采样的特定轨迹。</p>
+</li></ul>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">由于这两个性质，我们可以应用 MCMC 方法来微调从 numerical SDE solvers 中获得的轨迹。
+具体来说，本文提出了预测-校正采样器(Predictor-Corrector samplers)。
+其中，Predictor 可以是任意的 numerical SDE solver，它从现存的样本 $x(t) \sim p_t(x)$ 预测 $x(t+\triangle t) \sim p_{t+\triangle t}(x)$，例如 Euler solver。
+而 Corrector 可以是任意的完全依赖于 score function 的 MCMC 过程，例如离散情况下的 Langevin dynamics。
+在 Predictor-Corrector samplers 的每一步，我们首先使用 Predictor 选择合适的步长 $\triangle t < 0$，然后基于当前样本 $x(t)$ 预测 $x(t+\triangle t)$。
+接下来，我们运行几个 Corrector 步骤，根据score-based model $s_\theta(x,t +\triangle t) $改进样本 $x(t+\triangle t)$，使 $x(t+\triangle t)$ 成为 $p_{t+\triangle t}(x)$ 的高质量样本。</p>
