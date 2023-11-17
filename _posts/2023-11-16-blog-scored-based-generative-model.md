@@ -67,7 +67,7 @@ $$\begin{align}L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) - s_\thet
 而在具体实践中，只要 $\epsilon$ 很小，$K$ 很大，则生成的 $x_K$ 与真实采样数据(也就是 $\epsilon \rightarrow 0$，$K \rightarrow \infty$ 的理论采样数据)的误差就可以忽略不计。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">这样，拟合目标的选择，模型的训练和数据的采样推理过程就都可以实现了。<b>总结而言</b>，就是使用 score function $\triangledown_xlog\ p(x)$ 作为训练的拟合目标；
-然后设计一个模型 $s\theta(x)$ 去拟合它：$s_\theta(x)approx \triangledown_xlog\ p_{\theta}(x)$；接着使用 score mathch 目标函数来训练模型；
+然后设计一个模型 $s\theta(x)$ 去拟合它：$s_\theta(x) approx \triangledown_xlog\ p_{\theta}(x)$；接着使用 score mathch 目标函数来训练模型；
 最后设置固定的 $\epsilon$ 和 $K$，使用 Langevin dynamics 的迭代采样过程生成数据 $x$。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">但是，上述的流程存在一些缺点。
@@ -115,6 +115,11 @@ $$\begin{align}L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) - s_\thet
 <p style="text-align:justify; text-justify:inter-ideograph;">这里，除了 $\sigma_L$ 的迭代过程是使用初始化 $\bar{x}_0 \sim \pi(x)$ 进行生成数据，其余的 $\sigma_L$ 的迭代过程都是使用前一次生成的数据作为初始化进行进一步更新，
 这样，不仅可以利用每一个分布生成的数据，更减少了每一个分布生成数据的迭代次数。</p>
 
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>总结而言</b>，首先，使用 $L$ 个不同程度的噪声分别扰动原始数据的分布，获得 $L$ 个含噪分布；
+然后使用每个含噪分布的 score function $\triangledown_xlog\ p_{\sigma_i}(x)$ 作为训练的拟合目标；
+并设计一个模型 $s\theta(x, i)$ 去拟合它：$s_\theta(x, i) approx \triangledown_xlog\ p_{\theta,\sigma_i}(x)$；接着使用 score mathch 目标函数来训练模型；
+最后设置固定的 $\epsilon$ 和 $T$，使用 annealed Langevin dynamics 的迭代采样过程生成数据 $x$。</p>
+
 ![annealed Langevin dynamics](/images/score-based_generative_model-annealed_Langevin_dynamics.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">当噪声的数量 $L$ 接近无穷大时，其本质上是用不断增长的噪声水平来扰动数据分布。
@@ -143,10 +148,33 @@ $$\begin{align}L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) - s_\thet
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$dt$ 表示<b>负的</b>无穷小时间步长，且 reversal SDE 的迭代过程是从大到小的，即从 $t=T$ 到 $t=0$。
 在迭代过程的具体实现上，通过用 numerical SDE solver 求解预测的 reversal SDE，可以模拟样本生成的反向随机过程。例如对于 Euler solver (Euler-Maruyama)，它使用有限时间步长和小高斯噪声来将 SDE 离散化。
-它选择一个较小的负时间步长 $t \apporx 0$，并初始化 $t = T, x = x(T) \sim \pi$，然后使用如下迭代更新公式，直到 $t=0$：</p>
+它选择一个较小的负时间步长 $t \approx 0$，并初始化 $t = T, x = x(T) \sim \pi$，然后使用如下迭代更新公式，直到 $t=0$：</p>
 
 <center>$$\triangle x \rightarrow [f(x,t) - g^2(t)s_\theta(x,t)]\triangle t + g(t) \sqrt{|\triangle t|}z_t, x \rightarrow x + \triangle x, t \rightarrow t + \triangle t, \triangle t < 0, \triangle t \approx 0, z_t \sim \mathcal{N}(0,I)$$</center>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">可以看到，Euler-Maruyama 方法类似于 Langevin dynamics，都是通过使用高斯噪声扰动的 score function 来更新 $x$。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">可以看到，Euler-Maruyama 方法类似于 Langevin dynamics，都是通过使用高斯噪声扰动的 score function 来更新 $x$。
+<b>总结而言</b>，首先，使用 SDK 的迭代方程来扰动原始数据的分布，获得 $[0,T]$ 区间内的含噪分布；
+然后使用 $[0,T]$ 区间内的所有含噪分布的 score function $\triangledown_xlog\ p_{t}(x)$ 作为训练的拟合目标；
+并设计一个模型 $s\theta(x, t)$ 去拟合它：$s_\theta(x,t) approx \triangledown_xlog\ p_{\theta,t}(x)$；接着使用 score mathch 目标函数来训练模型；
+最后使用 reversal SDE 的 numeral SDE solver 迭代采样过程生成数据 $x$。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">但是，无论是基于 Langevin MCMC 的离散采样过程，还是基于 SDE solver 的连续采样过程，它们都没有提供一种 score-based generative models 的<b>精确的</b>对数似然的方法
+(都只是拟合了 score function)。为了解决这个问题，本文引入一个基于常微分方程(ordinary differential equation， ODE)的采样器，它能够实现精确的似然计算。
+值得注意的是，任意一个 SDE 都可以转化为一个 ODE (称为 probability flow (PE) ODE)，同时保持其边缘分布 $\{p_t(x)\}_{t \in [0,T]}$ 不变。其具体方程公式如下：
+
+<center>$$dx = [f(x,t) - \dfrac{1}{2}g^2(t)\triangledown_xlog\ p_t(x)]dt$$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">通过求解这个 ODE，可以获得和求解 reversal SDE 得到的相同的边缘分布 $\{p_t(x)\}_{t \in [0,T]}$。
+也就是说，求解 ODE 和 求解 reversal SDE 得到的结果是相同的。但是，相比于 reversal SDE，ODE 有许多优点：</p>
+
+<ul><li>
+<p style="text-align:justify; text-justify:inter-ideograph;">当 score function $\triangledown_xlog\ p(x)$ 使用它的估计模型 $s_\theta(x,t)$ 替换时，PE ODE成为 neural ODE 的一个特例。
+具体而言，它是 continuous normalizing flows 的一个特例，因为 PE ODE 将数据分布 $p_0(x)$ 转换为先验噪声分布 $p_T(x)$ (它与SDE共享相同的边缘分布 $\{p_t(x)\}_{t \in [0,T]}$)，并且是完全可逆的。
+因此，PE ODE 继承了neural ODE / continuous normalizing flows 的所有性质，包括精确的对数似然计算。
+具体来说，我们可以利用瞬时变量变化公式并借助 numerical ODE solver 从已知的先验噪声分布/先验密度 $p_T$ 计算未知的数据分布/数据密度 $p_0$。其中瞬时变量变化公式( instantaneous change-of-variable formula)如下：</p>
+
+<center>$$\underset{solutions}{\underbrace{\left[ \begin{array}{c} z_0 \\ log\ p(x) - log\ p_{z_0}(z_0) \end{array}\right]}} = \left[ \begin{array}{c} x \\ 0 \end{array}\right] + \underset{dynamics}{\underbrace{\int_{t_1}^{t_0} \left[ \begin{array}{c} f(z(t),t;\theta), Tr(\dfrac{\partial f}{\partial z(t)}) \end{array}\right]}} dt \\ \underset{inital\ values}{\underbrace{\left[ \begin{array}{c} z(t_1) \\ log\ p(x)-log\ p(z(t_1)) \end{array}\right] = \left[ \begin{array}{c} x \\ 0 \end{array}\right]}}$$</center>
+</li></ul>
+
 
 
