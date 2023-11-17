@@ -177,16 +177,14 @@ $$\begin{align}Final:\ L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) -
 <center>$$dx = [f(x,t) - \dfrac{1}{2}g^2(t)\triangledown_xlog\ p_t(x)]dt$$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">通过求解这个 ODE，可以获得和求解 reversal SDE 得到的相同的边缘分布 $\{p_t(x)\}_{t \in [0,T]}$。
-也就是说，求解 ODE 和 求解 reversal SDE 得到的结果是相同的。但是，相比于 reversal SDE，ODE 有许多优点：</p>
+也就是说，求解 ODE 和 求解 reversal SDE 得到的结果是相同的。但是，相比于 reversal SDE，ODE 有如下优点：</p>
 
-<ul><li>
 <p style="text-align:justify; text-justify:inter-ideograph;">当 score function $\triangledown_xlog\ p(x)$ 使用它的估计模型 $s_\theta(x,t)$ 替换后，PE ODE 就成为了 neural ODE 的一个特例。
 具体而言，它是 continuous normalizing flows 的一个特例，因为 PE ODE 将数据分布 $p_0(x)$ 转换为先验噪声分布 $p_T(x)$ (它与SDE共享相同的边缘分布 $\{p_t(x)\}_{t \in [0,T]}$)，并且是完全可逆的。
 因此，PE ODE 继承了 neural ODE / continuous normalizing flows 的所有性质，包括精确的对数似然计算。
 具体来说，我们可以利用瞬时变量变化公式并借助 numerical ODE solver 从已知的先验噪声分布/先验密度 $p_T$ 计算未知的数据分布/数据密度 $p_0$。其中瞬时变量变化公式( instantaneous change-of-variable formula)如下：</p>
 
 <center>$$\underset{solutions}{\underbrace{\left[ \begin{array}{c} z_0 \\ log\ p(x) - log\ p_{z_0}(z_0) \end{array}\right]}} = \left[ \begin{array}{c} x \\ 0 \end{array}\right] + \underset{dynamics}{\underbrace{\int_{t_1}^{t_0} \left[ \begin{array}{c} f(z(t),t;\theta), Tr(\dfrac{\partial f}{\partial z(t)}) \end{array}\right]}} dt \\ \underset{inital\ values}{\underbrace{\left[ \begin{array}{c} z(t_1) \\ log\ p(x)-log\ p(z(t_1)) \end{array}\right] = \left[ \begin{array}{c} x \\ 0 \end{array}\right]}}$$</center>
-</li></ul>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">除了能通过不同的加噪/采样方式获得更好的图像质量，score-based generative model 还能解决 inverse problem (逆问题，即基于条件的图像生成)。
 因为本质上，逆问题与贝叶斯推理问题相同。假设 $x$ 和 $y$ 是两个随机变量，其中 $y$ 是条件，$x$ 是任务，
@@ -210,3 +208,26 @@ $$\begin{align}Final:\ L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) -
 
 附录
 ===
+
+<p style="text-align:justify; text-justify:inter-ideograph;">1. 常见的生成模型可以分成 $2$ 个类别：<b>likelihood-based models</b> 和 <b>implicit generative models</b>。
+其中 likelihood-based models 通过(近似)最大似然的目标函数直接学习分布的概率密度(或质量)函数。
+典型的模型包括 autoregressive models、normalizing flow models、energy-based models (EBMs) 和 variational auto-encoders (VAEs)。
+本文的 score-based generative model 也属于这类模型。
+而 implicit generative models 的概率分布是由抽样过程的模型隐式表示。
+最典型的例子是生成式对抗网络(GANs)，其中通过用神经网络转换随机高斯向量来合成数据分布中的新样本。
+
+<p style="text-align:justify; text-justify:inter-ideograph;">然而，likelihood-based models 和 implicit generative models 都有显著的局限性。
+likelihood-based models 要么需要对模型架构进行严格的限制，以确保似然计算的可处理的 normalizing constant，要么必须依赖代理目标来近似最大似然训练。
+而 implicit generative models 通常需要对抗性训练，众所周知，这种训练是不稳定的，并可能导致模型坍塌。
+
+<p style="text-align:justify; text-justify:inter-ideograph;">使用 score-based generative models with multiple noise perturbations 的实用建议：</p>
+
+<ul><li>
+<p style="text-align:justify; text-justify:inter-ideograph;">选择 $\sigma_1 < ... < \sigma_L$ 作为几何级数，并且 $\sigma_1$ 足够小，$\sigma_L$ 可与所有训练数据点之间的最大成对距离相比较。$L$ 通常是几百或几千的数量级。</p>
+</li>
+<li>
+使用 U-Net skip connections 对  score-based model $s_\theta(x,i)$ 进行参数化，也就是使用 U-Net with skip connections 作为 $s_\theta(x,i)$。
+</li>
+<li>
+在测试时，对 score-based model 的权重应用指数移动平均(EMA)。
+</li></ul>
