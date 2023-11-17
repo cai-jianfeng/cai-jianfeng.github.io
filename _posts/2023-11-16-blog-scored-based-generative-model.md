@@ -176,5 +176,19 @@ $$\begin{align}L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) - s_\thet
 <center>$$\underset{solutions}{\underbrace{\left[ \begin{array}{c} z_0 \\ log\ p(x) - log\ p_{z_0}(z_0) \end{array}\right]}} = \left[ \begin{array}{c} x \\ 0 \end{array}\right] + \underset{dynamics}{\underbrace{\int_{t_1}^{t_0} \left[ \begin{array}{c} f(z(t),t;\theta), Tr(\dfrac{\partial f}{\partial z(t)}) \end{array}\right]}} dt \\ \underset{inital\ values}{\underbrace{\left[ \begin{array}{c} z(t_1) \\ log\ p(x)-log\ p(z(t_1)) \end{array}\right] = \left[ \begin{array}{c} x \\ 0 \end{array}\right]}}$$</center>
 </li></ul>
 
+<p style="text-align:justify; text-justify:inter-ideograph;">除了能通过不同的方式获得更好的图像质量，score-based generative model 还能解决 inverse problem (逆问题，即基于条件的图像生成)。
+因为本质上，逆问题与贝叶斯推理问题相同。假设 $x$ 和 $y$ 是两个随机变量，其中 $y$ 是条件，$x$ 是任务。
+我们知道从 $x$ 生成 $y$ 的正向过程，由转移概率分布 $p(y|x)$ 表示。那么反向问题是根据条件 $y$ 计算条件概率 $p(x|y)$。
+通过贝叶斯规则，并将两边同时取关于 $x$ 的梯度，这个表达式可以大大简化，得到以下 score function 的贝叶斯规则：</p>
 
+<center>$p(x|y) = p(x)p(y | x) / \int p(x)p(y|x)dx \Rightarrow \triangledown_xlog\ p(x|y) = \triangledown_xlog\ p(x) + \triangledown_xlog\ p(y|x), s_\theta(x) \approx \triangledown_xlog\ p(x|y)$</center>
 
+<p style="text-align:justify; text-justify:inter-ideograph;">通过 score matching，我们可以训练一个模型 $s_\theta(·)$ 来估计无条件数据分布(即 $p(x)$)的 score function $s_\theta(x) \approx \triangledown_xlog\ p(x)$。
+由于 $p(y|x)$ 是已知的，我们可以通过上述方程从已知的前向过程 $p(y|x)$ 中轻松计算后验 score function $\triangledown_xlog\ p(x|y)$，并使用 Langevin-type sampling 从中采样。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">例如，使用无条件的 time-dependent score-based model $s_\theta(x,t)$ 和预训练的噪声条件图像分类器 $p(y|x)$，就可以实现基于类别的图像生成，其中 $y$ 是类标签，$x$ 是图像。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">最后，虽然 score-based generative model 和 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-diffusion-model/" target="_blank">DM 模型</a> 的推理角度不同，
+但是本质上，通过将噪声的数量扩展到无穷大(即 SDE 情况/ ODE 情况下)，可以证明 score-based generative model 和 DM 模型都可视为由 score function 确定的 SDE 的离散形式
+(在 score-based generative model 是使用离散(高斯)噪声 + Langevin dynamics 迭代采样；而在 DM 模型中是使用离散(高斯)噪声 + 正态分布迭代采样)，
+这样就将 score-based generative model 和 DM 模型连接到一个统一的框架中。</p>
