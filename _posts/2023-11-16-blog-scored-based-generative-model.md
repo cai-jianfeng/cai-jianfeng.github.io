@@ -199,22 +199,22 @@ $$\begin{align}Final:\ L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) -
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$div$ 表示散度函数(即雅可比矩阵的迹)。根据前面的例子，我们得到 $f(x,t) = -\dfrac{1}{2}\sigma^{2t}s_\theta(x,t)$，
 则</p>
 
-<center>$div\ (f(x(t),t)) = div\ (-\frac{1}{2}\sigma^{2t}s_\theta(x,t)) = -\frac{1}{2} \dfrac{d\sigma^{2t}}{dt} div\ (s_\theta(x,t))$</center>
+<center>$div\ (f(x(t),t)) = div\ (-\frac{1}{2}\sigma^{2t}s_\theta(x(t),t)) = -\frac{1}{2} \dfrac{d\sigma^{2t}}{dt} div\ (s_\theta(x(t),t))$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">代入上式，并将两边同时取对数可得：</p>
 
-<center>$log\ p_0(x(0)) = log\ p_T(x(T)) - -\dfrac{1}{2}\int_0^T \dfrac{d[\sigma^{2t}]}{dt}div\ s_\theta(x(t),t) dt$</center>
+<center>$log\ p_0(x(0)) = log\ p_T(x(T)) - \dfrac{1}{2}\int_0^T \dfrac{d[\sigma^{2t}]}{dt}div\ s_\theta(x(t),t) dt$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">在实践中，对于一般的向量值函数 $s_\theta(·)$，这个散度函数 $div$ 可能很难评估，但我们可以使用一个无偏估计器，称为 <b>Skilling-Hutchinson estimator</b>，来近似 $div$，即雅可比矩阵的迹。
 Skilling-Hutchinson estimator 的表达式如下：</p>
 
-<center>$div\ f(x) = \mathbb{E}_{\epsilon \sim \mathcal{N}(0, I)}[\epsilon^T J_f(x) \epsilon] \Rightarrow div\ s_\theta(x(t),t) = \mathbb{E}_{\epsilon \sim \mathcal{N}(0, I)}[\epsilon^T J_{s_\theta}(x(t), t) \epsilon]$</center>
+<center>$div\ f(x) = \mathbb{E}_{\epsilon \sim \mathcal{N}(0, I)}[\epsilon^T J_f(x) \epsilon] \Rightarrow div\ (s_\theta(x(t),t)) = \mathbb{E}_{\epsilon \sim \mathcal{N}(0, I)}[\epsilon^T J_{s_\theta}(x(t), t) \epsilon]$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">然后，我们可以用数值积分器(numerical integrators)计算积分。
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$\epsilon \sim \mathcal{N}(0,I)$。然后，我们可以用数值积分器(numerical integrators)计算积分。
 这为我们提供了对真实数据的似然 $log\ p_0$ 的无偏估计，并且当我们多次运行并取平均值时，我们可以使估计的 $log\ p_0$ 越来越准确。（数值积分器要求 $x(t)$ 是 $t$ 的函数，可以通过 PE ODE sampler 得到。)</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">除了能通过不同的加噪/采样方式获得更好的图像质量，score-based generative model 还能解决 inverse problem (逆问题，即基于条件的图像生成)。
