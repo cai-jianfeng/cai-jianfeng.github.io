@@ -241,7 +241,7 @@ Skilling-Hutchinson estimator 的表达式如下：</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">代码实现主要是基于 <a href="https://yang-song.net/blog/2021/score/#connection-to-diffusion-models-and-others" target="_blank">
 Generative Modeling by Estimating Gradients of the Data Distribution</a> 给出的教程，并在上面进行一些注释，后续将会不断完善注释。
-代码地址：<a href="https://colab.research.google.com/drive/18yIziUouGz-edftFyN6M3tagUuSAcXSd">Tutorial on Score-Based Generative Modeling (PyTorch)</a></p>
+代码地址：<a href="https://colab.research.google.com/drive/18yIziUouGz-edftFyN6M3tagUuSAcXSd" target="_blank">Tutorial on Score-Based Generative Modeling (PyTorch)</a></p>
 
 <h1>附录</h1>
 
