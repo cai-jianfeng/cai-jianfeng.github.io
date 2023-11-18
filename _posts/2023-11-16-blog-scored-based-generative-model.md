@@ -186,6 +186,33 @@ $$\begin{align}Final:\ L_\theta = \mathbb{E}_{p(x)}[||\triangledown_xlog\ p(x) -
 
 <center>$$\underset{solutions}{\underbrace{\left[ \begin{array}{c} z_0 \\ log\ p(x) - log\ p_{z_0}(z_0) \end{array}\right]}} = \left[ \begin{array}{c} x \\ 0 \end{array}\right] + \underset{dynamics}{\underbrace{\int_{t_1}^{t_0} \left[ \begin{array}{c} f(z(t),t;\theta), Tr(\dfrac{\partial f}{\partial z(t)}) \end{array}\right]}} dt \\ \underset{inital\ values}{\underbrace{\left[ \begin{array}{c} z(t_1) \\ log\ p(x)-log\ p(z(t_1)) \end{array}\right] = \left[ \begin{array}{c} x \\ 0 \end{array}\right]}}$$</center>
 
+<p style="text-align:justify; text-justify:inter-ideograph;">上面这个公式可能有些抽象，下面将详细解释如何使用 PE ODE 来获得 $p_0(x)$。
+假设我们有一个从 $x \sim p_0$ (原始数据分布)到 $h(x) \sim p_T$ (先验分布)的一对一可微映射 $h$。那么我们就可以使用 change-of-variable formula (变量代换公式) 实现 $p_0(x)$ 的计算：</p>
+
+<center>$$p_0(x) = p_T(h(x)) \times |det(J_h(x))|$$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$J_h(x)$ 表示映射函数 $h(x)$ 的雅可比矩阵。而根据上述推导，我们的 PE ODE 的轨迹恰好是一个一对一映射的函数($x(0) \rightarrow x(T)$)，其映射公式为 $dx = f(x,t)dt$。
+因此，存在一个变量代换公式，称为  instantaneous change-of-variable formula (瞬时变量变化公式)，可以通过 $p_T$ 计算出原始数据分布 $p_0$：</p>
+
+<center>$$p_0(x(0)) = e^{\int_0^T div\ f(x(t),t)dt}p_T(x(T))$$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$div$ 表示散度函数(即雅可比矩阵的迹)。根据前面的例子，我们得到 $f(x,t) = -\dfrac{1}{2}\sigma^{2t}s_\theta(x,t)$，
+则 $div\ f(x(t),t) = div\ -\dfrac{1}{2}\sigma^{2t}s_\theta(x,t) = -\dfrac{1}{2} \dfrac{d\sigma^{2t}}{dt} div\ s_\theta(x,t)$，代入上式，并将两边同时取对数可得：</p>
+
+<center>$log\ p_0(x(0)) = log\ p_T(x(T)) - -\dfrac{1}{2}\int_0^T \dfrac{d[\sigma^{2t}]}{dt}div\ s_\theta(x(t),t) dt$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在实践中，对于一般的向量值函数 $s_\theta(·)$，这个散度函数 $div$ 可能很难评估，但我们可以使用一个无偏估计器，称为 <b>Skilling-Hutchinson estimator</b>，来近似 $div$，即雅可比矩阵的迹。
+Skilling-Hutchinson estimator 的表达式如下：</p>
+
+<center>$div\ f(x) = \mathbb{E}_{\epsilon \sim \mathcal{N}(0, I)}[\epsilon^T J_f(x) \epsilon] \Rightarrow div\ s_\theta(x(t),t) = \mathbb{E}_{\epsilon \sim \mathcal{N}(0, I)}[\epsilon^T J_{s_\theta}}(x(t), t) \epsilon]$</center>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">然后，我们可以用数值积分器(numerical integrators)计算积分。
+这为我们提供了对真实数据的似然 $log\ p_0$ 的无偏估计，并且当我们多次运行并取平均值时，我们可以使估计的 $log\ p_0$ 越来越准确。（数值积分器要求 $x(t)$ 是 $t$ 的函数，可以通过 PE ODE sampler 得到。)</p>
+
 <p style="text-align:justify; text-justify:inter-ideograph;">除了能通过不同的加噪/采样方式获得更好的图像质量，score-based generative model 还能解决 inverse problem (逆问题，即基于条件的图像生成)。
 因为本质上，逆问题与贝叶斯推理问题相同。假设 $x$ 和 $y$ 是两个随机变量，其中 $y$ 是条件，$x$ 是任务，
 且我们知道从 $x$ 生成 $y$ 的正向过程，由转移概率分布 $p(y|x)$ 表示。那么反向问题/逆问题就是根据条件 $y$ 计算条件概率 $p(x|y)$。
