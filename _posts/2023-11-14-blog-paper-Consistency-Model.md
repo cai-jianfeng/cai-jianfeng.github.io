@@ -20,7 +20,7 @@ Question
 Preliminary
 ===
 
-<p style="text-align:justify; text-justify:inter-ideograph;">Diffusion Model (DM dispersed)：如下图(Figure 1)，扩散模型是近年来最热的图像生成思想。
+<p style="text-align:justify; text-justify:inter-ideograph;">Diffusion Model (DM dispersed)：扩散模型是近年来最热的图像生成思想。
 将任意一张图像 $I_0$ 进行噪声添加，每次添加一个服从 $N(0,1)$ 分布的随机噪声 $\epsilon_t$，获得含有噪声的图像 $I_t$，则进行了无数次后，原本的图像就会变成一个各向同性的随机高斯噪声。
 按照这个理论，我们对一个各向同性的随机高斯噪声每次添加一个特定的服从 $N(0,1)$ 分布的噪声 $\epsilon_t'$，获得噪声量减少的图像 $I_t'$，则经过足够多次后便可获得一张逼真的图像 $I_0'$。
 为此，我们可以选择任意一个图像生成模型 $M_G$ (例如 U-net 等)，第 t 次时输入第 t-1 次生成的图像 $I_{t-1}'$，输出生成的图像 $I_t'$。
@@ -31,7 +31,8 @@ Preliminary
 其中 $z_0$ 是原始噪声(即一开始输入的图像)，而 $z_t$ 是第 $t$ 步输出的图像, $\epsilon_{\theta}(z_t, t, c_t)$ 为模型预测的第 $t$ 步所加的噪声。
 更加详细的介绍推理可以参考 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-diffusion-model/" target="_blank">The Basic Knowledge of Diffusion Model (DM)</a>。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">Diffusion Model (DM continuous)：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">Diffusion Model (DM continuous)：如下图(Figure 1)，也被称为 Score-based Generative Model。是 DM 模型的另一种推理方式，可以将噪声推广到连续时间。
+详细的介绍推理可以参考 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-score-based-generative-model/" target="_blank">The Basic Knowledge of Scored-based Generative Model</a>。</p>
 
 Method
 ===
