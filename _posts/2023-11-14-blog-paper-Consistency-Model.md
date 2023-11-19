@@ -167,21 +167,23 @@ $$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\phi):=E[\lambda(t_n)d(\bol
 
 
 
-<p style="text-align:justify; text-justify:inter-ideograph;">第二种是 <b>Isolation</b>，即不需要任何额外的预训练模型，从头开始训练。回顾上述的 Distillation，
-它将预训练好的 score model  近似为 $\triangledown log\ \mathcal{p}_t(x_t)$。
-只需要找到不依赖 $s_{\phi}(x,t)$ 的 $\triangledown log\ \mathcal{p}_t(x_t)$ 函数即可实现 Isolation 训练。
-为此，本文找到了一个 unbiased estimator (无偏估计器) $\triangledown log\ \mathcal{p}_t(x_t) = -E[\dfrac{x_t-x}{t^2}|x_t]$。
+<p style="text-align:justify; text-justify:inter-ideograph;">第二种是 <b>Isolation</b>，即不需要任何额外的预训练模型，从头开始训练。具体算法如下图(Algorithm 3)，具体而言，回顾上述的 Distillation，
+它将预训练好的 score model 近似为 $\triangledown log\ \mathcal{p}_t(x_t)$ 来求解 PE ODE 的解轨迹，进入进行 consistency model 的训练学习。
+而想要实现 PE ODE 的解轨迹的求解，我们只需要找到一个不依赖 $s_{\phi}(x,t)$ 的 $\triangledown log\ \mathcal{p}_t(x_t)$ 函数即可，从而进一步实现 Isolation 训练。
+为此，本文找到了一个 unbiased estimator (无偏估计器) $\triangledown log\ \mathcal{p}_t(x_t) = -E[\dfrac{x_t-x}{t^2}|x_t], x \sim p_{data}, x_t \sim \mathcal{N}(x;t^2I)$，
 然后便可使用相似的 consistency training loss 来训练 consistency model：</p>
 
 $$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\phi)=L_{CT}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-)=E[\lambda(t_n)d(\boldsymbol{f_\theta}(x + t_{n+1}z,t_{n+1}), \boldsymbol{f_\theta^-}(x + t_nz,t_{n}))]$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中，$z \sim \mathcal{N}(0,\boldsymbol{I})$。具体算法如下图(Algorithm 3)。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$z \sim \mathcal{N}(0,\boldsymbol{I})$。可以看到，使用无偏估计器得到的解轨迹点 $\hat{x}^{\phi}_{t_n}$ 其实就是 ground-truth 轨迹点 $x + t_nz$。
+也就是 Isolation 的训练方式是使用不同时刻的 ground-truth 轨迹点进行自我对比学习。</p>
 
 ![Comsistency Model Algorithm](/images/paper_Consistency_Model_Algorithm.png)
 
 <h1>附录</h1>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">为什么本文使用对比学习仅仅考虑了正样本之间的相似性增大，而没有考虑负样本之间的相似性减小，却不会出现模型坍塌问题(即对于任意的输入 $(x_t, t)$)，模型都输出一个相同的数据(比如全 0 矩阵)？
-因为 consistency model 很关键的 $boundary condition$ 限制。从上述可以看到，本文将 boundary condition 限制视为一个硬性限制，并使用模型上的设计来实现。
+<b style="text-align:justify; text-justify:inter-ideograph;">仔细观察两个训练的损失函数就可以发现，模型在训练时只考虑了正样本之间的相似性，并没有构造负样本来计算它们的相似性。
+为什么本文使用对比学习仅仅考虑了正样本之间的相似性增大，而没有考虑负样本之间的相似性减小，却不会出现模型坍塌问题(即对于任意的输入 $(x_t, t)$)，模型都输出一个相同的数据(比如全 0 矩阵)？
+因为 consistency model 很关键的 <b>$boundary condition</b> 限制。从上述可以看到，本文将 boundary condition 限制视为一个硬性限制，并使用模型上的设计来实现。
 这样一来，但输入 $x = x_\epsilon^i$ ($i$ 表示第 $i$ 个训练数据)时，$f_\theta(x_\epsilon^i, \epsilon)$ 就必须强制输出 $x_\epsilon^i$，
-这样模型就无法通过简单地输出任意相同的数据来实现“捷径”，即不会发生模型坍塌。</p>
+这样模型就无法通过简单地输出任意相同的数据来实现“捷径”，即不会发生模型坍塌。这就是为什么论文会说 boundary condition 限制是最重要的一个限制。</p>
