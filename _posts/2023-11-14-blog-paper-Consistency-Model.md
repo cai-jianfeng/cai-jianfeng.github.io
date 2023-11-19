@@ -111,7 +111,7 @@ $$\boldsymbol{f_\theta}(x,t) = c_{skip}(t)x + c_{out}(t)F_\theta(x,t)$$
 接着，循环 $\tau_n$ (n 从 $N-1$ 到 $1$)：每一次循环时，首先采样一个高斯噪声 $z \sim \mathcal{N}(0,I)$，
 然后将预测得到的原始图像 $x$ 进行加噪 $\hat{x}_{\tau_n} \leftarrow x + \sqrt{\tau_n^2 - \epsilon^2}z$，获得不同程度的加噪图像 $\hat{x}_{\tau_n}$，
 并对该加噪图像使用模型 $f_\theta(·,·)$ 生成进一步预测的原始图像 $x:x \leftarrow f_\theta(\hat{x}_{\tau_n},\tau_n)$。
-将优化后的原始图像 $x$ 代入下一次循环进行进一步优化。最终得到预测的原始图像 $x$。</p>
+将优化后的原始图像 $x$ 代入下一次循环进行进一步优化，最终得到预测的原始图像 $x$。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">接下来便是模型架构和训练问题。对于模型架构，如前述，本文已经将 consistency model 进行参数化，其中的 $F_\theta(x,t)$ 可以使用任意的主流 DM 模型(如 U-net)；
 而对于 $c_{skip}(t)$ 和 $c_{out}(t)$，满足 $c_{skip}(\epsilon)=1, c_{out}(\epsilon)=0$ 的函数也有很多，本文遵循 EDM 推荐的方式，使用：</p>
@@ -140,7 +140,7 @@ $$\boldsymbol{f_\theta}(x,t) = c_{skip}(t)x + c_{out}(t)F_\theta(x,t)$$
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中 $\Phi(...; \phi)$ 表示 ODE solver 的更新函数(update function)。例如，如果使用 Euler solver，$\Phi(x,t; \phi)) = -ts_\phi(x,t)$。
-在得到解轨迹后，最简单直观的方式是将每个解轨迹的数据点 $\hat{x}^{\phi}_{t_n}$ 都作为输入，使得模型 $f_\theta(\hat{x}^{\phi}_{t_n}, \phi}_{t_n)$ 预测出原始图像 $\hat{x}_0$，
+在得到解轨迹后，最简单直观的方式是将每个解轨迹的数据点 $\hat{x}^{\phi}_{t_n}$ 都作为输入，使得模型 $f_\theta(\hat{x}^{\phi}_{t_n}, t_n)$ 预测出原始图像 $\hat{x}_0$，
 然后使用 MSE 损失进行训练：$L_{\theta} = \boldsymbol{E}[||\hat{x}_0 - x_0||_2^2]$。但是正如上述讨论的，这样的效果并不好。
 因此，本文提出使用对比学习的方式来训练模型。我们已经获得了解轨迹 $\Phi(x,t; \phi)) = -ts_\phi(x,t)$，这是训练好的 score function $s_{\phi}(x_t,t)$ 给出的<b>预测轨迹</b>。
 同时，由于前述 SDE 和 PF ODE 的关联性，我们也可以通过先采样 $x \sim \mathcal{p}_{data}$，然后向 $x$ 添加高斯噪声，接着沿着 ODE 轨迹的分布进行采样，获得 <b>groudn-truth 的轨迹</b>。
