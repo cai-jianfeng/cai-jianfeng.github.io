@@ -142,7 +142,7 @@ $$\boldsymbol{f_\theta}(x,t) = c_{skip}(t)x + c_{out}(t)F_\theta(x,t)$$
 <p style="text-align:justify; text-justify:inter-ideograph;">其中 $\Phi(...; \phi)$ 表示 ODE solver 的更新函数(update function)。例如，如果使用 Euler solver，$\Phi(x,t; \phi)) = -ts_\phi(x,t)$。
 在得到解轨迹后，最简单直观的方式是将每个解轨迹的数据点 $\hat{x}^{\phi}_{t_n}$ 都作为输入，使得模型 $f_\theta(\hat{x}^{\phi}_{t_n}, t_n)$ 预测出原始图像 $\hat{x}_0$，
 然后使用 MSE 损失进行训练：$L_{\theta} = \boldsymbol{E}[||\hat{x}_0 - x_0||_2^2]$。但是正如上述讨论的，这样的效果并不好。
-因此，本文提出使用对比学习的方式来训练模型。我们已经获得了解轨迹 $\Phi(x,t; \phi)) = -ts_\phi(x,t)$，这是训练好的 score function $s_{\phi}(x_t,t)$ 给出的<b>预测轨迹</b>。
+因此，本文提出使用对比学习的方式来训练模型。我们已经获得了解轨迹 $\hat{x}^{\phi}_{t_n}$，这是训练好的 score function $s_{\phi}(x_t,t)$ 给出的<b>预测轨迹</b>。
 同时，由于前述 SDE 和 PF ODE 的关联性，我们也可以通过先采样 $x \sim \mathcal{p}_{data}$，然后向 $x$ 添加高斯噪声，接着沿着 ODE 轨迹的分布进行采样，获得 <b>groudn-truth 的轨迹</b>。
 这样我们就可以得到 {预测轨迹点，ground-truth 轨迹点}的数据对。
 因为预测轨迹点是由训练好的 score function $s_{\phi}(x_t,t)$ 给出的，它代表了 $s_{\phi}(x_t,t)$ 的性能(即轨迹点的质量)，而 ground-truth 轨迹点则是真实的数据，其质量自然十分好。
@@ -167,9 +167,10 @@ $$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\phi):=E[\lambda(t_n)d(\bol
 
 
 
-<p style="text-align:justify; text-justify:inter-ideograph;">第二种是 <b>Isolation</b>，即不需要任何额外的预训练模型，从头开始训练。具体算法如下图(Algorithm 3)，具体而言，回顾上述的 Distillation，
-它将预训练好的 score model 近似为 $\triangledown log\ \mathcal{p}_t(x_t)$ 来求解 PE ODE 的解轨迹，进入进行 consistency model 的训练学习。
-而想要实现 PE ODE 的解轨迹的求解，我们只需要找到一个不依赖 $s_{\phi}(x,t)$ 的 $\triangledown log\ \mathcal{p}_t(x_t)$ 函数即可，从而进一步实现 Isolation 训练。
+<p style="text-align:justify; text-justify:inter-ideograph;">第二种是 <b>Isolation</b>，即不需要任何额外的预训练模型，从头开始训练。具体算法如下图(Algorithm 3)：具体而言，回顾上述的 Distillation，
+它将预训练好的 score model 近似为 $\triangledown log\ \mathcal{p}_t(x_t)$ 来求解 PE ODE 的解轨迹，进而进行 consistency model 的训练学习。
+而想要实现 PE ODE 的解轨迹的求解，并不一定需要训练一个 score model，
+我们只需要找到一个不依赖 $s_{\phi}(x,t)$ 的 $\triangledown log\ \mathcal{p}_t(x_t)$ 函数即可，从而进一步实现 Isolation 训练。
 为此，本文找到了一个 unbiased estimator (无偏估计器) $\triangledown log\ \mathcal{p}_t(x_t) = -E[\dfrac{x_t-x}{t^2}|x_t], x \sim p_{data}, x_t \sim \mathcal{N}(x;t^2I)$，
 然后便可使用相似的 consistency training loss 来训练 consistency model：</p>
 
