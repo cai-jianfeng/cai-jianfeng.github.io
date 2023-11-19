@@ -185,6 +185,6 @@ $$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\phi)=L_{CT}^N(\boldsymbol{
 
 <p style="text-align:justify; text-justify:inter-ideograph;">仔细观察两个训练的损失函数就可以发现，模型在训练时只考虑了正样本之间的相似性，并没有构造负样本来计算它们的相似性。
 为什么本文使用对比学习仅仅考虑了正样本之间的相似性增大，而没有考虑负样本之间的相似性减小，却不会出现模型坍塌问题(即对于任意的输入 $(x_t, t)$)，模型都输出一个相同的数据(比如全 0 矩阵)？
-因为 consistency model 很关键的 <b>$boundary condition</b> 限制。从上述可以看到，本文将 boundary condition 限制视为一个硬性限制，并使用模型上的设计来实现。
+因为 consistency model 很关键的 <b>boundary condition</b> 限制。从上述可以看到，本文将 boundary condition 限制视为一个硬性限制，并使用模型上的设计来实现。
 这样一来，但输入 $x = x_\epsilon^i$ ($i$ 表示第 $i$ 个训练数据)时，$f_\theta(x_\epsilon^i, \epsilon)$ 就必须强制输出 $x_\epsilon^i$，
 这样模型就无法通过简单地输出任意相同的数据来实现“捷径”，即不会发生模型坍塌。这就是为什么论文会说 boundary condition 限制是最重要的一个限制。</p>
