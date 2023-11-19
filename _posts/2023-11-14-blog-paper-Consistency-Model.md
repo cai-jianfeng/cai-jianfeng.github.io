@@ -49,15 +49,17 @@ Method
 其中很大一部分原因是因为在没有其他条件的帮助下，直接让模型建模 $\mathcal{p}(x_0|x_T)/\mathcal{p}(\varepsilon_T|x_T)$ 的难度太大。
 为此本文提出通过使用 probability flow (PF) ordinary differential equation (ODE) (概率流常微分方程) 的解轨迹(solution trajectory)来帮助模型学习。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">如上图(Figure 1)，DM (continuous) 模型的数学过程是一个 stochastic differential equation (SDE，随机微分方程)：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">如上图(Figure 1)，DM (continuous) 模型扩散步骤的数学过程是一个 stochastic differential equation (SDE，随机微分方程)：</p>
 
 <center>$dx_t = \mu(x_t,t)dt + \sigma(t) dw_t$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中，假设 $x_t$ 的概率分布为 $\mathcal{p}_t(x) \Rightarrow p_0(x) = p_{data}(x), p_T(x) = \pi(x)$，
-$\{w_t\}_{t \in [0,T]}$ 是 standard Brownain motion (标准布朗运动)。
-SDE 有一个重要的性质：它存在一个 ODE 形式的方程，称为 PF ODE。
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$\mu(x_t,t)$ 称为 drift coefficient，$\sigma(t)$ 称为 diffusion coefficient，
+$\{w_t\}_{t \in [0,T]}$ 是 standard Brownain motion (标准布朗运动)，上述方程表示加噪过程。
+假设 $x_t$ 的概率分布为 $\mathcal{p}_t(x) \Rightarrow p_0(x) = p_{data}(x), p_T(x) = \pi(x)$。
+SDE 有一个重要的性质：即它存在一个 ODE 形式的去噪方程，称为 PF ODE (PF ODE 和 reversal SDE 相对应，即加噪的逆过程)，
+而 PF ODE 的解轨迹 $\{x_t\}_{t \in [0, T]}$ 就是将一个噪声图像 $x_T$ 不断去噪后得到的不同程度的去噪图像，最终的 $x_0$ 则是完全去噪后的图像。
 在本文的 DM 模型中，其 SDE 所对应 PF ODE 方程如下：</p>
 
 <center>$dx_t = [\mu(x_t,t)dt - \dfrac{1}{2} \sigma(t)^2 \triangledown log\ \mathcal{p}_t(x_t)]dt$</center>
@@ -65,9 +67,9 @@ SDE 有一个重要的性质：它存在一个 ODE 形式的方程，称为 PF O
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$\triangledown log\ \mathcal{p}_t(x_t)$ 是 $\mathcal{p}_t(x_t)$ 的 score function。
-为了方便建模，本文将方程进行简化：令 $\mu(x_t,t) = 0,\ \sigma(t) = \sqrt{2t},\ p_t(x) = p_{data}(x) \otimes \mathcal{N}(0, T^2\boldsymbol{I})$。
-为了实现对 PF ODE 解轨迹的求解，本文首先通过 score match 训练一个 score model $s_{\phi}(x_t,t) \approx \triangledown log\ p_t(x_t)$。
-然后将其代入方程，将方程简化为常系数微分方程(称为 empirical PF ODE)：</p>
+为了方便建模，本文将方程进行简化：令 $\mu(x_t,t) = 0,\ \sigma(t) = \sqrt{2t}$，则 $p_t(x) = p_{data}(x) \otimes \mathcal{N}(0, T^2\boldsymbol{I})$，$\otimes$ 表示卷积。
+为了实现对 PF ODE 解轨迹的求解，本文首先通过 score match 方法训练一个 score model $s_{\phi}(x_t,t) \approx \triangledown log\ p_t(x_t)$。
+然后将其代入 PE ODE 方程，将方程简化为常系数微分方程(称为 empirical PF ODE)：</p>
 
 <center>$\dfrac{dx}{dt} = -ts_{\phi}(x_t,t)$</center>
 
@@ -80,35 +82,47 @@ SDE 有一个重要的性质：它存在一个 ODE 形式的方程，称为 PF O
 则整个解轨迹就变成 $\{\hat{x}_t\}_{t \in [\epsilon,T]}$。本文中使用 $T = 80, \epsilon = 0.002$。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">有了解轨迹，本文便提出了 <b>consistency model</b> 来利用它进行一步 inference 的学习。
-具体而言，定义 consistency model 为 $\boldsymbol{f_\theta}:(x_t,t) \mapsto x_\epsilon$。它具有 self-consistency (自一致)的性质：
+具体而言，定义 consistency model 为 $\boldsymbol{f_\theta}:(x_t,t) \mapsto x_\epsilon$，即它将解轨迹上的任意一个数据点都映射到原始图像。
+从定义可以看出，它具有 self-consistency (自一致)的性质：
 即 $\boldsymbol{f_\theta}(x_t,t) = \boldsymbol{f_\theta}(x_{t'},t'), \forall t,t' \in [\epsilon, T]$ 
 (对于任意在相同 PF ODE 解轨迹上的输入对 $(x_t,t)$，其输出一致，都是 $x_\epsilon$)。
-这就使得模型具有一定的限制。其中最主要的限制便是 boundary condition：$\boldsymbol{f_\theta}(x_\epsilon,\epsilon) = x_\epsilon$，即 $\boldsymbol{f_\theta}(·,\epsilon)$ 是一个 identity function (恒等函数)。
-为了尽可能减少它对模型的限制(包括输入输出，结构等)，本文提出 $2$ 种方法来构建 consistency model，称为 <b>parameterization (参数化)</b>：</p>
+为了实现这一性质，就需要对模型进行一定的限制(包括结构、输入输出维度等)。
+其中最主要的限制便是 boundary condition：$\boldsymbol{f_\theta}(x_\epsilon,\epsilon) = x_\epsilon$，
+即 $\boldsymbol{f_\theta}(·,\epsilon)$ 是一个 identity function (恒等函数)。
+这对方法设计是不利的(因为不能自由设计模型来提高性能)，为了尽可能减少对模型的限制(包括输入输出，结构等)，本文提出 $2$ 种方法来构建 consistency model，称为 <b>parameterization (参数化)</b>，
+使得能尽可能自由地设计模型：</p>
 
 $$\boldsymbol{f_\theta}(x,t) = \begin{cases} x, & t = \epsilon \\ F_\theta(x,t), & t \in (\epsilon, T]\end{cases}$$
 
 $$\boldsymbol{f_\theta}(x,t) = c_{skip}(t)x + c_{out}(t)F_\theta(x,t)$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中，$F_\theta(x,t)$ 是 free-form 的深度神经网络；
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$F_\theta(x,t)$ 是 free-form 的深度神经网络(即无限制的模型)；
 第 $2$ 种方法的 $c_{skip}(t)$ 和 $c_{out}(t)$ 都是可微函数(differentiable)，且满足 $c_{skip}(\epsilon)=1, c_{out}(\epsilon)=0$。
-由于第 $2$ 种方法和 DM 模型相似(DM 模型是将噪声 $\varepsilon$ 分离出来实现参数化，即 $f_\theta(x) = x + \varepsilon_\theta(x)$)，
+由于第 $2$ 种方法和 DM 模型相似(DM 模型是将噪声 $\varepsilon$ 分离出来实现参数化，即 $f_\theta(x) = x + \varepsilon_\theta(x)$，从而实现模型设计的自由)，
 许多流行的 DM 模型架构都可以直接使用，因此本文选择第 $2$ 种方法参数化模型。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">而在训练完成后，模型可以进行<b>一步 inference </b>实现图像生成。
+<p style="text-align:justify; text-justify:inter-ideograph;">而在训练完成后(训练方法下面讲述)，模型可以进行<b>一步 inference </b>实现图像生成。
 具体而言，给定一个训练好的 consistency model $\boldsymbol{f_\theta}(·,·)$，从高斯分布空间中随机采样一个噪声 $\hat{x}_T \sim \mathcal{N}(0,T^2\boldsymbol{I})$，
 然后通过模型生成最终的图像 $\hat{x}_\epsilon = \boldsymbol{f_\theta}(\hat{x}_T,T)$。
-更重要的是，模型也可以进行<b>多步 inference</b> 提高图像的生成质量。它通过多次交替去噪(denoise)和噪声注入(noise)步骤来使用 consistence model 精细化图像。具体算法如下图(Algorithm 1)。</p>
+更重要的是，模型也可以进行<b>多步 inference</b> 利用更多的计算量来提高图像的生成质量(保留了 DM 模型的采样方式)。
+它通过多次交替去噪(denoise)和噪声注入(noise)步骤来使用 consistence model 精细化图像。具体算法如下图(Algorithm 1)：
+具体而言，给定训练好的模型 $f_\theta(·,·)$，时间点序列 $\tau_1 > ... > \tau_{N-1}$ (类似与 DM 模型的迭代时间 $t$，只是这里的 $\tau \in \mathbb{R}^+$ 是连续时间上的实数)。
+首先初始化图像为高斯噪声 $\hat{x}_T \sim \mathcal{N}(0,T^2\boldsymbol{I})$；然后使用模型 $f_\theta(·,·)$ 生成预测的原始图像 $x:x \leftarrow f_\theta(\hat{x}_T,T)$。
+接着，循环 $\tau_n$ (n 从 $N-1$ 到 $1$)：每一次循环时，首先采样一个高斯噪声 $z \sim \mathcal{N}(0,I)$，
+然后将预测得到的原始图像 $x$ 进行加噪 $\hat{x}_{\tau_n} \leftarrow x + \sqrt{\tau_n^2 - \epsilon^2}z$，获得不同程度的加噪图像 $\hat{x}_{\tau_n}$，
+并对该加噪图像使用模型 $f_\theta(·,·)$ 生成进一步预测的原始图像 $x:x \leftarrow f_\theta(\hat{x}_{\tau_n},\tau_n)$。
+将优化后的原始图像 $x$ 代入下一次循环进行进一步优化。最终得到预测的原始图像 $x$。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">接下来便是模型架构和训练问题。对于模型架构，如前述，$F_\theta(x,t)$ 可以使用主流的 DM 模型(如 U-net)；
-而对于 $c_{skip}(t)$ 和 $c_{out}(t)$，满足 $c_{skip}(\epsilon)=1, c_{out}(\epsilon)=0$ 的函数也有很多，本文遵循 EDM 的方式，使用：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">接下来便是模型架构和训练问题。对于模型架构，如前述，本文已经将 consistency model 进行参数化，其中的 $F_\theta(x,t)$ 可以使用任意的主流 DM 模型(如 U-net)；
+而对于 $c_{skip}(t)$ 和 $c_{out}(t)$，满足 $c_{skip}(\epsilon)=1, c_{out}(\epsilon)=0$ 的函数也有很多，本文遵循 EDM 推荐的方式，使用：</p>
 
 <center>$c_{skip}(t) = \dfrac{\sigma_{data}^2}{(t - \epsilon)^2 + \sigma_{data}^2}, c_{out}(t) = \dfrac{\sigma_{data}(t - \epsilon)}{\sqrt{\sigma_{data}^2 + t^2}}, \sigma_{data} = 0.5$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">而对于训练问题，本文提出了 $2$ 种训练方法。第一种是 <b>Distillation</b>，
-它通过 distill 一个预训练好的 score model $s_\phi(x,t)$ 来训练 consistency model。
+<p style="text-align:justify; text-justify:inter-ideograph;">这样便设计好了模型架构。而对于训练问题，本文提出了 $2$ 种训练方法，使用不同方式估计得到的 PE ODE 解轨迹来帮助模型学习。
+第一种是 <b>Distillation</b>，它通过 distill 一个预训练好的 score model $s_\phi(x,t)$ 来训练 consistency model。
+回顾上述的讲解，PE ODE 的解轨迹求解需要通过 score match 训练一个 score model $s_{\phi}(x_t,t)$。本文便使用了一个已经训练好的 $s_{\phi}(x_t,t)$ 来求解解轨迹。
 具体而言，首先将区间(time horizon) $[\epsilon, T]$ 划分为 $N - 1$ 个子区间：</p>
 
 <center>$[t_1,t_2],...,[t_{N-1},t_N], t_1 = \epsilon < t_2 <...<t_N = T$</center>
@@ -119,18 +133,24 @@ $$\boldsymbol{f_\theta}(x,t) = c_{skip}(t)x + c_{out}(t)F_\theta(x,t)$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">然后使用 numerical ODE solver 求解 empirical PF ODE，得到 $\hat{x}^{\phi}_{t_n}$：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">然后将 $s_{\phi}(x_t,t)$ 代入 empirical PE ODE 方程，并使用 numerical ODE solver 求解 empirical PF ODE，得到 $\hat{x}^{\phi}_{t_n}$：</p>
 
-<center>$\hat{x}^{\phi}_{t_n}:=x_{t_{n+1}} + (t_n - t_{n+1} \Phi(x_{t_{n+1}}, t_{n+1}; \phi))$</center>
+<center>$\hat{x}^{\phi}_{t_n}:=x_{t_{n+1}} + (t_n - t_{n+1}) \Phi(x_{t_{n+1}}, t_{n+1}; \phi)$</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中 $\Phi(...; \phi)$ 表示 ODE solver 的更新函数(update function)。例如，如果使用 Euler solver，$\Phi(x,t; \phi)) = -ts_\phi(x,t)$。
-同时，由于前述 SDE 和 PF ODE 的关联性，可以通过先采样 $x \sim \mathcal{p}_{data}$，然后向 $x$ 添加高斯噪声，接着沿着 ODE 轨迹的分布进行采样。
-具体而言，给定 $x$，首先使用 SDE 的过渡密度分布 $\mathcal{N}(x,t^2_{n+1}\boldsymbol{I})$ 采样得到 $x_{t_{n+1}}$；
+在得到解轨迹后，最简单直观的方式是将每个解轨迹的数据点 $\hat{x}^{\phi}_{t_n}$ 都作为输入，使得模型 $f_\theta(\hat{x}^{\phi}_{t_n}, \phi}_{t_n)$ 预测出原始图像 $\hat{x}_0$，
+然后使用 MSE 损失进行训练：$L_{\theta} = \boldsymbol{E}[||\hat{x}_0 - x_0||_2^2]$。但是正如上述讨论的，这样的效果并不好。
+因此，本文提出使用对比学习的方式来训练模型。我们已经获得了解轨迹 $\Phi(x,t; \phi)) = -ts_\phi(x,t)$，这是训练好的 score function $s_{\phi}(x_t,t)$ 给出的<b>预测轨迹</b>。
+同时，由于前述 SDE 和 PF ODE 的关联性，我们也可以通过先采样 $x \sim \mathcal{p}_{data}$，然后向 $x$ 添加高斯噪声，接着沿着 ODE 轨迹的分布进行采样，获得 <b>groudn-truth 的轨迹</b>。
+这样我们就可以得到 {预测轨迹点，ground-truth 轨迹点}的数据对。
+因为预测轨迹点是由训练好的 score function $s_{\phi}(x_t,t)$ 给出的，它代表了 $s_{\phi}(x_t,t)$ 的性能(即轨迹点的质量)，而 ground-truth 轨迹点则是真实的数据，其质量自然十分好。
+通过对这两轨迹点的对比学习，我们就可以 distill $s_{\phi}(x_t,t)$ 的性能，并将其转化到 consistency model 上。
+具体算法如下图(Algorithm 2)：具体而言，给定 $x$，首先使用 SDE 的过渡密度分布 $\mathcal{N}(x,t^2_{n+1}\boldsymbol{I})$ 采样得到 $x_{t_{n+1}}$；
 然后使用 numerical ODE solver 计算 $\hat{x}^{\phi}_{t_n}$，
 与 $x_{t_{n+1}}$ 组成 adjacent data points $(\hat{x}^{\phi}_{t_n}, x_{t_{n+1}})$。
-最后，通过最小化数据对 $(\hat{x}^{\phi}_{t_n}, x_{t_{n+1}})$ 的输出差异性(consistency distillation loss)来训练 consistency model：</p>
+最后，通过最小化数据对 $(\hat{x}^{\phi}_{t_n}, x_{t_{n+1}})$ 的输出差异性(<b>consistency distillation loss</b>)来训练 consistency model：</p>
 
 $$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\phi):=E[\lambda(t_n)d(\boldsymbol{f_\theta}(x_{t_{n+1}},t_{n+1}), \boldsymbol{f_{\theta^-}}(\hat{x}^{\phi}_{t_n}, t_n))]$$
 
@@ -143,7 +163,9 @@ $$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\phi):=E[\lambda(t_n)d(\bol
 <center>$\boldsymbol{\theta}^- \leftarrow stopgrad(\mu\boldsymbol{\theta}^- + (1-\mu)\boldsymbol{\theta})$；</center>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">$d(·,·)$ 表示度量函数，满足 $\forall x,y: d(x,y) \geq 0$ and $d(x,y)=0$ if and only if $x=y$。
-本文使用 $\lambda(t_n) \equiv 1$，$d(x,y) = \mathcal{l}_2:||x-y||_2^2/\mathcal{l}_1:||x-y||_1/LPIPS$。具体算法如下图(Algorithm 2)。</p>
+本文使用 $\lambda(t_n) \equiv 1$，$d(x,y) = \mathcal{l}_2:||x-y||_2^2/\mathcal{l}_1:||x-y||_1/LPIPS$。</p>
+
+
 
 <p style="text-align:justify; text-justify:inter-ideograph;">第二种是 <b>Isolation</b>，即不需要任何额外的预训练模型，从头开始训练。回顾上述的 Distillation，
 它将预训练好的 score model  近似为 $\triangledown log\ \mathcal{p}_t(x_t)$。
@@ -156,3 +178,10 @@ $$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\phi)=L_{CT}^N(\boldsymbol{
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$z \sim \mathcal{N}(0,\boldsymbol{I})$。具体算法如下图(Algorithm 3)。</p>
 
 ![Comsistency Model Algorithm](/images/paper_Consistency_Model_Algorithm.png)
+
+<h1>附录</h1>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">为什么本文使用对比学习仅仅考虑了正样本之间的相似性增大，而没有考虑负样本之间的相似性减小，却不会出现模型坍塌问题(即对于任意的输入 $(x_t, t)$)，模型都输出一个相同的数据(比如全 0 矩阵)？
+因为 consistency model 很关键的 $boundary condition$ 限制。从上述可以看到，本文将 boundary condition 限制视为一个硬性限制，并使用模型上的设计来实现。
+这样一来，但输入 $x = x_\epsilon^i$ ($i$ 表示第 $i$ 个训练数据)时，$f_\theta(x_\epsilon^i, \epsilon)$ 就必须强制输出 $x_\epsilon^i$，
+这样模型就无法通过简单地输出任意相同的数据来实现“捷径”，即不会发生模型坍塌。</p>
