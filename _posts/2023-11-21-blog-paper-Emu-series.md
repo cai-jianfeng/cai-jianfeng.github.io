@@ -59,8 +59,8 @@ Preliminary
 
 <ul><li><p style="text-align:justify; text-justify:inter-ideograph;">将 autoencoder 的 channel 数量从 4 提高到 16。</p></li>
 <li><p style="text-align:justify; text-justify:inter-ideograph;">添加额外的 adversarial loss 进行训练。</p></li>
-<li><p style="text-align:justify; text-justify:inter-ideograph;">将原始的 RGB 图像输入使用傅里叶特征变换将其变换到更高 channel 维度的输入。</li>
-<li><p style="text-align:justify; text-justify:inter-ideograph;">增加 U-Net 模型的 channel 数量和 residual block 的数量。</li>
+<li><p style="text-align:justify; text-justify:inter-ideograph;">将原始的 RGB 图像输入使用傅里叶特征变换将其变换到更高 channel 维度的输入。</p></li>
+<li><p style="text-align:justify; text-justify:inter-ideograph;">增加 U-Net 模型的 channel 数量和 residual block 的数量。</p></li>
 <li><p style="text-align:justify; text-justify:inter-ideograph;">使用 CLIP ViT-L 将图像转为 visual embedding；使用 T5-XXL 将文本转为 text embedding (text 是作为条件)。</p></li></ul>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">然后使用 1.1 billion 的图像来<b>预训练</b>模型。训练时使用逐步增大分辨率的方式，即最开始使用最小分辨率的图像，随着训练的进行不断增加高一级分辨率的图像，直到加到最高分辨率的图像。
