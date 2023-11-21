@@ -49,9 +49,10 @@ Preliminary
 
 <p style="text-align:justify; text-justify:inter-ideograph;">想要 DM 模型生成任意(即大范围)的高质量图像，最简单直观的方法是收集一个这样的数据集给模型训练，但这显然是不可能的。
 因此，一般采用的方法是先在一个质量参差不齐的大规模图像数据集(通常是网上收集到的)上预训练一个 DM 模型(称为 pre-training)。
-此时它具有了生成任意的图像的能力，即<b>泛化能力</b>，但是生成质量不够高。接着便设计一个方法(称为 post pre-training)，进一步改进模型的<b>生成质量</b>，同时又能保持模型的泛化能力。
-本文便提出了一个简单好用的 post pre-training 方法(称为 <b>quality-tuning</b>)来改进模型。
-具体而言，本文首先使用 latent Diffusion Architecture (即 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-stablediffusion/" target="_blank">Stable Diffusion</a>)作为生成模型，
+此时它具有了生成任意的图像的能力，即<b>泛化能力</b>，但是生成质量不够高。接着便设计一个方法(称为 post pre-training，即 fine-tuning)，进一步改进模型的<b>生成质量</b>，同时又能保持模型的泛化能力。
+本文便提出了一个简单好用的 post pre-training 方法(称为 <b>quality-tuning</b>)来改进模型的生成能力。
+具体而言，本文首先使用 latent Diffusion Architecture 
+(即 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-stablediffusion/" target="_blank">Stable Diffusion</a>)作为生成模型，
 并对其进行简单改进以增强其作为预训练模型的能力(即在没有 post pre-training 之前，就尽量将模型的性能提高。
 因为本文发现，对于提出的 quality-tuning 方法而言，如果原先的预训练模型能力越强，这经过 quality-tuning 后的模型能力也会越强)。
 模型的具体改动如下：</p>
@@ -60,7 +61,28 @@ Preliminary
 <li><p style="text-align:justify; text-justify:inter-ideograph;">添加额外的 adversarial loss 进行训练。</p></li>
 <li><p style="text-align:justify; text-justify:inter-ideograph;">将原始的 RGB 图像输入使用傅里叶特征变换将其变换到更高 channel 维度的输入。</li>
 <li><p style="text-align:justify; text-justify:inter-ideograph;">增加 U-Net 模型的 channel 数量和 residual block 的数量。</li>
-<li><p style="text-align:justify; text-justify:inter-ideograph;">使用 CLIP ViT-L 将图像转为 visual embedding；使用 T5-XXL 将文本转为 text embedding (text 是作为条件)。</li></ul>
+<li><p style="text-align:justify; text-justify:inter-ideograph;">使用 CLIP ViT-L 将图像转为 visual embedding；使用 T5-XXL 将文本转为 text embedding (text 是作为条件)。</p></li></ul>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">然后使用 1.1 billion 的图像来<b>预训练</b>模型。训练时使用逐步增大分辨率的方式，即最开始使用最小分辨率的图像，随着训练的进行不断增加高一级分辨率的图像，直到加到最高分辨率的图像。
+这样可以引导模型在最开始时先学习图像的整体生成，后面再不断学习图像的细节生成。
+同时，在预训练的最后阶段，使用 <a href="https://www.crosslabs.org/blog/diffusion-with-offset-noise" target="_blank">noise-offset</a> 技术($offset = 0.02$)来训练模型，促进模型生成高对比度的图像。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">接下来，本文使用 quality-tuning (即 <b>fine-tuning</b>) 方法来改进模型的生成质量。
+quality-tuning 方法的关键是构造一个<b>小型但是质量极高</b>的数据集来 fine-tuning 模型，因此 fine-tuning数据集必须包含以下性质：</p>
+
+<ul><li><p style="text-align:justify; text-justify:inter-ideograph;"> fine-tuning数据集可以非常小，大约只有几千张图像。</p></li>
+<li><p style="text-align:justify; text-justify:inter-ideograph;">数据集的质量需要非常高，因此不能使用完全的自动化数据选择，必须需要人工注释进行进一步选择。</p></li></ul>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">这样，即使 fine-tuning数据集很小，quality-tuning 方法不仅可以显著提高生成图像的质量，而且不会牺牲模型的泛化能力。
+但是如何选择这样一个数据集是一个问题，因为高质量具有很强的主观性。为此，本文借鉴了摄影领域对高质量图像评判的一些标准来帮助选择图像，同时结合了 Automatic Filtering 和 Human Filtering 来尽可能保证选择的图像的质量。
+具体选择步骤感兴趣的读者可以阅读论文 Section 3.3。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">为什么仅仅只用几千张的高质量图像就可以很好地提高模型生成能力？本文给出的一个解释是其实在预训练后，模型已经具备了生成高质量图像的能力，
+但是由于没有对其加以正确的引导，导致模型不知道什么图像算是高质量图像，就只能随机生成不同质量的图像。而对其使用少量的高质量图像进行 fine-tuning (即加以引导)后，
+模型就能掌握高质量图像的一些常见的统计性质，从而限制了模型输出图像的质量。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">因此，在 quality-tuning 阶段，本文使用 small batch size ($64$) 来 fine-tuning 模型，
+同时使用 noise offet $=0.1$，并使用 early-stopping 来防止模型过拟合(即要求 fine-tuning 不超过 $15K$)。</p>
 
 <h1>Emu Edit</h1>
 
