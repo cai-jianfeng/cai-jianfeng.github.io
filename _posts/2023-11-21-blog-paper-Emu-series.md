@@ -21,11 +21,31 @@ tags:
 
 <p style="text-align:justify; text-justify:inter-ideograph;">第一作者：Xiaoliang Dai & Shelly Sheynin & Rohit Girdhar (GenAI, Meta)</p>
 
-<h2>Emu</h2>
+Preliminary
+===
 
-<h3>Question</h3>
+<p style="text-align:justify; text-justify:inter-ideograph;">Diffusion Model (DM)：扩散模型是近年来最热的图像生成思想。
+将任意一张图像 $I_0$ 进行噪声添加，每次添加一个服从 $N(0,1)$ 分布的随机噪声 $\epsilon_t$，获得含有噪声的图像 $I_t$，则进行了无数次后，原本的图像就会变成一个各向同性的随机高斯噪声。
+按照这个理论，我们对一个各向同性的随机高斯噪声每次添加一个特定的服从 $N(0,1)$ 分布的噪声 $\epsilon_t'$，获得噪声量减少的图像 $I_t'$，则经过足够多次后便可获得一张逼真的图像 $I_0'$。
+为此，我们可以选择任意一个图像生成模型 $M_G$ (例如 U-net 等)，第 t 次时输入第 t-1 次生成的图像 $I_{t-1}'$，输出生成的图像 $I_t'$。
+由于每次使用的是同一个图像生成模型 $M_G$，所以需要输入时间步信息 $t$ 来告诉模型现在是生成的第几步
+(一个直观的理解是在随机噪声恢复成原始图像的前期，模型更关注图像的整体恢复，而后期则更加关注图像的细节恢复，所以需要时间步信息告诉模型现在是偏前期还是后期)。
+同时通过 $I_{t-1}$ 直接生成 $I_t$ 较为困难，因为它需要生成正确其每个像素值，而每次添加的噪声 $\epsilon_t$ 较容易预测。
+因此可以更换为每次输入 $I_{t-1}$，模型预测第 $t$ 次所加的噪声 $\epsilon_t$。所以损失函数为 $L = E_{z_0, t, c_t, \epsilon \sim N(0,1)}[||\epsilon - \epsilon_{\theta}(z_t, t, c_t)||_2^2]$。
+其中 $z_0$ 是原始噪声(即一开始输入的图像)，而 $z_t$ 是第 $t$ 步输出的图像, $\epsilon_{\theta}(z_t, t, c_t)$ 为模型预测的第 $t$ 步所加的噪声。
+更加详细的介绍推理可以参考 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-diffusion-model/" target="_blank">The Basic Knowledge of Diffusion Model (DM)</a>或者 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-score-based-generative-model/" target="_blank">The Basic Knowledge of Scored-based Generative Model</a>。</p>
 
-<h2>Emu Edit</h2>
+<p style="text-align:justify; text-justify:inter-ideograph;">Stable Diffusion：是 DM 模型的一种改进形式。它将噪声推广到潜变量空间进行学习，使得模型的计算量大大降低。
+同时通过 cross-attention 的方法添条件，使得模型可以根据给定的条件(如 text)来生成指定的图像。
+详细的介绍推理可以参考 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-stablediffusion/" target="_blank">Stable Diffusion</a>。</p>
 
-<h2>Emu Video</h2>
+<h1>Emu</h1>
+
+<h2>Question</h2>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">如何使得 Diffusion Model (DM) 可以生成高质量的图像，同时又保持其泛化性(即能够生成任意描述的图像)</p>
+
+<h1>Emu Edit</h1>
+
+<h1>Emu Video</h1>
 
