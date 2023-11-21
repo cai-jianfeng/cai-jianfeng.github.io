@@ -15,3 +15,10 @@ tags:
 <p style="text-align:justify; text-justify:inter-ideograph;">发表会议：三篇论文都发表在 Conference of Computer Vision and Pattern Recognition (CVPR 2023)</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">第一作者：Xiaoliang Dai & Shelly Sheynin & Rohit Girdhar (GenAI, Meta)</p>
+
+<h1>Emu</h1>
+
+<h1>Emu Edit</h1>
+
+<h1>Emu Video</h1>
+
