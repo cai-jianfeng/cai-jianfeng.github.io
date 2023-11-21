@@ -45,6 +45,23 @@ Preliminary
 
 <p style="text-align:justify; text-justify:inter-ideograph;">如何使得 Diffusion Model (DM) 可以生成高质量的图像，同时又保持其泛化性(即能够生成任意描述的图像)</p>
 
+<h2>Method</h2>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">想要 DM 模型生成任意(即大范围)的高质量图像，最简单直观的方法是收集一个这样的数据集给模型训练，但这显然是不可能的。
+因此，一般采用的方法是先在一个质量参差不齐的大规模图像数据集(通常是网上收集到的)上预训练一个 DM 模型(称为 pre-training)。
+此时它具有了生成任意的图像的能力，即<b>泛化能力</b>，但是生成质量不够高。接着便设计一个方法(称为 post pre-training)，进一步改进模型的<b>生成质量</b>，同时又能保持模型的泛化能力。
+本文便提出了一个简单好用的 post pre-training 方法(称为 <b>quality-tuning</b>)来改进模型。
+具体而言，本文首先使用 latent Diffusion Architecture (即 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-stablediffusion/" target="_blank">Stable Diffusion</a>)作为生成模型，
+并对其进行简单改进以增强其作为预训练模型的能力(即在没有 post pre-training 之前，就尽量将模型的性能提高。
+因为本文发现，对于提出的 quality-tuning 方法而言，如果原先的预训练模型能力越强，这经过 quality-tuning 后的模型能力也会越强)。
+模型的具体改动如下：</p>
+
+<ul><li><p style="text-align:justify; text-justify:inter-ideograph;">将 autoencoder 的 channel 数量从 4 提高到 16。</p></li>
+<li><p style="text-align:justify; text-justify:inter-ideograph;">添加额外的 adversarial loss 进行训练。</p></li>
+<li><p style="text-align:justify; text-justify:inter-ideograph;">将原始的 RGB 图像输入使用傅里叶特征变换将其变换到更高 channel 维度的输入。</li>
+<li><p style="text-align:justify; text-justify:inter-ideograph;">增加 U-Net 模型的 channel 数量和 residual block 的数量。</li>
+<li><p style="text-align:justify; text-justify:inter-ideograph;">使用 CLIP ViT-L 将图像转为 visual embedding；使用 T5-XXL 将文本转为 text embedding (text 是作为条件)。</li></ul>
+
 <h1>Emu Edit</h1>
 
 <h1>Emu Video</h1>
