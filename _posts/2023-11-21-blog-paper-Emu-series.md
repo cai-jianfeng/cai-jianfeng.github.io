@@ -86,5 +86,14 @@ quality-tuning 方法的关键是构造一个<b>小型但是质量极高</b>的�
 
 <h1>Emu Edit</h1>
 
+<h2>Question</h2>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">如何提高 Instruction-based image editing model 的性能(即仅仅使用 Instruction/text 来对输入的图像进行编辑，
+例如：输入文字“将图像的 xx 物体去掉/在 xx 位置添加一个 xx 物体”和一张给定的图像，就可以获得按照文字要求编辑后的图像)</p>
+
+<h2>Method</h2>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
 <h1>Emu Video</h1>
 
