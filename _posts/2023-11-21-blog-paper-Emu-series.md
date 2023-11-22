@@ -133,7 +133,30 @@ caption 和 object 主要是作为生成数据时的输入，而 editing instruc
 
 $$\underset{\theta}{min} \mathbb{E}_{y,\epsilon,t}[||\epsilon - \epsilon_\theta(z_t,t,E(c_I),c_T)||_2^2]$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中 $\epsilon \in \mathcal{N}(0,1)$ 表示添加的噪声，$y = (c_T,c_I,x)$</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $\epsilon \in \mathcal{N}(0,1)$ 表示添加的噪声，$y = (c_T,c_I,x)$。
+但是有些时候模型对于任务的区分不是那么清晰(例如 Global 和 Texture)，容易将它们混淆在一起，从而导致输出图像的质量降低。
+为此，本文通过输入显式的任务标签来引导模型使用正确的编辑方式。具体而言，
+本文借鉴 VQ-VAE 的思想，创建了一个 task embedding table (可训练的)，每个任务标签 $i$ 对应一个 task embedding $v_i$，根据不同的输入选择对应的 $v_i$；
+然后使用 cross-attention 与 U-net 进行交互，同时将其加入到原始输入中，与模型一同优化训练。因此，进阶模型的训练函数更新为：</p>
+
+$$\underset{\theta,v_1,...,v_k}{min} \mathbb{E}_{\hat{y},\epsilon,t}[||\epsilon - \epsilon_\theta(z_t,t,E(c_I),c_T, v_i)||_2^2]$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $\k$ 表示任务的数量，$y = (c_T,c_I,x,i)$。而在 inference 阶段，本文训练一个 Flan-T5-XL 模型来根据输入的编辑指令 $c_T$ 预测对应的任务标签 $i$。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">使用显式的 task embedding 除了可以帮助模型更好地学习外，还能够方便模型对其他任务的扩展。
+当想要将模型扩展到 $16$ 个任务之外的图像编辑子任务时(如图像修复等)，可以保持模型的参数权重不变，初始化一个新的 task embedding $v_{new}$ (可训练的)，
+然后使用少量的该任务的训练样本来更新 $v_{new}$。在训练完成后，便可以将其加入到 task embedding table，成为一个新的任务。具体的训练函数如下：</p>
+
+$$\underset{v_{new}}{min} \mathbb{E}_{y,\epsilon,t}[||\epsilon - \epsilon_\theta(z_t,t,E(c_I),c_T, v_new)||_2^2]$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">进一步地，当使用模型连续进行一系列地图像编辑任务(例如先在图像上添加一个物体，然后再在结果图像上修改风格等)，其重构和数值误差很可能就会累计，导致后面的图像质量较差。
+为此，本文在每一步 edit 之后都使用了 pre-pixel thresholding 步骤。
+具体而言，在每一步 edit $s$ 中，模型生成编辑后的图像 $c_I^{s+1}$，而其输入图像为 $c_I^s$。本文设置一个阈值 $\alpha$，对于每一个像素 $p_{i,j}$ (表示第 $i$ 行，第 $j$ 列)，
+只有当输出图像的像素值和输入图像的像素值之差大于阈值时，才使用输出图像的像素值；否则抛弃输出图像所预测的像素值，使用原始输入图像的像素值，即：</p>
+
+$$c_I^{s+1} = \begin{cases}c_I^s, & if\ \bar{d} < \alpha \\ c_I^{s+1}, & otherwise \end{cases}; d = ||c_I^{s+1} - c_I^s||_1$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$\bar{d}$ 表示经过低通滤波后的 $d$。本文选择 $\alpha = 0.03$</p>
 
 <h1>Emu Video</h1>
 
