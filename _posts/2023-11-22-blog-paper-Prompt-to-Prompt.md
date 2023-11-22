@@ -1,6 +1,6 @@
 ---
 title: 'Prompt-to-Prompt'
-date: 23-11-21
+date: 23-11-22
 permalink: /posts/2023/11/blog-paper-emu-series/
 tags:
   - 论文阅读
