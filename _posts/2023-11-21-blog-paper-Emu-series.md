@@ -36,7 +36,7 @@ Preliminary
 更加详细的介绍推理可以参考 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-diffusion-model/" target="_blank">The Basic Knowledge of Diffusion Model (DM)</a>或者 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-score-based-generative-model/" target="_blank">The Basic Knowledge of Scored-based Generative Model</a>。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">Stable Diffusion：是 DM 模型的一种改进形式。它将噪声推广到潜变量空间进行学习，使得模型的计算量大大降低。
-同时通过 cross-attention 的方法添条件，使得模型可以根据给定的条件(如 text)来生成指定的图像。
+同时通过 cross-attention 的方法添加条件，使得模型可以根据给定的条件(如 text)来生成指定的图像。
 详细的介绍推理可以参考 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-stablediffusion/" target="_blank">Stable Diffusion</a>。</p>
 
 <h1>Emu</h1>
@@ -63,17 +63,17 @@ Preliminary
 <li><p style="text-align:justify; text-justify:inter-ideograph;">增加 U-Net 模型的 channel 数量和 residual block 的数量。</p></li>
 <li><p style="text-align:justify; text-justify:inter-ideograph;">使用 CLIP ViT-L 将图像转为 visual embedding；使用 T5-XXL 将文本转为 text embedding (text 是作为条件)。</p></li></ul>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">然后使用 1.1 billion 的图像来<b>预训练</b>模型。训练时使用逐步增大分辨率的方式，即最开始使用最小分辨率的图像，随着训练的进行不断增加高一级分辨率的图像，直到加到最高分辨率的图像。
+<p style="text-align:justify; text-justify:inter-ideograph;">然后使用 1.1 billion 的图像数据集来<b>预训练</b>模型。训练时使用逐步增大分辨率的方式，即最开始使用最小分辨率的图像，随着训练的进行不断增加高一级分辨率的图像，直到加到最高分辨率的图像。
 这样可以引导模型在最开始时先学习图像的整体生成，后面再不断学习图像的细节生成。
 同时，在预训练的最后阶段，使用 <a href="https://www.crosslabs.org/blog/diffusion-with-offset-noise" target="_blank">noise-offset</a> 技术($offset = 0.02$)来训练模型，促进模型生成高对比度的图像。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">接下来，本文使用 quality-tuning (即 <b>fine-tuning</b>) 方法来改进模型的生成质量。
 quality-tuning 方法的关键是构造一个<b>小型但是质量极高</b>的数据集来 fine-tuning 模型，因此 fine-tuning数据集必须包含以下性质：</p>
 
-<ul><li><p style="text-align:justify; text-justify:inter-ideograph;"> fine-tuning数据集可以非常小，大约只有几千张图像。</p></li>
+<ul><li><p style="text-align:justify; text-justify:inter-ideograph;"> fine-tuning 数据集可以非常小，大约只有几千张图像。</p></li>
 <li><p style="text-align:justify; text-justify:inter-ideograph;">数据集的质量需要非常高，因此不能使用完全的自动化数据选择，必须需要人工注释进行进一步选择。</p></li></ul>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">这样，即使 fine-tuning数据集很小，quality-tuning 方法不仅可以显著提高生成图像的质量，而且不会牺牲模型的泛化能力。
+<p style="text-align:justify; text-justify:inter-ideograph;">这样，即使 fine-tuning 数据集很小，quality-tuning 方法不仅可以显著提高生成图像的质量，而且不会牺牲模型的泛化能力。
 但是如何选择这样一个数据集是一个问题，因为高质量具有很强的主观性。为此，本文借鉴了摄影领域对高质量图像评判的一些标准来帮助选择图像，同时结合了 Automatic Filtering 和 Human Filtering 来尽可能保证选择的图像的质量。
 具体选择步骤感兴趣的读者可以阅读论文 Section 3.3。</p>
 
@@ -98,16 +98,16 @@ quality-tuning 方法的关键是构造一个<b>小型但是质量极高</b>的�
 通常而言，不同的子任务会采用不同的方式：例如对于修改图像中的某个物体，可能会使用基于 mask 的方法，将其他地方掩码住，只保留指定修改的物体可以编辑；
 而对于风格迁移任务(例如转化为素描风)，则可能会使用基于 adversarial learning 的方法，给定需要转化的输入图像和任意一张目标风格图像，使用 GAN 的训练方式训练图像，使其完成风格转化。
 另一方面是数据集较少，每个任务的数据集相较于传统的图像生成数据集都属于小型数据集。
-为此，本文借鉴了 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-glip/" target="_blank"> GLIP </a>的思想(ps：我猜的🙂，因它们的想法比较像)，
-通过将 $16$ 个任务的输入输出统一到一起，从而训练一个 multi-task image editing model <b>Emu Edit</b>。</p>
+为此，本文借鉴了 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-glip/" target="_blank"> GLIP </a>的思想(ps：我猜的🙂，因为它们的想法比较像)，
+通过统一 $16$ 个任务的输入输出将其聚集为一个任务，从而训练一个 multi-task image editing model <b>Emu Edit</b>。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">具体的$16$ 个任务如下图所示，主要包括 $3$ 个方面：Region-Based Editing，即仅对图像的局部进行编辑的任务；Free-Form Editing，即对图像进行自由编辑的任务(一般是全局编辑)；
 Vision Tasks，即常见的传统视觉任务。对于每个任务，本文将它们的输入输出统一为 $(c_I, c_T, x, i)$：其中 $c_I$ 表示给定的输入图像(需要编辑)，$c_T$ 表示给定的编辑 text (编辑要求)，
 $x$ 表示编辑好的输出图像，$i$ 表示任务的编号($1 \sim 16$)。
 与 GLIP 不同，本文并没有通过将这 $16$ 任务的原有数据集进行转化来获得一个统一的数据集，而是使用各个任务的 SOTA 模型生成伪数据构成数据集。
-其基本思路包括多个方面，对于三个方向的任务数据生成。
-对于 Region-Based Editing + Global + Text Editing，给定一个输入图像的标题 $T_I$，输出图像的标题 $T_O$，以及需要编辑的物体(通常存在在) $O_e$，先使用模型根据 $T_I$ 生成输入图像 $C_I$，
-然后根据 $C_I$ 和 $O_e$ 生成编辑好的输出图像 $C_O$。
+其基本思路包括多个方面，对应三个方向的任务数据生成。
+对于 Region-Based Editing + Global + Text Editing，给定一个输入图像的标题 $T_I$，输出图像的标题 $T_O$，以及需要编辑的物体(通常存在在标题中) $O_e$，先使用模型根据 $T_I$ 生成输入图像 $C_I$，
+然后根据 $C_I$ 和 $O_e$ 生成编辑好的输出图像 $C_O$，可以通过 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-prompt-to-prompt/" target="_blank">P2P</a> 模型实现。
 对于 Style，先使用模型根据 $T_I$ 生成输入图像 $C_I$，再使用 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-plug-and-play/" target="_blank">PNP</a> 模型来实现风格转化。
 对于 Detect & Segment，先使用模型根据 $T_I$ 生成输入图像 $C_I$，再使用 DINO/SAM 模型生成检测/分割的区域，并直接对 $C_I$ 进行标记来获得输出图像 $C_O$。
 对于 Color，先使用模型根据 $T_I$ 生成输入图像 $C_I$，再使用 color fliters & blurring & sharpening and defocusing 来获得输出图像 $C_O$。
@@ -137,11 +137,11 @@ $$\underset{\theta}{min} \mathbb{E}_{y,\epsilon,t}[||\epsilon - \epsilon_\theta(
 但是有些时候模型对于任务的区分不是那么清晰(例如 Global 和 Texture)，容易将它们混淆在一起，从而导致输出图像的质量降低。
 为此，本文通过输入显式的任务标签来引导模型使用正确的编辑方式。具体而言，
 本文借鉴 VQ-VAE 的思想，创建了一个 task embedding table (可训练的)，每个任务标签 $i$ 对应一个 task embedding $v_i$，根据不同的输入选择对应的 $v_i$；
-然后使用 cross-attention 与 U-net 进行交互，同时将其加入到原始输入中，与模型一同优化训练。因此，进阶模型的训练函数更新为：</p>
+然后使用 cross-attention 与 U-net 进行交互，同时将其加入到原始输入 $concat(z_t,y)$ 中，与模型一同优化训练。因此，进阶模型的训练函数更新为：</p>
 
 $$\underset{\theta,v_1,...,v_k}{min} \mathbb{E}_{\hat{y},\epsilon,t}[||\epsilon - \epsilon_\theta(z_t,t,E(c_I),c_T, v_i)||_2^2]$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中 $\k$ 表示任务的数量，$y = (c_T,c_I,x,i)$。而在 inference 阶段，本文训练一个 Flan-T5-XL 模型来根据输入的编辑指令 $c_T$ 预测对应的任务标签 $i$。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $k$ 表示任务的数量，$y = (c_T,c_I,x,i)$。而在 inference 阶段，本文训练一个 Flan-T5-XL 模型来根据输入的编辑指令 $c_T$ 预测对应的任务标签 $i$。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">使用显式的 task embedding 除了可以帮助模型更好地学习外，还能够方便模型对其他任务的扩展。
 当想要将模型扩展到 $16$ 个任务之外的图像编辑子任务时(如图像修复等)，可以保持模型的参数权重不变，初始化一个新的 task embedding $v_{new}$ (可训练的)，
@@ -149,14 +149,14 @@ $$\underset{\theta,v_1,...,v_k}{min} \mathbb{E}_{\hat{y},\epsilon,t}[||\epsilon 
 
 $$\underset{v_{new}}{min} \mathbb{E}_{y,\epsilon,t}[||\epsilon - \epsilon_\theta(z_t,t,E(c_I),c_T, v_new)||_2^2]$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">进一步地，当使用模型连续进行一系列地图像编辑任务(例如先在图像上添加一个物体，然后再在结果图像上修改风格等)，其重构和数值误差很可能就会累计，导致后面的图像质量较差。
-为此，本文在每一步 edit 之后都使用了 pre-pixel thresholding 步骤。
+<p style="text-align:justify; text-justify:inter-ideograph;">进一步地，当使用模型连续进行一系列的图像编辑任务(例如先在图像上添加一个物体，然后再在结果图像上修改风格等)，其重构和数值误差很可能就会累计，导致后面的图像质量较差。
+为此，本文在每一步 edit 之后都使用了 pre-pixel thresholding 步骤来筛选生成图像的像素值。
 具体而言，在每一步 edit $s$ 中，模型生成编辑后的图像 $c_I^{s+1}$，而其输入图像为 $c_I^s$。本文设置一个阈值 $\alpha$，对于每一个像素 $p_{i,j}$ (表示第 $i$ 行，第 $j$ 列)，
 只有当输出图像的像素值和输入图像的像素值之差大于阈值时，才使用输出图像的像素值；否则抛弃输出图像所预测的像素值，使用原始输入图像的像素值，即：</p>
 
 $$c_I^{s+1} = \begin{cases}c_I^s, & if\ \bar{d} < \alpha \\ c_I^{s+1}, & otherwise \end{cases}; d = ||c_I^{s+1} - c_I^s||_1$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中，$\bar{d}$ 表示经过低通滤波后的 $d$。本文选择 $\alpha = 0.03$</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，$\bar{d}$ 表示经过低通滤波后的 $d$。本文选择 $\alpha = 0.03$。</p>
 
 <h1>Emu Video</h1>
 
@@ -167,19 +167,19 @@ $$c_I^{s+1} = \begin{cases}c_I^s, & if\ \bar{d} < \alpha \\ c_I^{s+1}, & otherwi
 <h2>Method</h2>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">相较于 text-to-image，text-to-video 任务更加困难，因为它涉及多帧图像的生成，同时还要保证图像之间的一致性(连续性)。
-在 NLP 领域中，对于序列生成的问题通常使用自回归方法，即一次生成一个元素，然后以已经生成好的元素作为额外的条件来帮助模型生成下一个元素。
-因此，本文假设增强条件信息对于高质量视频的生成也很重要，因为它本质上是一个时间序列生成问题。
+在 NLP 领域中，对于序列生成的问题通常使用自回归方法，即一次生成一个元素，然后以已经生成好的元素作为额外的条件信息来帮助模型生成下一个元素。
+因此，本文假设<b>增强条件信息</b>对于高质量视频的生成也很重要，因为它本质上是一个时间序列生成问题。
 但是如果使用自回归方法，则会大大增加生成时间和计算量(特别是对于 DM 模型这种一次生成就需要多次采样的模型)。
-为此，本文使用另一个条件信息来辅助模型学习，即视频第一帧的图像。
+为此，本文使用另一个条件信息来辅助模型学习，即<b>视频第一帧的图像</b>。
 为了实现仅使用 text 作为输入，又能实现图像作为条件监督，
 本文将 text-to-video 任务分解为 $2$ 部分：第一部分是使用给定的 text 生成图像，作为视频的第一帧；第二部分是使用给定的 text 和第一步生成的第一帧图像，生成视频；同时，本文仅使用一个生成模型来生成图像和视频。
 具体而言，如下图，本文选择 Emu 模型 $\mathcal{F}$ 作为 baseling。首先将模型 $\mathcal{F}$ 使用预训练好的 text-to-image model 进行初始化，使其能够生成高质量图像，
 这样，我们就只需要关注第二部分的视频生成。然后，本文使用 video-text 对来继续训练模型，并将视频的第一帧 $I$ 作为图像条件来辅助模型学习
 (即在训练时没有第一步生成图像阶段，而是直接使用 ground-truth 视频的第一帧作为第一步生成得到的图像)。
 模型输入 text $p$ 和图像 $I$，预测输出对应的视频 $V \in \mathbb{R}^{T \times 3 \times H' \times W'}$ (包含 $T$ 帧)。
-因为 Emu 是针对图像的 latent DM，所以需要针对视频进行一定的改进。
+因为 Emu 是针对图像的 latent DM，所以需要针对其进行一定的改进以适应输入输出视频。
 首先使用 image autoencoder 的 encoder 将每帧图像(独立地)都转化为潜变量 $X \in \mathbb{R}^{T \times C \times H \times W}$；
-而在去噪完成后，使用 image autoencoder 的 decoder 将每帧图像的潜变量(独立地)都转化回图像 $V \in \mathbb{R}^{T \times 3 \times H' \times W'}$。
+然后在去噪完成后，使用 image autoencoder 的 decoder 将每帧图像的潜变量(独立地)都转化回图像 $V \in \mathbb{R}^{T \times 3 \times H' \times W'}$。
 而在去噪环节，首先将每帧图像的潜变量独立地进行加噪，获得含噪输入 $X_t$，然后使用 U-net 独立地对每一帧含噪图像的潜变量进行去噪。
 为了增强各帧之间的信息交互学习，本文在 U-net 的每个 spatial convolution (空间卷积)后增加一个 1D 的 temporal convolution (时间卷积)，
 在每个 spatial attention (空间注意力) 后增加一个 1D 的 temporal attention (时间注意力)，将它们初始化(identity kernels for convolution, zero for attention MLP layer)，
