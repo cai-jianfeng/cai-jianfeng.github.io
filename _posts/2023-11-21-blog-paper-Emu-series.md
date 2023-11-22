@@ -205,4 +205,4 @@ $\mathcal{I}$ 的模型架构和 $\mathcal{F}$ 一样，因此它只能输入输
 然后使用 $\mathcal{F}$ (经过 temporal convolution 和 temporal attention) 输入 $I$ 和 $T$ 以及随机噪声 $V_\epsilon$ 输出生成的视频 $V$，
 最后使用 interpolation model $\mathcal{I}$ 输入低帧率视频 $V$ 和随机噪声 $V_\epsilon'$ 输出生成的高帧率视频 $V'$。</p>
 
-![Emu Video Architecture](/images/paper_EMU-VIDEO_architecture.png)
+<img src="https://cai-jianfeng.github.io/images/paper_EMU-VIDEO_architecture.png">
