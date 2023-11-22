@@ -160,3 +160,10 @@ $$c_I^{s+1} = \begin{cases}c_I^s, & if\ \bar{d} < \alpha \\ c_I^{s+1}, & otherwi
 
 <h1>Emu Video</h1>
 
+<h2>Question</h2>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">如何提高 text-to-video model 的性能，包括视频质量，视频一致性以及多样性</p>
+
+<h2>Method</h2>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
