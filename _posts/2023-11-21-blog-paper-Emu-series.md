@@ -118,11 +118,22 @@ $x$ 表示编辑好的输出图像，$i$ 表示任务的编号($1 \sim 16$)。
 本文借助了 LLM 的超强文本生成能力，通过为每个任务构造一个拥有上下文场景(包括任务和目的)的 agent，然后规定其输出格式(例如 JSON)，并使用例子进行说明，然后引导 LLM agent 输出和例子相似的数据。
 其输出的格式至少包括以下字段：一个编辑指令(editing instruction)；一个输入 & 输出图像的标题(caption)；需要编辑的物体的名字(object)。
 caption 和 object 主要是作为生成数据时的输入，而 editing instruction 主要是作为训练时的输入。
-因此，本文的数据集从头到尾都是生成的，包括需要编辑的图像的类型，编辑的类型，以及给定的编辑指令等。</p>
+因此，本文的数据集从头到尾都是生成的，包括需要编辑的图像的类型，编辑的类型，以及给定的编辑指令等。
+在生成了数据集后，本文还使用多个自动过滤方法来提出低质量的图像，最终保留较高质量的图像。
+具体的数据生成使用的模型和过滤方法等可以参考<a href="https://arxiv.org/abs/2311.10089" target="_blank" title="Emu Edit">原文</a>。</p>
 
 ![16 dataset](/images/paper_Emu_Edit_dataset.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+<p style="text-align:justify; text-justify:inter-ideograph;">在获得了数据集(格式为 $(c_I, c_T, x, i)$)后，本文便使用 DM 模型来生成编辑后的图像，而将输入图像 $c_I$，编辑指令 $c_T$ 和任务标签 $i$ 作为条件限制模型的输出。
+具体而言，本文选择 Emu 模型作为 baseline，使用 encoder 将目标图像 $x$ 转化为潜变量 $z = E(x)$，并使用扩散过程将其转化为含噪潜变量 $z_t, t \in [1,...,T]$ 作为模型的输入。
+对于输入编辑指令 $c_T$，本文将它作为条件，使用 Text Embedding encoder 将其编码为 embedding，然后使用 cross-attention 与 $z_t$ 进行交互学习；
+而对于输入图像 $c_I$，本文首先使用 encoder 将其转化为潜变量 $y = E(c_I)$，然后将其和 $z_t$ 在 channel 维度进行 concat 作为输入，对应地模型的输入 channel 也需要增加，
+其权重初始化为 $0$。同时使用 classifer-free guidance ($\gamma_I=1.5$ (image condition) & $\gamma_T=5.0$ (text condition)) 和 zero signal-to-noise ratio (SNR) 来促进模型学习。
+这样获得的初级模型训练函数为：</p>
+
+$$\underset{\theta}{min} \mathbb{E}_{y,\epsilon,t}[||\epsilon - \epsilon_\theta(z_t,t,E(c_I),c_T)||_2^2]$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $\epsilon \in \mathcal{N}(0,1)$ 表示添加的噪声，$y = (c_T,c_I,x)$</p>
 
 <h1>Emu Video</h1>
 
