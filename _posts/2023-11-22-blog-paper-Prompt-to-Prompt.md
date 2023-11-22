@@ -1,7 +1,7 @@
 ---
 title: 'Prompt-to-Prompt'
 date: 23-11-22
-permalink: /posts/2023/11/blog-paper-emu-series/
+permalink: /posts/2023/11/blog-paper-prompt-to-prompt/
 tags:
   - 论文阅读
 ---
