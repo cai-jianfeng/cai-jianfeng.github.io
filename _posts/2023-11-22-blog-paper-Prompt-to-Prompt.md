@@ -10,7 +10,7 @@ tags:
 
 <p style="text-align:justify; text-justify:inter-ideograph;">发表会议：International Conference on Learning Representations (ICLR 2023)</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">第一作者：Xiaoliang Dai & Shelly Sheynin & Rohit Girdhar (Google Research)</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">第一作者：Amir Hertz (Google Research)</p>
 
 Question
 ===
