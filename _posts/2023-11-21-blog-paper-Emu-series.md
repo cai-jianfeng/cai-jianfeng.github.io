@@ -93,6 +93,35 @@ quality-tuning 方法的关键是构造一个<b>小型但是质量极高</b>的�
 
 <h2>Method</h2>
 
+<p style="text-align:justify; text-justify:inter-ideograph;">Instruction-based image editing 任务面临的最大问题是如何按照给定的文本要求<b>精确地</b>编辑给定的图像，即变动指定的位置，其他地方保持不变。
+一方面是这个任务的范围太广(包括可以用文本描述的任意编辑问题)。
+通常而言，不同的子任务会采用不同的方式：例如对于修改图像中的某个物体，可能会使用基于 mask 的方法，将其他地方掩码住，只保留指定修改的物体可以编辑；
+而对于风格迁移任务(例如转化为素描风)，则可能会使用基于 adversarial learning 的方法，给定需要转化的输入图像和任意一张目标风格图像，使用 GAN 的训练方式训练图像，使其完成风格转化。
+另一方面是数据集较少，每个任务的数据集相较于传统的图像生成数据集都属于小型数据集。
+为此，本文借鉴了 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-glip/" target="_blank"> GLIP </a>的思想(ps：我猜的🙂，因它们的想法比较像)，
+通过将 $16$ 个任务的输入输出统一到一起，从而训练一个 multi-task image editing model <b>Emu Edit</b>。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">具体的$16$ 个任务如下图所示，主要包括 $3$ 个方面：Region-Based Editing，即仅对图像的局部进行编辑的任务；Free-Form Editing，即对图像进行自由编辑的任务(一般是全局编辑)；
+Vision Tasks，即常见的传统视觉任务。对于每个任务，本文将它们的输入输出统一为 $(c_I, c_T, x, i)$：其中 $c_I$ 表示给定的输入图像(需要编辑)，$c_T$ 表示给定的编辑 text (编辑要求)，
+$x$ 表示编辑好的输出图像，$i$ 表示任务的编号($1 \sim 16$)。
+与 GLIP 不同，本文并没有通过将这 $16$ 任务的原有数据集进行转化来获得一个统一的数据集，而是使用各个任务的 SOTA 模型生成伪数据构成数据集。
+其基本思路包括多个方面，对于三个方向的任务数据生成。
+对于 Region-Based Editing + Global + Text Editing，给定一个输入图像的标题 $T_I$，输出图像的标题 $T_O$，以及需要编辑的物体(通常存在在) $O_e$，先使用模型根据 $T_I$ 生成输入图像 $C_I$，
+然后根据 $C_I$ 和 $O_e$ 生成编辑好的输出图像 $C_O$。
+对于 Style，先使用模型根据 $T_I$ 生成输入图像 $C_I$，再使用 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-plug-and-play/" target="_blank">PNP</a> 模型来实现风格转化。
+对于 Detect & Segment，先使用模型根据 $T_I$ 生成输入图像 $C_I$，再使用 DINO/SAM 模型生成检测/分割的区域，并直接对 $C_I$ 进行标记来获得输出图像 $C_O$。
+对于 Color，先使用模型根据 $T_I$ 生成输入图像 $C_I$，再使用 color fliters & blurring & sharpening and defocusing 来获得输出图像 $C_O$。
+对于 Image-to-Image Translation，先使用模型根据 $T_I$ 生成输入图像 $C_I$，
+再使用 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-controlnet/" target="_blank">ControlNet</a> 模型来实现图像转化。
+这样就可以生成各个任务的统一格式的伪数据，并将它们组成一个新数据集。
+可以看到，上述的生成过程至少需要 $T_I$，$T_O$ 和 $O_e$ 和任务 $i$。
+本文借助了 LLM 的超强文本生成能力，通过为每个任务构造一个拥有上下文场景(包括任务和目的)的 agent，然后规定其输出格式(例如 JSON)，并使用例子进行说明，然后引导 LLM agent 输出和例子相似的数据。
+其输出的格式至少包括以下字段：一个编辑指令(editing instruction)；一个输入 & 输出图像的标题(caption)；需要编辑的物体的名字(object)。
+caption 和 object 主要是作为生成数据时的输入，而 editing instruction 主要是作为训练时的输入。
+因此，本文的数据集从头到尾都是生成的，包括需要编辑的图像的类型，编辑的类型，以及给定的编辑指令等。</p>
+
+![16 dataset](/images/paper_Emu_Edit_dataset.png)
+
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 <h1>Emu Video</h1>
