@@ -166,4 +166,43 @@ $$c_I^{s+1} = \begin{cases}c_I^s, & if\ \bar{d} < \alpha \\ c_I^{s+1}, & otherwi
 
 <h2>Method</h2>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+<p style="text-align:justify; text-justify:inter-ideograph;">相较于 text-to-image，text-to-video 任务更加困难，因为它涉及多帧图像的生成，同时还要保证图像之间的一致性(连续性)。
+在 NLP 领域中，对于序列生成的问题通常使用自回归方法，即一次生成一个元素，然后以已经生成好的元素作为额外的条件来帮助模型生成下一个元素。
+因此，本文假设增强条件信息对于高质量视频的生成也很重要，因为它本质上是一个时间序列生成问题。
+但是如果使用自回归方法，则会大大增加生成时间和计算量(特别是对于 DM 模型这种一次生成就需要多次采样的模型)。
+为此，本文使用另一个条件信息来辅助模型学习，即视频第一帧的图像。
+为了实现仅使用 text 作为输入，又能实现图像作为条件监督，
+本文将 text-to-video 任务分解为 $2$ 部分：第一部分是使用给定的 text 生成图像，作为视频的第一帧；第二部分是使用给定的 text 和第一步生成的第一帧图像，生成视频；同时，本文仅使用一个生成模型来生成图像和视频。
+具体而言，如下图，本文选择 Emu 模型 $\mathcal{F}$ 作为 baseling。首先将模型 $\mathcal{F}$ 使用预训练好的 text-to-image model 进行初始化，使其能够生成高质量图像，
+这样，我们就只需要关注第二部分的视频生成。然后，本文使用 video-text 对来继续训练模型，并将视频的第一帧 $I$ 作为图像条件来辅助模型学习
+(即在训练时没有第一步生成图像阶段，而是直接使用 ground-truth 视频的第一帧作为第一步生成得到的图像)。
+模型输入 text $p$ 和图像 $I$，预测输出对应的视频 $V \in \mathbb{R}^{T \times 3 \times H' \times W'}$ (包含 $T$ 帧)。
+因为 Emu 是针对图像的 latent DM，所以需要针对视频进行一定的改进。
+首先使用 image autoencoder 的 encoder 将每帧图像(独立地)都转化为潜变量 $X \in \mathbb{R}^{T \times C \times H \times W}$；
+而在去噪完成后，使用 image autoencoder 的 decoder 将每帧图像的潜变量(独立地)都转化回图像 $V \in \mathbb{R}^{T \times 3 \times H' \times W'}$。
+而在去噪环节，首先将每帧图像的潜变量独立地进行加噪，获得含噪输入 $X_t$，然后使用 U-net 独立地对每一帧含噪图像的潜变量进行去噪。
+为了增强各帧之间的信息交互学习，本文在 U-net 的每个 spatial convolution (空间卷积)后增加一个 1D 的 temporal convolution (时间卷积)，
+在每个 spatial attention (空间注意力) 后增加一个 1D 的 temporal attention (时间注意力)，将它们初始化(identity kernels for convolution, zero for attention MLP layer)，
+然后保持原始模型的参数不变，仅训练这些新增的模块的参数。
+而对于 image condition，本文将图像单独表示为一个视频，并使用 zero-pad 将其扩展为 $I_V \in \mathbb{R}^{T \times C \times H \times W}$ 的张量，
+同时构造一个 mask $ M \in \mathbb{R}^{T \times 1 \times H \times W}$ 来指示图像所在的位置(图像所在的位置设为 $1$，其他位置设为 $0$)，
+最后将 $I_V, M, X$ 在 channel 的维度上进行 concat，作为模型的输入，这样就将 image 作为条件添加到模型训练中。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在训练策略上，Emu Video 和 Emu 类似，首先使用 multi-stage multi-resolution 的方式进行训练，
+即在训练的第一阶段使用低分辨率的视频进行训练($256px,8fps,1s,70K\ iteration$)，第二阶段使用高分辨率的视频进行训练($512px,4fps,2s,15K\ iteration$)，
+第三阶段，使用更高帧率的视频进行再训练($512px,4fps,4s,25K\ iteration$)。然后使用极高质量的小型视频数据集进行 fine-tuning。
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在上述的训练过程中，模型 $\mathcal{F}$ 是在低帧率的视频输入下进行训练。
+而在训练完成后，本文提出了 interpolation model $\mathcal{I}$ 将 $\mathcal{F}$ 输出的低帧率视频 $V \in \mathbb{R}^{T \times 3 \times H' \times W'}$ 
+转化为高帧率视频 $V' \in \mathbb{R}^{T_p \times 3 \times H' \times W'}, T_p = 37$。
+$\mathcal{I}$ 的模型架构和 $\mathcal{F}$ 一样，因此它只能输入输出相同帧数的视频。
+为此，和上述 Image condition 类似，本文将输入视频  $V \in \mathbb{R}^{T \times 3 \times H' \times W'}$ ($T$ 帧) 使用 zero-interleave 
+填充到 $\hat{V} \in \mathbb{R}^{T_p \times 3 \times H' \times W'}$ ($T_p$ 帧)；
+然后构造一个 mask $ m \in \mathbb{R}^{T \times 1 \times H \times W}$ 来指示有效视频帧所在的位置(有效视频帧所在的位置设为 $1$，其他位置设为 $0$)，
+最后使用 $\mathcal{F}$ 初始化，并也只训练 temporal convolution 和 temporal attention。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在 inference 阶段，给定一个 text prompt $T$，首先使用 $\mathcal{F}$ (不经过 temporal convolution 和 temporal attention) 输入 $T$ 和随机噪声 $I_\epsilon$ 输出生成的图像 $I$；
+然后使用 $\mathcal{F}$ (经过 temporal convolution 和 temporal attention) 输入 $I$ 和 $T$ 以及随机噪声 $V_\epsilon$ 输出生成的视频 $V$，
+最后使用 interpolation model $\mathcal{I}$ 输入低帧率视频 $V$ 和随机噪声 $V_\epsilon'$ 输出生成的高帧率视频 $V'$。</p>
+
+![Emu Video Architecture](/images/paper_EMU-VIDEO_architecture.png)
