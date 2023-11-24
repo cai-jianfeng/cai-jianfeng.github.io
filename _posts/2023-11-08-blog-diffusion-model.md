@@ -128,12 +128,11 @@ $$\begin{aligned}\mu_1 & = \sqrt{1 - \beta_t}x_{t-1};&\ \sigma_1^2 & = \beta_t &
 
 $$\begin{aligned} q(x_{t-1}\vert x_t,x_0) & \Rightarrow \dfrac{\dfrac{1}{\sqrt{2\pi}\sigma_1}exp(-\dfrac{(x-\mu_1)^2}{2\sigma_1^2}) \times \dfrac{1}{\sqrt{2\pi}\sigma_2}exp(-\dfrac{(x-\mu_2)^2}{2\sigma_2^2})}{\dfrac{1}{\sqrt{2\pi}\sigma_3}exp(-\dfrac{(x-\mu_3)^2}{2\sigma_3^2})} \\
 & \Rightarrow \dfrac{1}{\sqrt{2\pi}\dfrac{\sigma_1\sigma_2}{\sigma_3}}exp(-\dfrac{(x-\mu_1)^2}{2\sigma_1^2}-\dfrac{(x-\mu_2)^2}{2\sigma_2^2}+\dfrac{(x-\mu_3)^2}{2\sigma_3^2}) \\
-& \Rightarrow \sigma^2 = \dfrac{\sigma_1^2\sigma_2^2}{\sigma_3^2} = \dfrac{\beta_t(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} \\
+& \Rightarrow \sigma = \dfrac{\sigma_1\sigma_2}{\sigma_3} = \dfrac{\beta_t(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} \\
 & \Rightarrow -\dfrac{(x-\mu)^2}{2\sigma^2}) = -\dfrac{(x-\mu_1)^2}{2\sigma_1^2}-\dfrac{(x-\mu_2)^2}{2\sigma_2^2}+\dfrac{(x-\mu_3)^2}{2\sigma_3^2} \\ 
-& \Rightarrow \dfrac{x_t^2 - 2 \sqrt{\alpha_t}x_t{\color{Blue}x_{t-1}}+\alpha_t{\color{Red}x_{t-1}^2}}{\beta_t} + \dfrac{{\color{Red}{x_{t-1}^2} - 2\sqrt{\bar{\alpha}_{t-1}}x_0{\color{Blue}x_{t-1}} + \bar{\alpha}_{t-1}x_0^2}{1 - \bar{\alpha}_{t-1}} - \dfrac{(x_t - \sqrt{\bar{\alpha}_t}x_0)^2}{1 - \bar{\alpha}_t} \\ 
-& \Rightarrow {\color{Red}(\dfrac{\alpha_t}{\beta_t} + \dfrac{1}{1 - \bar{\alpha}_{t-1}})x_{t-1}^2 -} {\color{Blue}(\dfrac{2\sqrt{\alpha_t}}{\beta_t}x_t + \dfrac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}x_0)x_{t-1}} + C(x_t,x_0) \\ 
-& \Rightarrow \mu = \dfrac{2a}{b} = \dfrac{2(\dfrac{\alpha_t}{\beta_t} + \dfrac{1}{1 - \bar{\alpha}_{t-1}})}{\dfrac{2\sqrt{\alpha_t}}{\beta_t}x_t + \dfrac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}x_0} \\ 
-& \Rightarrow \mu = \dfrac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1 - \bar{\alpha}_{t}}x_t + \dfrac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t}x_0 \\ 
+& \Rightarrow \dfrac{x_t^2 - 2 \sqrt{\alpha_t}x_t{\color{Blue}x_{t-1}}+\alpha_t{\color{Red}x_{t-1}^2}}{\beta_t} + \dfrac{{\color{Red}x_{t-1}^2} - 2\sqrt{\bar{\alpha}_{t-1}}x_0{\color{Blue}x_{t-1}} + \bar{\alpha}_{t-1}x_0^2}{1 - \bar{\alpha}_{t-1}} - \dfrac{(x_t - \sqrt{\bar{\alpha}_t}x_0)^2}{1 - \bar{\alpha}_t} \\ 
+& \Rightarrow {\color{Blue}(\dfrac{\alpha_t}{\beta_t} + \dfrac{1}{1 - \bar{\alpha}_{t-1}})x_{t-1}^2} - {\color{Blue}(\dfrac{2\sqrt{\alpha_t}}{\beta_t}x_t + \dfrac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}x_0)x_{t-1}} + C(x_t,x_0) \\ 
+& \Rightarrow \mu = \dfrac{2a}{b} = \dfrac{2(\dfrac{\alpha_t}{\beta_t} + \dfrac{1}{1 - \bar{\alpha}_{t-1}})}{\dfrac{2\sqrt{\alpha_t}}{\beta_t}x_t + \dfrac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}x_0} = \dfrac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1 - \bar{\alpha}_{t}}x_t + \dfrac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t}x_0 \\ 
 & \Rightarrow -\dfrac{(x-\dfrac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1 - \bar{\alpha}_{t}}x_t + \dfrac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t}x_0)^2}{2(\dfrac{\beta_t(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t})^2}\end{aligned}$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>B.</b> 代码框架：在<b>训练</b>时，首先，你需要预设置方差序列 $\{\beta_{t} \in (0, 1)\}_{t=1}^T$ 并计算 $\bar{\alpha}_{1:T}$。
