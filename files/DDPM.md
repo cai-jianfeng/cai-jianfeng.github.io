@@ -95,7 +95,7 @@ $\begin{align}x_{\tau_{i-1}} & \sqrt{\bar{\alpha}_{t-1}}(\dfrac{x_t - \sqrt{1 - 
 
 The resulting *ablated diffusion model* (**ADM**) and the one with additional classifier guidance (**ADM-G**): 
 
-![1700804320466](C:\Users\86199\AppData\Roaming\Typora\typora-user-images\1700804320466.png)
+![classifier_guidance](/images/classifier_guidance.png)
 
 ## Classifer-Free Guidance
 
