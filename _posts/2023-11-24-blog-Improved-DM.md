@@ -13,8 +13,7 @@ What are Diffusion Models?</a>，继续详细讲述了最近大火的 DM 模型�
 <p style="text-align:justify; text-justify:inter-ideograph;">注意：公式中的$\color{Green}{绿色}$字体公式表示在 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-diffusion-model/" target="_blank">The Basic Knowledge of Diffusion Model (DM)</a> 中已经推理得到了。
 $\color{Red}{红色}$字体公式表示使用$\color{Green}{绿色}$字体的公式进一步推理得到的/从附录中推理得到的。
 
-DDIM
-===
+<h1>DDIM</h1>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">回顾 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-diffusion-model/" target="_blank">The Basic Knowledge of Diffusion Model (DM)</a>，$x_{t-1}$ 可以由如下方程推导：</p>
 
@@ -48,7 +47,7 @@ $$\color{Green}{x_{\tau_i} = \sqrt{\bar{\alpha}_{\tau_i}}x_0 + \sqrt{1 - \bar{\a
 <p style="text-align:justify; text-justify:inter-ideograph;">接着将 $x_0$ 代入上述的更新公式(公式 (8))，最终预测得到更新的 $x_{\tau_{i-1}}$
 
 $$\begin{align}x_{\tau_{i-1}} & = \sqrt{\bar{\alpha}_{t-1}}x_0 + \sqrt{1 - \bar{\alpha}_{t-1}}\dfrac{x_{\tau_i} - \sqrt{\bar{\alpha}_t}x_0}{\sqrt{1 - \bar{\alpha}_t}} \\ 
-&  = \sqrt{\bar{\alpha}_{t-1}}\dfrac{1}{\sqrt{\bar{\alpha}_t}}(x_t - \sqrt{1 - \bar{\alpha}_t}{\epsilon}_t) + \sqrt{1 - \bar{\alpha}_{t-1}}\dfrac{\color{Blue}{x_{\tau_i}} - \color{Yellow}{\sqrt{\bar{\alpha}_t}\dfrac{1}{\sqrt{\bar{\alpha}_t}}}(\color{Blue}{x_t} - \color{Orange}{\sqrt{1 - \bar{\alpha}_t}}{\epsilon}_t)}{\color{Orange}{\sqrt{1 - \bar{\alpha}_t}}} \\ & = \sqrt{\bar{\alpha}_{t-1}}(\dfrac{x_t - \sqrt{1 - \bar{\alpha}_t}{\epsilon}_t}{\sqrt{\bar{\alpha}_t}}) + \sqrt{1 - \bar{\alpha}_{t-1}}\epsilon_t \end{align}$$
+&  = \sqrt{\bar{\alpha}_{t-1}}\dfrac{1}{\sqrt{\bar{\alpha}_t}}(x_t - \sqrt{1 - \bar{\alpha}_t}{\epsilon}_t) + \sqrt{1 - \bar{\alpha}_{t-1}}\dfrac{\color{Blue}{x_{\tau_i}} - \color{Purple}{\sqrt{\bar{\alpha}_t}\dfrac{1}{\sqrt{\bar{\alpha}_t}}}(\color{Blue}{x_t} - \color{Orange}{\sqrt{1 - \bar{\alpha}_t}}{\epsilon}_t)}{\color{Orange}{\sqrt{1 - \bar{\alpha}_t}}} \\ & = \sqrt{\bar{\alpha}_{t-1}}(\dfrac{x_t - \sqrt{1 - \bar{\alpha}_t}{\epsilon}_t}{\sqrt{\bar{\alpha}_t}}) + \sqrt{1 - \bar{\alpha}_{t-1}}\epsilon_t \end{align}$$
 
 <h1>Condition</h1>
 
@@ -117,30 +116,5 @@ $$\bar{\epsilon}_\theta(x,t) = \epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t
 因此，我们可以利用 ```torch``` 的自动求导机制对 $x_t$ 进行求导，而由于 $x_t$ 的梯度和 $\epsilon_\theta(x_t,t)$ 形状相同(都是原始图像的形状)，
 因此我们可以直接将它们进行相加，具体代码框架如下：
 
-```python
-def cond_fn(x, t, y):
-    """
-    x 表示 x_t; y 表示 label
-    """
-    with torch.enable_grad():
-        x_in = x.detach().requires_grad_(True)  # 将 x 设置为需要梯度
-        logits = classifier(x_in, t)  #  classifier 前向过程
-        log_probs = F.log_softmax(logits, dim=-1)  # softmax 求概率
-        selected = log_probs[range(len(logits)), y.view(-1)]
-        # th.autograd.grad(selected.sum(), x_in) 是通过 selected 反向传播求解 x_in 的梯度，其形状和 x_in 一致；classifier_scale 即 $$\omega$$
-        return torch.autograd.grad(selected.sum(), x_in)[0] * classifier_scale
-def condition_mean(self, cond_fn, p_mean_var, x, t, model_kwargs=None):
-    """
-        Compute the mean for the previous step, given a function cond_fn that
-        computes the gradient of a conditional log probability with respect to
-        x. In particular, cond_fn computes grad(log(p(y|x))), and we want to
-        condition on y.
-
-        This uses the conditioning strategy from Sohl-Dickstein et al. (2015).
-        """
-    gradient = cond_fn(x, self._scale_timesteps(t), y)
-    # p_mean_var["mean"] 表示原始的 $$\epsilon$$; p_mean_var["variance"] 表示 $$\sqrt{1 - \bar{\alpha}_t}$$
-    new_mean = (p_mean_var["mean"] + p_mean_var["variance"] * gradient.float())
-    return new_mean  # 经过 classifier-guidance 的 $$\epsilon$$
-```
+<img src="https://cai-jianfeng.github.io/images/classifier_guidance_code.png">
 
