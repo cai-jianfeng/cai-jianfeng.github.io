@@ -23,7 +23,7 @@ $$q_\sigma(x_{t-1}|x_t,x_0) = \mathcal{N}(x_{t-1};\sqrt{\bar{\alpha}_{t-1}}x_0 +
 
 $$q_\sigma(x_{t-1}|x_t,x_0) = \mathcal{N}(x_{t-1};\sqrt{\bar{\alpha}_{t-1}}x_0 + \sqrt{1 - \bar{\alpha}_{t-1}}\dfrac{x_t - \sqrt{\bar{\alpha}_t}x_0}{\sqrt{1 - \bar{\alpha}_t}}, 0)$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">同时令 $$\{\tau_1,...,\tau_S\}, \tau_1 < ... < \tau_S \in [1, T], S < T$$ 就可以获得 <b>Improved DDPM</b> 的改进，即从 $[1,T]$ 抽样部分步骤完成逆扩散过程：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">同时令 $\{\tau_1,...,\tau_S\}, \tau_1 < ... < \tau_S \in [1, T], S < T$，就可以获得 <b>Improved DDPM</b> 的改进，即从 $[1,T]$ 抽样部分步骤完成逆扩散过程：</p>
 
 $$q_{\sigma, \tau}(x_{\tau_{i-1}}|x_{\tau_i},x_0) = \mathcal{N}(x_{\tau_{i-1}};\sqrt{\bar{\alpha}_{t-1}}x_0 + \sqrt{1 - \bar{\alpha}_{t-1} - \sigma_t^2}\dfrac{x_{\tau_i} - \sqrt{\bar{\alpha}_t}x_0}{\sqrt{1 - \bar{\alpha}_t}}, \sigma^2_tI)$$ 
 
@@ -45,26 +45,46 @@ $$x_{\tau_i} = \sqrt{\bar{\alpha}_{\tau_i}}x_0 + \sqrt{1 - \bar{\alpha}_{\tau_i}
 $$\begin{align}x_{\tau_{i-1}} & = \sqrt{\bar{\alpha}_{t-1}}x_0 + \sqrt{1 - \bar{\alpha}_{t-1}}\dfrac{x_{\tau_i} - \sqrt{\bar{\alpha}_t}x_0}{\sqrt{1 - \bar{\alpha}_t}} \\ 
 &  = \sqrt{\bar{\alpha}_{t-1}}\dfrac{1}{\sqrt{\bar{\alpha}_t}}(x_t - \sqrt{1 - \bar{\alpha}_t}{\epsilon}_t) + \sqrt{1 - \bar{\alpha}_{t-1}}\dfrac{\color{Blue}{x_{\tau_i}} - \color{Red}{\sqrt{\bar{\alpha}_t}\dfrac{1}{\sqrt{\bar{\alpha}_t}}}(\color{Blue}{x_t} - \color{Orange}{\sqrt{1 - \bar{\alpha}_t}}{\epsilon}_t)}{\color{Orange}{\sqrt{1 - \bar{\alpha}_t}}} \\ & = \sqrt{\bar{\alpha}_{t-1}}(\dfrac{x_t - \sqrt{1 - \bar{\alpha}_t}{\epsilon}_t}{\sqrt{\bar{\alpha}_t}}) + \sqrt{1 - \bar{\alpha}_{t-1}}\epsilon_t \end{align}$$
 
-Condition
-===
+<h1>Condition</h1>
 
-## Classifier Guidance
+<h2>Classifier Guidance</h2>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">可以训练一个分类器 $f_\phi(y \vert x_t,t)$，
 其将含噪图像 $x_t$ 分类为其类别 $y$，然后使用分类器对于输入(含噪图像) $x_t$ 的梯度 $\nabla_{x_t}log\ f_\phi(y \vert x_t)$ 来指导模型的逆扩散过程，
-使其偏移到基于条件 $y$ 进行逆扩散生成图像的样本空间。</p>
+使其偏移到基于条件 $y$ 进行逆扩散生成图像的样本空间。
+具体而言，假设无条件的样本空间为 $q(x)$，则基于条件 $y$ 的样本空间则为 $q(x,y)$，通过贝叶斯规则的转化，即可实现从无条件到有条件的转化。</p>
 
-$$\nabla_{x_t}log\ q(x_t) = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}\epsilon_\theta(x_t,t)$$
+$$\begin{align}\nabla_{x_t}log\ q(x_t,y) & = \nabla_{x_t}log\ q(x_t) + \nabla_{x_t}log\ q(y|x_t) \\ & \approx \nabla_{x_t}log\ q(x_t) + \nabla_{x_t}log\ f_\phi(y|x_t), \nabla_{x_t}log\ q(x_t) = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}\epsilon_\theta(x_t,t) \\ 
+& = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}\epsilon_\theta(x_t,t) + \nabla_{x_t}log\ f_\phi(y|x_t) \\ 
+& = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}(\epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t}\nabla_{x_t}log\ f_\phi(y|x_t)) \end{align}$$ 
 
-$$\begin{align}\nabla_{x_t}log\ q(x_t,y) & = \nabla_{x_t}log\ q(x_t) + \nabla_{x_t}log\ q(y|x_t) \\ & \approx \nabla_{x_t}log\ q(x_t) + \nabla_{x_t}log\ f_\phi(y|x_t) \\ & = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}\epsilon_\theta(x_t,t) + \nabla_{x_t}log\ f_\phi(y|x_t) \\ & = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}(\epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t}\nabla_{x_t}log\ f_\phi(y|x_t)) \end{align}$$ 
-
+<p style="text-align:justify; text-justify:inter-ideograph;">因此，在使用给定分类器对于 $x_t$ 的梯度对无条件情况下预测得到的噪声 $\epsilon_\theta(x_t,t)$ 进行指导(即相加)，就可以得到基于条件 $y$ 下的噪声 $\bar{\epsilon}_\theta(x,t)$：</p>
 a new classifier-guided predictor 
 
 $$\bar{\epsilon}_\theta(x,t) = \epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t}\nabla_{x_t}log\ f_\phi(y|x_t)$$
 
-To control the strength of the classifier guidance, add a weight $$\omega$$ to the delta part: 
+<p style="text-align:justify; text-justify:inter-ideograph;">为了控制分类器梯度指导的强度，可以给梯度部分添加一个权重 $\omega$ 来控制：</p>
 
 $$\bar{\epsilon}_\theta(x,t) = \epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t}\omega\nabla_{x_t}log\ f_\phi(y|x_t)$$
+
+## Classifer-Free Guidance
+
+<p style="text-align:justify; text-justify:inter-ideograph;">即使没有独立的分类器$$f_\phi(·)$$，
+我们也可以直接通过无条件模型 $p_\theta(x) \rightarrow \epsilon_\theta(x_t,t)$ 和基于条件 $y$ 的模型 $p_\theta(x \vert y) \rightarrow \epsilon_\theta(x_t,t,y)$ 来实现类似 Classifier-Guidance 的效果。
+具体而言，我们可以训练一个基于条件 $y$ 的模型 $\epsilon_\theta(x_t,t,y)$，并对条件 $y$ 进行周期性的随即丢弃，使得模型可以学习无条件的情况
+(相当于使用一个模型即学习到了基于条件 $y$ 的情况，又学习到了无条件的情况)，
+即 $\epsilon_\theta(x_t,t) = \epsilon_\theta(x_t,t,y=\varnothing)$。这样，在得到了 $\epsilon_\theta(x_t,t)$ 和 $\epsilon_\theta(x_t,t,y)$ 后，
+我们就可以使用贝叶斯规则获得类似分类器对于输入(含噪图像) $x_t$ 的梯度：</p>
+
+$$\nabla_{x_t}log\ p(y|x_t) = \nabla_{x_t}log\ p(x_t|y) - \nabla_{x_t}log\ p(x_t) = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}(\epsilon_\theta(x_t,t, y) - \epsilon_\theta(x_t,t))$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">最后，在获得了分类器对于输入(含噪图像) $x_t$ 的梯度，我们就可以使用 Classifier-Guidance 方法进行更新预测的噪声：</p>
+
+$$\begin{align}\bar{\epsilon}_\theta(x,t,y) & = \epsilon_\theta(x_t,t, y) - \sqrt{1 - \bar{\alpha}_t}\omega\nabla_{x_t}log\ p(y|x_t) \\ & = \epsilon_\theta(x_t,t, y) + \omega(\epsilon_\theta(x_t,t, y) - \epsilon_\theta(x_t,t)) \\ & = (\omega + 1)\epsilon_\theta(x_t,t, y) - \omega\epsilon_\theta(x_t,t) \end{align}$$
+
+<h1>附录</h1>
+
+A. Classifier_guidance 在 DDPM 和 DDIM 框架下的实现：
 
 DDPM: 
 
@@ -74,22 +94,11 @@ DDIM:
 
 $$\begin{align}x_{\tau_{i-1}} & \sqrt{\bar{\alpha}_{t-1}}(\dfrac{x_t - \sqrt{1 - \bar{\alpha}_t}\bar{\epsilon}_\theta(x,t)}{\sqrt{\bar{\alpha}_t}}) + \sqrt{1 - \bar{\alpha}_{t-1}}\bar{\epsilon}_\theta(x,t) \\ & = \sqrt{\bar{\alpha}_{\tau_{i-1}}}(\dfrac{x_{\tau_i} - \sqrt{1 - \bar{\alpha}_{\tau_i}}(\epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t}\omega\nabla_{x_t}log\ f_\phi(y|x_t))}{\sqrt{\bar{\alpha}_{\tau_i}}}) + \sqrt{1 - \bar{\alpha}_{\tau_{i-1}}}(\epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t}\omega\nabla_{x_t}log\ f_\phi(y|x_t)) \end{align}$$
 
-The resulting *ablated diffusion model* (**ADM**) and the one with additional classifier guidance (**ADM-G**): 
+The resulting ablated diffusion model (<b>ADM</b>) and the one with additional classifier guidance (<b>ADM-G</b>): 
 
 ![classifier_guidance](/images/classifier_guidance.png)
 
-## Classifer-Free Guidance
-
-Without an independent classifier $$f_\phi(·)$$, unconditional denoising diffusion mode $$p_\theta(x) \rightarrow \epsilon_\theta(x_t,t)$$, 
-conditonal model $$p_\theta(x \vert y) \rightarrow \epsilon_\theta(x_t,t,y)$$, 
-the conditioning information $$y$$ gets discarded periodically at random: $$\epsilon_\theta(x_t,t) = \epsilon_\theta(x_t,t,y=\varnothing)$$. 
-
-$$\nabla_{x_t}log\ p(y|x_t) = \nabla_{x_t}log\ p(x_t|y) - \nabla_{x_t}log\ p(x_t) = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}(\epsilon_\theta(x_t,t, y) - \epsilon_\theta(x_t,t)) \\ \begin{align}\bar{\epsilon}_\theta(x,t,y) & = \epsilon_\theta(x_t,t, y) - \sqrt{1 - \bar{\alpha}_t}\omega\nabla_{x_t}log\ p(y|x_t) \\ & = \epsilon_\theta(x_t,t, y) + \omega(\epsilon_\theta(x_t,t, y) - \epsilon_\theta(x_t,t)) \\ & = (\omega + 1)\epsilon_\theta(x_t,t, y) - \omega\epsilon_\theta(x_t,t) \end{align}$$
-
-附录
-===
-
-A. Classifier-Guidance 代码框架：由上述推导可知，最后需要将 classifier 的梯度加入到预测的噪声中：
+B. Classifier-Guidance 代码框架：由上述推导可知，最后需要将 classifier 的梯度加入到预测的噪声中：
 
 $$\bar{\epsilon}_\theta(x,t) = \epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t}\omega\nabla_{x_t}log\ f_\phi(y \vert x_t)$$
 
