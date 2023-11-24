@@ -21,9 +21,9 @@ $$q_\sigma(x_{t-1}|x_t,x_0) = \mathcal{N}(x_{t-1};\sqrt{\bar{\alpha}_{t-1}}x_0 +
 
 <p style="text-align:justify; text-justify:inter-ideograph;">令 $\eta = 0$，就可以获得 <b>DDIM</b> 的第一个改进，即随机方差 $\sigma^2=0$：</p>
 
-$$q_\sigma(x_{t-1}|x_t,x_0) = \mathcal{N}(x_{t-1};\sqrt{\bar{\alpha}_{t-1}}x_0 + \sqrt{1 - \bar{\alpha}_{t-1}}\dfrac{x_t - \sqrt{\bar{\alpha}_t}x_0}{\sqrt{1 - \bar{\alpha}_t}}, 0) \rightarrow$$
+$$q_\sigma(x_{t-1}|x_t,x_0) = \mathcal{N}(x_{t-1};\sqrt{\bar{\alpha}_{t-1}}x_0 + \sqrt{1 - \bar{\alpha}_{t-1}}\dfrac{x_t - \sqrt{\bar{\alpha}_t}x_0}{\sqrt{1 - \bar{\alpha}_t}}, 0)$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">同时令 $$\{\tau_1,...,\tau_S\}, \tau_1 < ... < \tau_S \in [1, T], S < T$$，就可以获得 <b>Improved DDPM</b> 的改进，即从 $[1,T]$ 抽样部分步骤完成逆扩散过程：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">同时令 $$\{\tau_1,...,\tau_S\}, \tau_1 < ... < \tau_S \in [1, T], S < T$$ 就可以获得 <b>Improved DDPM</b> 的改进，即从 $[1,T]$ 抽样部分步骤完成逆扩散过程：</p>
 
 $$q_{\sigma, \tau}(x_{\tau_{i-1}}|x_{\tau_i},x_0) = \mathcal{N}(x_{\tau_{i-1}};\sqrt{\bar{\alpha}_{t-1}}x_0 + \sqrt{1 - \bar{\alpha}_{t-1} - \sigma_t^2}\dfrac{x_{\tau_i} - \sqrt{\bar{\alpha}_t}x_0}{\sqrt{1 - \bar{\alpha}_t}}, \sigma^2_tI)$$ 
 
@@ -33,14 +33,14 @@ $$q_{\sigma, \tau}(x_{\tau_{i-1}}|x_{\tau_i},x_0) = \mathcal{N}(x_{\tau_{i-1}};\
 
 $$x_{\tau_{i-1}} = \sqrt{\bar{\alpha}_{t-1}}x_0 + \sqrt{1 - \bar{\alpha}_{t-1}}\dfrac{x_{\tau_i} - \sqrt{\bar{\alpha}_t}x_0}{\sqrt{1 - \bar{\alpha}_t}}$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">由于 $$x_0$$ 是未知的, 所以给定一个含噪图像 $$x_{\tau_i}$$, 首先需要预测出对应的 $$x_0$$, 
-然后使用给定的 $x_{\tau_i} 和预测得到的 $x_0$ 通过上述的反向条件分布方程 $$q_\sigma(x_{\tau_{i-1}} \vert x_{\tau_i},x_0)$$ 预测 $$x_{\tau_{i-1}}$$。
-具体而言，首先模型 $$\epsilon_\theta(x_{\tau_i})$$ 输入含噪图像 $$x_{\tau_i}$$ 预测噪声 $$\epsilon_{\tau_i}$$，
-然后通过如下方程通过 $$x_{\tau_i}$$ 和预测的噪声 $$\epsilon_{\tau_i}$$ 获得 $x_0$：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">由于 $x_0$ 是未知的, 所以给定一个含噪图像 $x_{\tau_i}$, 首先需要预测出对应的 $x_0$, 
+然后使用给定的 $x_{\tau_i}$ 和预测得到的 $x_0$ 通过上述的反向条件分布方程 $q_\sigma(x_{\tau_{i-1}} \vert x_{\tau_i},x_0)$ 预测 $x_{\tau_{i-1}}$。
+具体而言，首先模型 $\epsilon_\theta(x_{\tau_i})$ 输入含噪图像 $x_{\tau_i}$ 预测噪声 $\epsilon_{\tau_i}$，
+然后通过如下方程通过 $x_{\tau_i}$ 和预测的噪声 $\epsilon_{\tau_i}$ 获得 $x_0$：</p>
 
 $$x_{\tau_i} = \sqrt{\bar{\alpha}_{\tau_i}}x_0 + \sqrt{1 - \bar{\alpha}_{\tau_i}}{\epsilon}_{\tau_i} \rightarrow  x_0 = \dfrac{1}{\sqrt{\bar{\alpha}_{\tau_i}}}(x_{\tau_i} - \sqrt{1 - \bar{\alpha}_{\tau_i}}{\epsilon}_{\tau_i})$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">接着将 $x_0$ 代入上述的更新公式，最终预测得到更新的 $$x_{\tau_{i-1}}$$
+<p style="text-align:justify; text-justify:inter-ideograph;">接着将 $x_0$ 代入上述的更新公式，最终预测得到更新的 $x_{\tau_{i-1}}$
 
 $$\begin{align}x_{\tau_{i-1}} & = \sqrt{\bar{\alpha}_{t-1}}x_0 + \sqrt{1 - \bar{\alpha}_{t-1}}\dfrac{x_{\tau_i} - \sqrt{\bar{\alpha}_t}x_0}{\sqrt{1 - \bar{\alpha}_t}} \\ 
 &  = \sqrt{\bar{\alpha}_{t-1}}\dfrac{1}{\sqrt{\bar{\alpha}_t}}(x_t - \sqrt{1 - \bar{\alpha}_t}{\epsilon}_t) + \sqrt{1 - \bar{\alpha}_{t-1}}\dfrac{\color{Blue}{x_{\tau_i}} - \color{Red}{\sqrt{\bar{\alpha}_t}\dfrac{1}{\sqrt{\bar{\alpha}_t}}}(\color{Blue}{x_t} - \color{Orange}{\sqrt{1 - \bar{\alpha}_t}}{\epsilon}_t)}{\color{Orange}{\sqrt{1 - \bar{\alpha}_t}}} \\ & = \sqrt{\bar{\alpha}_{t-1}}(\dfrac{x_t - \sqrt{1 - \bar{\alpha}_t}{\epsilon}_t}{\sqrt{\bar{\alpha}_t}}) + \sqrt{1 - \bar{\alpha}_{t-1}}\epsilon_t \end{align}$$
@@ -50,7 +50,9 @@ Condition
 
 ## Classifier Guidance
 
-train a classifier $$f_\phi(y \vert x_t,t)$$, and use gradients $$\nabla_{x_t}log\ f_\phi(y \vert x_t)$$ to guide the diffusion sampling process toward the conditioning information $$y$$. 
+<p style="text-align:justify; text-justify:inter-ideograph;">可以训练一个分类器 $f_\phi(y \vert x_t,t)$，
+其将含噪图像 $x_t$ 分类为其类别 $y$，然后使用分类器对于输入(含噪图像) $x_t$ 的梯度 $\nabla_{x_t}log\ f_\phi(y \vert x_t)$ 来指导模型的逆扩散过程，
+使其偏移到基于条件 $y$ 进行逆扩散生成图像的样本空间。</p>
 
 $$\nabla_{x_t}log\ q(x_t) = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}\epsilon_\theta(x_t,t)$$
 
