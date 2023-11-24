@@ -76,14 +76,22 @@ The resulting *ablated diffusion model* (**ADM**) and the one with additional cl
 
 ## Classifer-Free Guidance
 
-Without an independent classifier $$f_\phi(·)$$,  unconditional denoising diffusion mode $$p_\theta(x) \rightarrow \epsilon_\theta(x_t,t)$$, conditonal model $$p_\theta(x|y) \rightarrow \epsilon_\theta(x_t,t,y)$$,  the conditioning information $$y$$ gets discarded periodically at random: $$\epsilon_\theta(x_t,t) = \epsilon_\theta(x_t,t,y=\varnothing)$$. 
+Without an independent classifier $$f_\phi(·)$$, unconditional denoising diffusion mode $$p_\theta(x) \rightarrow \epsilon_\theta(x_t,t)$$, 
+conditonal model $$p_\theta(x \vert y) \rightarrow \epsilon_\theta(x_t,t,y)$$, 
+the conditioning information $$y$$ gets discarded periodically at random: $$\epsilon_\theta(x_t,t) = \epsilon_\theta(x_t,t,y=\varnothing)$$. 
 
 $$\nabla_{x_t}log\ p(y|x_t) = \nabla_{x_t}log\ p(x_t|y) - \nabla_{x_t}log\ p(x_t) = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}(\epsilon_\theta(x_t,t, y) - \epsilon_\theta(x_t,t)) \\ \begin{align}\bar{\epsilon}_\theta(x,t,y) & = \epsilon_\theta(x_t,t, y) - \sqrt{1 - \bar{\alpha}_t}\omega\nabla_{x_t}log\ p(y|x_t) \\ & = \epsilon_\theta(x_t,t, y) + \omega(\epsilon_\theta(x_t,t, y) - \epsilon_\theta(x_t,t)) \\ & = (\omega + 1)\epsilon_\theta(x_t,t, y) - \omega\epsilon_\theta(x_t,t) \end{align}$$
 
 附录
 ===
 
-A. Classifier-Guidance 代码框架：由上述推导可知，最后需要将 classifier 的梯度加入到预测的噪声中：$$\bar{\epsilon}_\theta(x,t) = \epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t}\omega\nabla_{x_t}log\ f_\phi(y|x_t)$$。注意，这里是 classifier 关于输入 $$x_t$$ 的梯度，而不是 classifier 模型参数的梯度。因此，我们可以利用 ```torch``` 的自动求导机制对 $$x_t$$ 进行求导，而由于 $$x_t$$ 的梯度和 $$\epsilon_\theta(x_t,t)$$ 形状相同(都是原始图像的形状)，因此我们可以直接将它们进行相加，具体代码框架如下：
+A. Classifier-Guidance 代码框架：由上述推导可知，最后需要将 classifier 的梯度加入到预测的噪声中：
+
+$$\bar{\epsilon}_\theta(x,t) = \epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t}\omega\nabla_{x_t}log\ f_\phi(y|x_t)$$。
+
+注意，这里是 classifier 关于输入 $$x_t$$ 的梯度，而不是 classifier 模型参数的梯度。
+因此，我们可以利用 ```torch``` 的自动求导机制对 $$x_t$$ 进行求导，而由于 $$x_t$$ 的梯度和 $$\epsilon_\theta(x_t,t)$$ 形状相同(都是原始图像的形状)，
+因此我们可以直接将它们进行相加，具体代码框架如下：
 
 ```python
 def cond_fn(x, t, y):
