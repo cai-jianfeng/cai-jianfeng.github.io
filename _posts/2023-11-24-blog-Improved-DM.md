@@ -52,14 +52,14 @@ $$\begin{align}x_{\tau_{i-1}} & = \sqrt{\bar{\alpha}_{t-1}}x_0 + \sqrt{1 - \bar{
 <p style="text-align:justify; text-justify:inter-ideograph;">可以训练一个分类器 $f_\phi(y \vert x_t,t)$，
 其将含噪图像 $x_t$ 分类为其类别 $y$，然后使用分类器对于输入(含噪图像) $x_t$ 的梯度 $\nabla_{x_t}log\ f_\phi(y \vert x_t)$ 来指导模型的逆扩散过程，
 使其偏移到基于条件 $y$ 进行逆扩散生成图像的样本空间。
-具体而言，假设无条件的样本空间为 $q(x)$，则基于条件 $y$ 的样本空间则为 $q(x,y)$，通过贝叶斯规则的转化，即可实现从无条件到有条件的转化。</p>
+具体而言，假设无条件的样本空间为 $q(x)$，则基于条件 $y$ 的样本空间则为 $q(x,y)$，
+由于 $q(x)/q(x,y)$ 都服从高斯分布，因此其梯度为 $-\dfrac{\epsilon}{\sigma}$ (详细推导见附录 A)，然后通过贝叶斯规则的转化，即可实现从无条件到有条件的转化。</p>
 
 $$\begin{align}\nabla_{x_t}log\ q(x_t,y) & = \nabla_{x_t}log\ q(x_t) + \nabla_{x_t}log\ q(y|x_t) \\ & \approx \nabla_{x_t}log\ q(x_t) + \nabla_{x_t}log\ f_\phi(y|x_t), \nabla_{x_t}log\ q(x_t) = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}\epsilon_\theta(x_t,t) \\ 
 & = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}\epsilon_\theta(x_t,t) + \nabla_{x_t}log\ f_\phi(y|x_t) \\ 
 & = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}(\epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t}\nabla_{x_t}log\ f_\phi(y|x_t)) \end{align}$$ 
 
 <p style="text-align:justify; text-justify:inter-ideograph;">因此，在使用给定分类器对于 $x_t$ 的梯度对无条件情况下预测得到的噪声 $\epsilon_\theta(x_t,t)$ 进行指导(即相加)，就可以得到基于条件 $y$ 下的噪声 $\bar{\epsilon}_\theta(x,t)$：</p>
-a new classifier-guided predictor 
 
 $$\bar{\epsilon}_\theta(x,t) = \epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t}\nabla_{x_t}log\ f_\phi(y|x_t)$$
 
@@ -67,11 +67,11 @@ $$\bar{\epsilon}_\theta(x,t) = \epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t
 
 $$\bar{\epsilon}_\theta(x,t) = \epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t}\omega\nabla_{x_t}log\ f_\phi(y|x_t)$$
 
-## Classifer-Free Guidance
+<h2>Classifer-Free Guidance</h2>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">即使没有独立的分类器$$f_\phi(·)$$，
+<p style="text-align:justify; text-justify:inter-ideograph;">即使没有独立的分类器$f_\phi(·)$，
 我们也可以直接通过无条件模型 $p_\theta(x) \rightarrow \epsilon_\theta(x_t,t)$ 和基于条件 $y$ 的模型 $p_\theta(x \vert y) \rightarrow \epsilon_\theta(x_t,t,y)$ 来实现类似 Classifier-Guidance 的效果。
-具体而言，我们可以训练一个基于条件 $y$ 的模型 $\epsilon_\theta(x_t,t,y)$，并对条件 $y$ 进行周期性的随即丢弃，使得模型可以学习无条件的情况
+具体而言，我们可以训练一个基于条件 $y$ 的模型 $\epsilon_\theta(x_t,t,y)$，并对条件 $y$ 进行周期性的随机丢弃，使得模型可以学习无条件的情况
 (相当于使用一个模型即学习到了基于条件 $y$ 的情况，又学习到了无条件的情况)，
 即 $\epsilon_\theta(x_t,t) = \epsilon_\theta(x_t,t,y=\varnothing)$。这样，在得到了 $\epsilon_\theta(x_t,t)$ 和 $\epsilon_\theta(x_t,t,y)$ 后，
 我们就可以使用贝叶斯规则获得类似分类器对于输入(含噪图像) $x_t$ 的梯度：</p>
@@ -84,7 +84,13 @@ $$\begin{align}\bar{\epsilon}_\theta(x,t,y) & = \epsilon_\theta(x_t,t, y) - \sqr
 
 <h1>附录</h1>
 
-A. Classifier_guidance 在 DDPM 和 DDIM 框架下的实现：
+A. 高斯分布的梯度推导：
+
+$$\begin{align}x \sim \mathcal{N}(\mu,\sigma^2I) & \Rightarrow p(x) = \dfrac{1}{\sqrt{2\pi}\sigma}exp(-\dfrac{(x-\mu)^2}{2\sigma^2}) \\
+& \Rightarrow \nabla_xlog\ p(x) = \nabla_x(-\dfrac{(x-\mu)^2}{2\sigma^2}) \\
+& \Rightarrow \nabla_xlog\ p(x) = -\dfrac{x-\mu}{\sigma^2} = -\dfrac{\epsilon}{\sigma}, x = \mu + \sigma \times \epsilon \rightarrow \epsilon = \dfrac{x - \mu}{\sigma}$$
+
+B. Classifier_guidance 在 DDPM 和 DDIM 框架下的实现：
 
 DDPM: 
 
