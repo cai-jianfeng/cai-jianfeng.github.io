@@ -7,7 +7,7 @@ tags:
 ---
 
 <p style="text-align:justify; text-justify:inter-ideograph;">这篇博客参考了<a href="https://zhuanlan.zhihu.com/p/663880249?utm_psn=1705611921401720833" target="_blank">
-DDPM讲解</a>，详细讲述了最近大火的 DM 模型的数学原理/推导及编程。</p>
+DDPM讲解</a>，详细讲述了最近大火的 DM 模型的数学原理/推导及编程。(ps：强烈安利 Lil 的<a href="https://lilianweng.github.io/posts/2021-07-11-diffusion-models/" target="_blank">博客</a>，写的太好了🙂)</p>
 
 DM的基本原理
 ===
