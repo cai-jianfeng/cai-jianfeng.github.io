@@ -184,7 +184,7 @@ $$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\phi)=L_{CT}^N(\boldsymbol{
 <p style="text-align:justify; text-justify:inter-ideograph;">总结，Consistency Model 其实比较简单，假设 DM 模型的扩散过程形成的所有样本为 $x_{1:T}$，
 Cosistency Model 的目标是将它们一一映射到原始样本 $x_0$：$f_\theta(x_t,t) = x_0$。
 但是，直接使用 MSE 损失效果不佳，本文便采样对比学习的损失来训练模型：$L_\theta = E[\lambda(t_n)d(\boldsymbol{f_\theta}(x_{t}, t), \boldsymbol{f_\theta^-}(x_{t-1},t-1))]$。
-同时，通过强制性满足 self-consistency 属性保证模型的收敛：$f_\theta(x_0, 0) = x_0$ (不然对比学习可能不能按照 $x_{T:1}$ 的顺序收敛，也有可能按照 $x_{1:T}$ 的顺序收敛，即输入 $x_0$ 时输出 $x_T$)。
+同时，通过强制性满足 boundary condition 限制保证模型的收敛：$f_\theta(x_0, 0) = x_0$ (不然对比学习可能不能按照 $x_{T:1}$ 的顺序收敛，也有可能按照 $x_{1:T}$ 的顺序收敛，即输入 $x_0$ 时输出 $x_T$)。
 同时通过不同的 $x_{t-1}$ 的选择方式(ground-truth 还是预训练模型的预测)来实现不同的训练模式。</p>
 
 <h1>附录</h1>
