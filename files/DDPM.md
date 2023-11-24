@@ -117,7 +117,7 @@ $$\begin{aligned} q(x_{t-1}\vert x_t,x_0) & \Rightarrow \dfrac{\dfrac{1}{\sqrt{2
 & \Rightarrow \sigma^2 = \dfrac{\sigma_1^2\sigma_2^2}{\sigma_3^2} = \dfrac{\beta_t(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} \\
 & \Rightarrow -\dfrac{(x-\mu)^2}{2\sigma^2}) = -\dfrac{(x-\mu_1)^2}{2\sigma_1^2}-\dfrac{(x-\mu_2)^2}{2\sigma_2^2}+\dfrac{(x-\mu_3)^2}{2\sigma_3^2} \\ & \Rightarrow \dfrac{x_t^2 - 2 \sqrt{\alpha_t}x_tx_{t-1}+\alpha_t\textcolor{red}{x_{t-1}^2} }{\beta_t} + \dfrac{\textcolor{red}{x_{t-1}^2} - 2\sqrt{\bar{\alpha}_{t-1}}x_0x_{t-1} + \bar{\alpha}_{t-1}x_0^2}{1 - \bar{\alpha}_{t-1}} - \dfrac{(x_t - \sqrt{\bar{\alpha}_t}x_0)^2}{1 - \bar{\alpha}_t} \\ & \Rightarrow \textcolor{red}{(\dfrac{\alpha_t}{\beta_t} + \dfrac{1}{1 - \bar{\alpha}_{t-1}})x_{t-1}^2 -} \textcolor{blue}{(\dfrac{2\sqrt{\alpha_t}}{\beta_t}x_t + \dfrac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}x_0)x_{t-1}} + C(x_t,x_0) \\ & \Rightarrow \mu = \dfrac{2a}{b} = \dfrac{2(\dfrac{\alpha_t}{\beta_t} + \dfrac{1}{1 - \bar{\alpha}_{t-1}})}{\dfrac{2\sqrt{\alpha_t}}{\beta_t}x_t + \dfrac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}x_0} \\ & \Rightarrow \mu = \dfrac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1 - \bar{\alpha}_{t}}x_t + \dfrac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t}x_0 \\ & \Rightarrow -\dfrac{(x-\dfrac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1 - \bar{\alpha}_{t}}x_t + \dfrac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t}x_0)^2}{2(\dfrac{\beta_t(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t})^2}\end{aligned}$$
 
-B. 代码框架：在训练时，首先，你需要预设置方差序列 $\{\beta_{t} \in (0, 1)\}_{t=1}^T$ 并计算 $\bar{\alpha}_{1:T}$。
+B. DDPM 代码框架：在训练时，首先，你需要预设置方差序列 $\{\beta_{t} \in (0, 1)\}_{t=1}^T$ 并计算 $\bar{\alpha}_{1:T}$。
 然后，在 $1\sim T$ 中随机选择一个数字 $t$，并使用正态分布随机函数生成 $\bar{\varepsilon}_0$ (注意，这里生成的正态分布随机变量 $\bar{\varepsilon}_0$ 的维度为 $H \times W \times 3$，和原始图像 $x_0$ 一致)；
 通过公式 $x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\varepsilon}_0$ 计算 $x_t$，其维度也为 $H \times \W \times 3$；
 接着构造一个模型，输入 $x_t$ 和 $t$ (通常 $t$ 需要转化成 embedding，类似 Transformer，可以选择正弦函数这种确定的方式，也可以选择 learnable embedding parameter 让模型学习)，
@@ -128,3 +128,33 @@ B. 代码框架：在训练时，首先，你需要预设置方差序列 $\{\bet
 将 $t=T$ 一起输入训练好的模型，预测输出 $\hat{\varepsilon}_0$，并使用正态分布随机函数生成 $z_t$，维度为 $H \times W \times 3$，
 接着使用公式 $x_{t-1} = \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\bar{\varepsilon}_0) + \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t \times z_t$
 生成预测的 $\hat{x_{T-1}}$，循环迭代，直到 $t = 0$ 时结束，最终的 $\hat{x}_0$ 即为模型生成的图像。
+
+C. Classifier-Guidance 代码框架：由上述推导可知，最后需要将 classifier 的梯度加入到预测的噪声中：$\bar{\epsilon}_\theta(x,t) = \epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t}\omega\nabla_{x_t}log\ f_\phi(y|x_t)$。注意，这里是 classifier 关于输入 $x_t$ 的梯度，而不是 classifier 模型参数的梯度。因此，我们可以利用 ```torch``` 的自动求导机制对 $x_t$ 进行求导，而由于 $x_t$ 的梯度和 $\epsilon_\theta(x_t,t)$ 形状相同(都是原始图像的形状)，因此我们可以直接将它们进行相加，具体代码框架如下：
+
+```python
+def cond_fn(x, t, y):
+    """
+    x 表示 x_t; y 表示 label
+    """
+    with th.enable_grad():
+        x_in = x.detach().requires_grad_(True)  # 将 x 设置为需要梯度
+        logits = classifier(x_in, t)  #  classifier 前向过程
+        log_probs = F.log_softmax(logits, dim=-1)  # softmax 求概率
+        selected = log_probs[range(len(logits)), y.view(-1)]
+        # th.autograd.grad(selected.sum(), x_in) 是通过 selected 反向传播求解 x_in 的梯度，其形状和 x_in 一致；classifier_scale 即 $\omega$
+        return th.autograd.grad(selected.sum(), x_in)[0] * classifier_scale
+def condition_mean(self, cond_fn, p_mean_var, x, t, model_kwargs=None):
+    """
+        Compute the mean for the previous step, given a function cond_fn that
+        computes the gradient of a conditional log probability with respect to
+        x. In particular, cond_fn computes grad(log(p(y|x))), and we want to
+        condition on y.
+
+        This uses the conditioning strategy from Sohl-Dickstein et al. (2015).
+        """
+    gradient = cond_fn(x, self._scale_timesteps(t), y)
+    # p_mean_var["mean"] 表示原始的 $\epsilon$; p_mean_var["variance"] 表示 $\sqrt{1 - \bar{\alpha}_t}$
+    new_mean = (p_mean_var["mean"] + p_mean_var["variance"] * gradient.float())
+    return new_mean  # 经过 classifier-guidance 的 $\epsilon$
+```
+
