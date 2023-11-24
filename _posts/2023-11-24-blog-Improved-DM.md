@@ -108,8 +108,8 @@ B. Classifier-Guidance 代码框架：由上述推导可知，最后需要将 cl
 
 $$\bar{\epsilon}_\theta(x,t) = \epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t}\omega\nabla_{x_t}log\ f_\phi(y \vert x_t)$$
 
-注意，这里是 classifier 关于输入 $$x_t$$ 的梯度，而不是 classifier 模型参数的梯度。
-因此，我们可以利用 ```torch``` 的自动求导机制对 $$x_t$$ 进行求导，而由于 $$x_t$$ 的梯度和 $$\epsilon_\theta(x_t,t)$$ 形状相同(都是原始图像的形状)，
+注意，这里是 classifier 关于输入 $x_t$ 的梯度，而不是 classifier 模型参数的梯度。
+因此，我们可以利用 ```torch``` 的自动求导机制对 $x_t$ 进行求导，而由于 $x_t$ 的梯度和 $\epsilon_\theta(x_t,t)$ 形状相同(都是原始图像的形状)，
 因此我们可以直接将它们进行相加，具体代码框架如下：
 
 ```python
