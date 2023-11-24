@@ -17,7 +17,7 @@ DDIM
 
 $$\begin{align}x_{t-1} & = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_{t-1}}\bar{\varepsilon}_{t-1}, \bar{\varepsilon}_{t-1} \sim \mathcal{N}(0, \boldsymbol{I}) \\ 
 & = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_{t-1} - \sigma_t^2}\bar{\varepsilon}_{t} + \sigma_t^2\bar{\varepsilon}, \sigma_t^2 = \eta \dfrac{\beta_t(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} \\ 
-& = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_{t-1} - \sigma_t^2}\color{Red}{\dfrac{x_t - \sqrt{\bar{\alpha}_t}x_0}{\sqrt{1 - \bar{\alpha}_t}}} + \sigma_t^2\bar{\varepsilon}, x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\epsilon}_t \end{align}$$
+& = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_{t-1} - \sigma_t^2}\color{Red}{\dfrac{x_t - \sqrt{\bar{\alpha}_t}x_0}{\sqrt{1 - \bar{\alpha}_t}}} + \sigma_t^2\bar{\varepsilon} \leftarrow \color{Green}{x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\epsilon}_t} \end{align}$$
 
 $$q_\sigma(x_{t-1}|x_t,x_0) = \mathcal{N}(x_{t-1};\sqrt{\bar{\alpha}_{t-1}}x_0 + \sqrt{1 - \bar{\alpha}_{t-1} - \sigma_t^2}\dfrac{x_t - \sqrt{\bar{\alpha}_t}x_0}{\sqrt{1 - \bar{\alpha}_t}}, \sigma^2_tI)$$
 
@@ -38,9 +38,9 @@ $$x_{\tau_{i-1}} = \sqrt{\bar{\alpha}_{t-1}}x_0 + \sqrt{1 - \bar{\alpha}_{t-1}}\
 <p style="text-align:justify; text-justify:inter-ideograph;">由于 $x_0$ 是未知的, 所以给定一个含噪图像 $x_{\tau_i}$, 首先需要预测出对应的 $x_0$, 
 然后使用给定的 $x_{\tau_i}$ 和预测得到的 $x_0$ 通过上述的反向条件分布方程 $q_\sigma(x_{\tau_{i-1}} \vert x_{\tau_i},x_0)$ 预测 $x_{\tau_{i-1}}$。
 具体而言，首先模型 $\epsilon_\theta(x_{\tau_i})$ 输入含噪图像 $x_{\tau_i}$ 预测噪声 $\epsilon_{\tau_i}$，
-然后通过如下方程通过 $x_{\tau_i}$ 和预测的噪声 $\epsilon_{\tau_i}$ 获得 $x_0$：</p>
+然后通过如下方程使用 $x_{\tau_i}$ 和预测的噪声 $\epsilon_{\tau_i}$ 获得 $x_0$：</p>
 
-$$x_{\tau_i} = \sqrt{\bar{\alpha}_{\tau_i}}x_0 + \sqrt{1 - \bar{\alpha}_{\tau_i}}{\epsilon}_{\tau_i} \rightarrow  x_0 = \dfrac{1}{\sqrt{\bar{\alpha}_{\tau_i}}}(x_{\tau_i} - \sqrt{1 - \bar{\alpha}_{\tau_i}}{\epsilon}_{\tau_i})$$
+$$\color{Green}{x_{\tau_i} = \sqrt{\bar{\alpha}_{\tau_i}}x_0 + \sqrt{1 - \bar{\alpha}_{\tau_i}}{\epsilon}_{\tau_i}} \rightarrow  x_0 = \dfrac{1}{\sqrt{\bar{\alpha}_{\tau_i}}}(x_{\tau_i} - \sqrt{1 - \bar{\alpha}_{\tau_i}}{\epsilon}_{\tau_i})$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">接着将 $x_0$ 代入上述的更新公式，最终预测得到更新的 $x_{\tau_{i-1}}$
 
