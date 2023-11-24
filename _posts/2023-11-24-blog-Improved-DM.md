@@ -10,6 +10,9 @@ tags:
 What are Diffusion Models?</a>，继续详细讲述了最近大火的 DM 模型的改进的数学原理/推导及编程
 (ps：DM 的基础知识详见 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-diffusion-model/" target="_blank">The Basic Knowledge of Diffusion Model (DM)</a>)。</p>
 
+<p style="text-align:justify; text-justify:inter-ideograph;">注意：公式中的<p style="color: green;">绿色</p>字体公式表示在 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-diffusion-model/" target="_blank">The Basic Knowledge of Diffusion Model (DM)</a> 中已经推理得到了。
+<p style="color: red;">红色</p>字体公式表示使用<p style="color: green;">绿色</p>字体的公式进一步推理得到的/从附录中推理得到的。</p>
+
 DDIM
 ===
 
@@ -57,7 +60,7 @@ $$\begin{align}x_{\tau_{i-1}} & = \sqrt{\bar{\alpha}_{t-1}}x_0 + \sqrt{1 - \bar{
 具体而言，假设无条件的样本空间为 $q(x)$，则基于条件 $y$ 的样本空间则为 $q(x,y)$，
 由于 $q(x)/q(x,y)$ 都服从高斯分布，因此其梯度为 $-\dfrac{\epsilon}{\sigma}$ (详细推导见附录 A)，然后通过贝叶斯规则的转化，即可实现从无条件到有条件的转化：</p>
 
-$$\begin{align}\nabla_{x_t}log\ q(x_t,y) & = \nabla_{x_t}log\ q(x_t) + \nabla_{x_t}log\ q(y|x_t) \\ & \approx \nabla_{x_t}log\ q(x_t) + \nabla_{x_t}log\ f_\phi(y|x_t), \nabla_{x_t}log\ q(x_t) = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}\epsilon_\theta(x_t,t) \\ 
+$$\begin{align}\nabla_{x_t}log\ q(x_t,y) & = \nabla_{x_t}log\ q(x_t) + \nabla_{x_t}log\ q(y|x_t) \\ & \approx \nabla_{x_t}log\ q(x_t) + \nabla_{x_t}log\ f_\phi(y|x_t) \leftarrow \color{Red}{\nabla_{x_t}log\ q(x_t) = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}\epsilon_\theta(x_t,t)} \\ 
 & = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}\epsilon_\theta(x_t,t) + \nabla_{x_t}log\ f_\phi(y|x_t) \\ 
 & = - \dfrac{1}{\sqrt{1 - \bar{\alpha}_t}}(\epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t}\nabla_{x_t}log\ f_\phi(y|x_t)) \end{align}$$ 
 
