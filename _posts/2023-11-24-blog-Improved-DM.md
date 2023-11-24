@@ -107,7 +107,7 @@ $$\begin{align}x_{\tau_{i-1}} & \sqrt{\bar{\alpha}_{t-1}}(\dfrac{x_t - \sqrt{1 -
 
 The resulting ablated diffusion model (<b>ADM</b>) and the one with additional classifier guidance (<b>ADM-G</b>): 
 
-<img src="https://cai-jianfeng.github.io/images/classifier_guidance.png">>
+<img src="https://cai-jianfeng.github.io/images/classifier_guidance.png">
 
 B. Classifier-Guidance 代码框架：由上述推导可知，最后需要将 classifier 的梯度加入到预测的噪声中：
 
