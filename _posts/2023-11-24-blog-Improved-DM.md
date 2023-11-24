@@ -17,8 +17,8 @@ $\color{Red}{红色}$字体公式表示使用$\color{Green}{绿色}$字体的公
 
 <p style="text-align:justify; text-justify:inter-ideograph;">回顾 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-diffusion-model/" target="_blank">The Basic Knowledge of Diffusion Model (DM)</a>，$x_{t-1}$ 可以由如下方程推导：</p>
 
-$$\begin{align}x_{t-1} & = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_{t-1}}\bar{\varepsilon}_{t-1}, \color{Green}{\bar{\varepsilon}_{t-1} \sim \mathcal{N}(0, \boldsymbol{I})} \\ 
-& = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_{t-1} - \sigma_t^2}\bar{\varepsilon}_{t} + \sigma_t^2\bar{\varepsilon}, \sigma_t^2 = \eta \dfrac{\beta_t(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} \\ 
+$$\begin{align}x_{t-1} & = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_{t-1}}\bar{\varepsilon}_{t-1}, \bar{\varepsilon}_{t-1} \sim \mathcal{N}(0, \boldsymbol{I}) \\ 
+& = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_{t-1} - \sigma_t^2}\bar{\varepsilon}_{t} + \sigma_t^2\bar{\varepsilon}, \color{Green}{\sigma_t^2 = \eta \dfrac{\beta_t(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t}} \\ 
 & = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_{t-1} - \sigma_t^2}\color{Red}{\dfrac{x_t - \sqrt{\bar{\alpha}_t}x_0}{\sqrt{1 - \bar{\alpha}_t}}} + \sigma_t^2\bar{\varepsilon} \leftarrow \color{Green}{x_t = \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\bar{\epsilon}_t} \end{align}$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">(在之前的推理时 $\eta = 1$，这里我们将其扩展，使用一个变量 $\eta$ 来控制方差)根据上述公式，可以得到 $q_\sigma(x_{t-1}|x_t,x_0)$ 的分布：</p>
