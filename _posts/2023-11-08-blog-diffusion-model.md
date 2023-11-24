@@ -130,8 +130,8 @@ $$\begin{aligned} q(x_{t-1}\vert x_t,x_0) & \Rightarrow \dfrac{\dfrac{1}{\sqrt{2
 & \Rightarrow \dfrac{1}{\sqrt{2\pi}\dfrac{\sigma_1\sigma_2}{\sigma_3}}exp(-\dfrac{(x-\mu_1)^2}{2\sigma_1^2}-\dfrac{(x-\mu_2)^2}{2\sigma_2^2}+\dfrac{(x-\mu_3)^2}{2\sigma_3^2}) \\
 & \Rightarrow \sigma = \dfrac{\sigma_1\sigma_2}{\sigma_3} = \dfrac{\beta_t(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} \\
 & \Rightarrow -\dfrac{(x-\mu)^2}{2\sigma^2}) = -\dfrac{(x-\mu_1)^2}{2\sigma_1^2}-\dfrac{(x-\mu_2)^2}{2\sigma_2^2}+\dfrac{(x-\mu_3)^2}{2\sigma_3^2} \\ 
-& \Rightarrow \dfrac{x_t^2 - 2 \sqrt{\alpha_t}x_tx_{t-1}+\alpha_t{x_{t-1}^2} }{\beta_t} + \dfrac{{x_{t-1}^2} - 2\sqrt{\bar{\alpha}_{t-1}}x_0x_{t-1} + \bar{\alpha}_{t-1}x_0^2}{1 - \bar{\alpha}_{t-1}} - \dfrac{(x_t - \sqrt{\bar{\alpha}_t}x_0)^2}{1 - \bar{\alpha}_t} \\ 
-& \Rightarrow {(\dfrac{\alpha_t}{\beta_t} + \dfrac{1}{1 - \bar{\alpha}_{t-1}})x_{t-1}^2 -} {(\dfrac{2\sqrt{\alpha_t}}{\beta_t}x_t + \dfrac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}x_0)x_{t-1}} + C(x_t,x_0) \\ 
+& \Rightarrow \dfrac{x_t^2 - 2 \sqrt{\alpha_t}x_tx_{t-1}+\alpha_tx_{t-1}^2}{\beta_t} + \dfrac{x_{t-1}^2 - 2\sqrt{\bar{\alpha}_{t-1}}x_0x_{t-1} + \bar{\alpha}_{t-1}x_0^2}{1 - \bar{\alpha}_{t-1}} - \dfrac{(x_t - \sqrt{\bar{\alpha}_t}x_0)^2}{1 - \bar{\alpha}_t} \\ 
+& \Rightarrow (\dfrac{\alpha_t}{\beta_t} + \dfrac{1}{1 - \bar{\alpha}_{t-1}})x_{t-1}^2 - (\dfrac{2\sqrt{\alpha_t}}{\beta_t}x_t + \dfrac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}x_0)x_{t-1} + C(x_t,x_0) \\ 
 & \Rightarrow \mu = \dfrac{2a}{b} = \dfrac{2(\dfrac{\alpha_t}{\beta_t} + \dfrac{1}{1 - \bar{\alpha}_{t-1}})}{\dfrac{2\sqrt{\alpha_t}}{\beta_t}x_t + \dfrac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}}x_0} \\ 
 & \Rightarrow \mu = \dfrac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1 - \bar{\alpha}_{t}}x_t + \dfrac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t}x_0 \\ 
 & \Rightarrow -\dfrac{(x-\dfrac{\sqrt{\alpha_t}(1-\bar{\alpha}_{t-1})}{1 - \bar{\alpha}_{t}}x_t + \dfrac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t}x_0)^2}{2(\dfrac{\beta_t(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t})^2}\end{aligned}$$
