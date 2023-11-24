@@ -188,3 +188,8 @@ $$L_{CD}^N(\boldsymbol{\theta},\boldsymbol{\theta}^-;\phi)=L_{CT}^N(\boldsymbol{
 因为 consistency model 很关键的 <b>boundary condition</b> 限制。从上述可以看到，本文将 boundary condition 限制视为一个硬性限制，并使用模型上的设计来实现。
 这样一来，当输入 $x = x_\epsilon^i$ ($i$ 表示第 $i$ 个训练数据)时，$f_\theta(x_\epsilon^i, \epsilon)$ 就必须强制输出 $x_\epsilon^i$，
 这样模型就无法通过简单地输出任意相同的数据来实现“捷径”，即不会发生模型坍塌。这就是为什么论文会说 boundary condition 限制是最重要的一个限制。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">2. 本文是使用 $\hat{x}^{\phi}_{t_n}$ 和 $x_{t_{n+1}}$ 作为对比学习的正样本对。这里有一个问题：
+为什么不直接使用 ground-truth 的 $x_{t_{n+1}}$ 和 $x_{t_{n}}$ 来作为正样本对，这样也不需要使用 numerical ODE solver 来求解 $\hat{x}^{\phi}_{t_n}$ 了？
+这里使用 $\hat{x}^{\phi}_{t_n}$ 的主要原因是因为它代表的是预训练好的 score-based generation model 的生成质量，而我们想要做的是 dstill 该模型的生成能力，
+因此必须使用 $\hat{x}^{\phi}_{t_n}$。而在使用 Isolation 方法进行训练时，本文就直接使用 ground-truth 的 $x_{t_{n+1}}$ 和 $x_{t_{n}}$ 来作为正样本对进行对比学习。
