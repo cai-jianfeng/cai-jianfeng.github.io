@@ -10,8 +10,8 @@ tags:
 What are Diffusion Models?</a>，继续详细讲述了最近大火的 DM 模型的改进的数学原理/推导及编程
 (ps：DM 的基础知识详见 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-diffusion-model/" target="_blank">The Basic Knowledge of Diffusion Model (DM)</a>)。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">注意：公式中的$\color{Green}{绿色}$字体公式表示在 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-diffusion-model/" target="_blank">The Basic Knowledge of Diffusion Model (DM)</a> 中已经推理得到了。
-$\color{Red}{红色}$字体公式表示使用$\color{Green}{绿色}$字体的公式进一步推理得到的/从附录中推理得到的。
+<p style="text-align:justify; text-justify:inter-ideograph;">注意：公式中的<span style="color: green;">绿色</span>字体公式表示在 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-diffusion-model/" target="_blank">The Basic Knowledge of Diffusion Model (DM)</a> 中已经推理得到了。
+<span style="color: red;">红色</span>字体公式表示使用<span style="color: green;">绿色</span>字体的公式进一步推理得到的/从附录中推理得到的。
 
 <h1>DDIM</h1>
 
