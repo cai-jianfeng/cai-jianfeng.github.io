@@ -7,3 +7,13 @@ BLEU = BP \times exp(\sum_{n=1}^{N}\omega_nlog\ p_n), log\ BLEU = min(1 - \frac{
 
 $c = \sum_{i=1}^ML_{out}^i, r = \sum_{i=1}^ML_{ref}^i, \underset{y_i^j, j = [1,...,J]}{arg\ min}{|L_{out}^i - {L_{ref}^i}^j|_1}$
 
+```python
+iterables = tee(sequence, n)
+for i, sub_iterable in enumerate(iterables): # For each window,
+    for _ in range(i):  # iterate through every order of ngrams
+        next(sub_iterable, None)  # generate the ngrams within the window
+n_gram = zip(*iterables) # Unpack and flattens the iterables
+```
+
+
+
