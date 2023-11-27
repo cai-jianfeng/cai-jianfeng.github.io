@@ -29,7 +29,6 @@ BLEU = BP \times exp(\sum_{n=1}^{N}\omega_nlog\ p_n), log\ BLEU = min(1 - \frac{
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$\{Candidates\} = \{\hat{y}_i\}_{i=1}^M$;
 $c$ 表示 $\mathcal{D}_t$ 中所有预测的句子 $\hat{y}_i$ 的长度 $L_{out}^i$ 的总和 $c = \sum_{i=1}^ML_{out}^i$，
 $r$ 表示 $\mathcal{D}_t$ 中所有 ground-truth 的句子 $y_i$ 的长度 $L_{ref}^i$ 的总和 $r = \sum_{i=1}^ML_{ref}^i$ 
-(如果每个 $S_i$ 对应不止一个目标句子 $y_i^j, j=1,...,J$，则 $L_{ref}^i$ 表示与预测的句子 $\hat{y}_i$ 的长度最短的目标句子 $y_i^j$：$\underset{y_i^j, j = [1,...,J]}{arg\ min}{|L_{out}^i - {L_{ref}^i}^j|_1}$)；
-$Counter_{Clip}(x)$ 表示 $x$ 在 $Ref$ 中出现的次数和在 $Out$ 中出现的次数的最小值；
-$Counter(x)$ 表示 $x$ 在 $Out$ 中出现的次数；$L_{out/ref}$ 表示 $Out/Ref$ 的长度。</p>
+(如果每个 $S_i$ 对应不止一个目标句子 $y_i^j, j=1,...,J$，
+则 $L_{ref}^i$ 表示与预测的句子 $\hat{y}_i$ 的长度最短的目标句子 $y_i^j$ 的长度 ${L_{ref}^i}^j$：$\underset{y_i^j, j = [1,...,J]}{arg\ min}{|L_{out}^i - {L_{ref}^i}^j|_1}$)。</p>
 
