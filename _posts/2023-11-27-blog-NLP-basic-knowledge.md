@@ -11,7 +11,7 @@ tags:
 <h1>Metric</h1>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b><a href="https://aclanthology.org/P02-1040.pdf" target="_blank">BLEU (BLEU Score)</a></b>：Bilingual Evaluation Understudy，
-主要用于计算一对多的 Translation 的任务的质量，例如  Machine Translation。这种任务通常拥有多个 ground-truth (<a href="https://github.com/cai-jianfeng/glossification_editing_programs/blob/main/bleu_score.py" target="_blank">参考代码</a>)。其计算公式如下：</p>
+主要用于计算一对多的 Translation 的任务的质量，例如  Machine Translation。这种任务通常拥有多个 ground-truth (<a href="https://github.com/cai-jianfeng/glossification_editing_programs/blob/main/metrics/bleu_score.py" target="_blank">参考代码</a>)。其计算公式如下：</p>
 
 $$BLEU_{n-gram} = BP \times exp(log\ P_n),\ BLEU = BP \times exp(\dfrac{\sum_{i=1}^N\omega_nlog\ P_n}{N}), \\ 
 P_n = \dfrac{\sum_{n-gram \in \hat{y}}{Counter_{Clip}(n-gram)}}{\sum_{n-gram \in \hat{y}}{Counter(n-gram)}}, 
@@ -33,7 +33,7 @@ $r$ 表示 $\mathcal{D}_t$ 中所有 ground-truth 的句子 $y_i$ 的长度 $L_{
 则 $L_{ref}^i$ 表示与预测的句子 $\hat{y}_i$ 的长度最短的目标句子 $y_i^j$ 的长度 $L_{ref}^{i,j}$：$\underset{y_i^j, j = [1,...,J]}{arg\ min}{|L_{out}^i - L_{ref}^{i,j}|_1}$)。
 <b><span style="color: red">BlEU Score 是通过将整个测试/训练/验证集的文本作为一个整体来计算的。因此，不能对集合中的每个句子单独计算 BlEU Score，然后用某种方式平均得到最终的分数。</span></b></p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"><b>WER</b>：Word Error Rate，主要用于计算一对一的 Translation 的任务的质量，例如 Speech-to-text。这种任务通常只有一个 ground-truth。其计算公式如下：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>WER</b>：Word Error Rate，主要用于计算一对一的 Translation 的任务的质量，例如 Speech-to-text。这种任务通常只有一个 ground-truth (<a href="https://github.com/cai-jianfeng/glossification_editing_programs/blob/main/metrics/word_error_rate.py" target="_blank">参考代码</a>)。其计算公式如下：</p>
 
 $$WER = \dfrac{d_{Levenstein}}{L_{out}} = \dfrac{d_{insert} + d_{delete} + d_{substitute}}{L_{out}}$$
 
@@ -41,5 +41,5 @@ $$WER = \dfrac{d_{Levenstein}}{L_{out}} = \dfrac{d_{insert} + d_{delete} + d_{su
 而所定义的编辑步骤由 $3$ 个部分组成：<b>Insert(i)</b>，表示在第 $i$ 个位置添加一个词；<b>Delete(i)</b>：表示删除第 $i$ 个位置的词；
 <b>Substitute(i, w)</b>：表示将第 $i$ 个位置上的词换成 $w$。$d_{insert/delete/substitute}$ 分别表示将预测的句子 $\hat{y}$ 转化为 $y$ 所需的 $insert/delete/substitute$ 的次数。
 通常情况下，我们不会分开计算 $3$ 个编辑步骤的各自次数，
-而是使用 <b><a href="https://github.com/cai-jianfeng/glossification_editing_programs/blob/main/extract_editoring_program.py" target="_blank">DP</a></b> (Dynamic Programming，
+而是使用 <b><a href="https://github.com/cai-jianfeng/glossification_editing_programs/blob/main/metrics/word_error_rate.py" target="_blank">DP</a></b> (Dynamic Programming，
 动态规划)算法直接求解 $d_{Levenstein}$。</p>
