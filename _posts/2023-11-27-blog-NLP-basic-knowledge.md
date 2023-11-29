@@ -44,7 +44,7 @@ $$WER = \dfrac{d_{Levenstein}}{L_{out}} = \dfrac{d_{insert} + d_{delete} + d_{su
 而是使用 <b><a href="https://github.com/cai-jianfeng/glossification_editing_programs/blob/main/metrics/word_error_rate.py" target="_blank">DP</a></b> (Dynamic Programming，
 动态规划)算法直接求解 $d_{Levenstein}$。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"><b>ROUGE-L</b>，主要用于计算一对多的 Translation 的任务的质量，例如  Machine Translation。
+<p style="text-align:justify; text-justify:inter-ideograph;"><b><a href="https://aclanthology.org/P04-1077.pdf" target="_blank">ROUGE-L</a></b>，主要用于计算一对多的 Translation 的任务的质量，例如  Machine Translation。
 这种任务通常拥有多个 ground-truth (<a href="https://github.com/cai-jianfeng/glossification_editing_programs/blob/main/metrics/ROUGE-L.py" target="_blank">参考代码</a>)。
 具体而言，对于一对一的 Translation 任务，其计算公式如下：</p>
 
@@ -58,5 +58,5 @@ $$R_{lcs-multi} = max_{j=1}^u\big(\dfrac{LCS(r_j,c)}{m_j}\big); P_{lcs-multi} = 
 F_{lcs-multi} = \dfrac{(1+\beta^2)R_{lcs-multi}P_{lcs-multi}}{R_{lcs-multi} + \beta^2P_{lcs-multi}}$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$c$ 表示预测的句子，$n$ 表示其长度，$r_{1,...,u}$ 表示对应的 $u$ 个 ground-truth，$m_j,j=[1,...,u]$ 表示 $r_j$ 的长度；
-$\beta$ 表示权重：$\beta = \dfrac{P_{lcs-multi}}{R_{lcs-multi}} \leftarrow \dfrac{\partial F_{lcs-multi}}{\partial R_{lcs-multi}} = \dfrac{\partial F_{lcs-multi}}{\partial P_{lcs-multi}}$。
+$\beta$ 表示权重，和一对一的 Translation 任务的计算公式相似：$\beta = \dfrac{P_{lcs-multi}}{R_{lcs-multi}} \leftarrow \dfrac{\partial F_{lcs-multi}}{\partial R_{lcs-multi}} = \dfrac{\partial F_{lcs-multi}}{\partial P_{lcs-multi}}$。
 最长公共子序列的求解可以使用 <a href="https://github.com/cai-jianfeng/glossification_editing_programs/blob/main/metrics/ROUGE-L.py" target="_blank">DP</a> 算法，时间复杂度为 $O(mn)$。</p>
