@@ -105,7 +105,7 @@ $$f(k) = \underset{t = 1,2,3,4}{max}\{f(k-t) + g(k-t+1,k)\}$$
 具体而言，首先使用字符词汇表($26$ 个字母 + 其他特殊字符，character vocabulary)初始化符号词汇表(symbol vocabulary)，
 并使用初始化的符号词汇表对训练数据进行 tokenize，然后使用该数据训练一个语言模型 $P_\theta(·)$。
 通过组合当前符号词汇表中的两个符号来生成一个新的符号，使符号词汇表的符号数量加一，将其替换对应的两个符号添加到语言模型时，可以最大程度地增加训练数据上的似然概率：
-即假设训练句子为 $S = \{t_1,...,t_n\}$ ($t_1$ 表示符号，$S$ 是已经使用初始化的符号词汇表 tokenize 的)，其语言模型的似然概率 $log\ P(S) = \sum_{i=1}^nlog\ P(t_i)$。
+即假设训练句子为 $S = \{t_1,...,t_n\}$ ($t_i$ 表示符号，$S$ 是已经使用初始化的符号词汇表 tokenize 的)，其语言模型的似然概率 $log\ P(S) = \sum_{i=1}^nlog\ P(t_i)$。
 当位置为 $x$ 和 $y=x+1$ 的符号 $t_x$ 和 $t_y$ 进行组合，生成新的符号 $t_{[x:y]} = [t_x, t_y]$ 后，
 句子 $S$ 的语言模型的似然概率为：</p>
 
@@ -118,8 +118,8 @@ $$t_z = \underset{t_x,t_y \in S}{arg\ max}{log\dfrac{P(t_{[x:y]})}{P(t_x)P(t_y)}
 
 <p style="text-align:justify; text-justify:inter-ideograph;">重复上述组合步骤直到达到设定的符号词汇表大小或似然概率增量低于某一阈值。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">最简单的语言模型 $P_\theta(t)$ 是每个符号 $t$ 的频数概率，即 $P_\theta(t) = dfrac{freq(t)}{freq(any)}$，其中 $freq(t)$ 表示符号 $t$ 在训练数据 $\mathcal{D}$ 中的出现次数；
+<p style="text-align:justify; text-justify:inter-ideograph;">最简单的语言模型 $P_\theta(t)$ 是每个符号 $t$ 的频数概率，即 $P_\theta(t) = \dfrac{freq(t)}{freq(any)}$，其中 $freq(t)$ 表示符号 $t$ 在训练数据 $\mathcal{D}$ 中的出现次数；
 而 $freq(any)$ 表示任意词在训练数据中的出现次数，也就是整个数据 $\mathcal{D}$ 的总符号数。
-当进行组合时，$P(t_{[x:y]}) = dfrac{freq(t_{[x:y]})}{freq(t_x) + freq(t_y) - freq(t_{[x:y]})}$，其中 $freq(t_{[x:y]})$ 表示符号对 $t_{[x:y]}$ 在训练数据 $\mathcal{D}$ 中的出现次数；
+当进行组合时，$P(t_{[x:y]}) = \dfrac{freq(t_{[x:y]})}{freq(t_x) + freq(t_y) - freq(t_{[x:y]})}$，其中 $freq(t_{[x:y]})$ 表示符号对 $t_{[x:y]}$ 在训练数据 $\mathcal{D}$ 中的出现次数；
 而 $freq(t_x) + freq(t_y) - freq(t_{[x:y]})$ 表示训练数据 $\mathcal{D}$ 中任意符号对中一个为 $t_x$ 的出现次数和任意符号对中一个为 $t_y$ 的出现次数减去符号对 $t_{[x:y]}$ 出现次数
 (因为符号对 $t_{[x:y]}$ 在任意符号对中一个为 $t_x$ 和任意符号对中一个为 $t_y$ 都统计了一次(一共两次)，因此需要减去一次)。</p>
