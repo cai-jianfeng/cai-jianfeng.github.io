@@ -109,11 +109,14 @@ $$f(k) = \underset{t = 1,2,3,4}{max}\{f(k-t) + g(k-t+1,k)\}$$
 当位置为 $x$ 和 $y=x+1$ 的符号 $t_x$ 和 $t_y$ 进行组合，生成新的符号 $t_{[x:y]} = [t_x, t_y]$ 后，
 句子 $S$ 的语言模型的似然概率为：</p>
 
-$$log\ P‘(S) = \sum_{i=1}^nlog\ P(t_i) + log\ P(t_{[x:y]}) - log\ P(t_x)- log\ P(t_y) = \sum_{i=1}^nlog\ P(t_i) + log\dfrac{P(t_{[x:y]})}{P(t_x)P(t_y)}$$
+$$log\ P'(S) = \sum_{i=1}^nlog\ P(t_i) + log\ P(t_{[x:y]}) - log\ P(t_x)- log\ P(t_y) = \sum_{i=1}^nlog\ P(t_i) + log\dfrac{P(t_{[x:y]})}{P(t_x)P(t_y)}$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">因此，将 $t_x$ 和 $t_y$ 进行组合后的句子的语言模型的似然概率增值为 $log\ P‘(S) - log\ P(S) = log\dfrac{P(t_{[x:y]})}{P(t_x)P(t_y)}$。
-通过选择增值最大的符号对进行组合来实现符号词汇表的更新：$t_z = \underset{t_x,t_y \in S, t_{[x:y]} = [t_x, t_y], y = x+1}{arg\ max}{log\dfrac{P(t_{[x:y]})}{P(t_x)P(t_y)}}$。
-重复上述组合步骤直到达到设定的符号词汇表大小或似然概率增量低于某一阈值。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">因此，将 $t_x$ 和 $t_y$ 进行组合后的句子的语言模型的似然概率增值为 $log\ P'(S) - log\ P(S) = log\dfrac{P(t_{[x:y]})}{P(t_x)P(t_y)}$。
+通过选择增值最大的符号对进行组合来实现符号词汇表的更新：</p>
+
+$$t_z = \underset{t_x,t_y \in S}{arg\ max}{log\dfrac{P(t_{[x:y]})}{P(t_x)P(t_y)}}, t_{[x:y]} = [t_x, t_y], y = x+1$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">重复上述组合步骤直到达到设定的符号词汇表大小或似然概率增量低于某一阈值。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">最简单的语言模型 $P_\theta(t)$ 是每个符号 $t$ 的频数概率，即 $P_\theta(t) = dfrac{freq(t)}{freq(any)}$，其中 $freq(t)$ 表示符号 $t$ 在训练数据 $\mathcal{D}$ 中的出现次数；
 而 $freq(any)$ 表示任意词在训练数据中的出现次数，也就是整个数据 $\mathcal{D}$ 的总符号数。
