@@ -120,6 +120,6 @@ $$t_z = \underset{t_x,t_y \in S}{arg\ max}{log\dfrac{P(t_{[x:y]})}{P(t_x)P(t_y)}
 
 <p style="text-align:justify; text-justify:inter-ideograph;">最简单的语言模型 $P_\theta(t)$ 是每个符号 $t$ 的频数概率，即 $P_\theta(t) = \dfrac{freq(t)}{freq(any)}$，其中 $freq(t)$ 表示符号 $t$ 在训练数据 $\mathcal{D}$ 中的出现次数；
 而 $freq(any)$ 表示任意词在训练数据中的出现次数，也就是整个数据 $\mathcal{D}$ 的总符号数。
-当进行组合时，$P(t_{[x:y]}) = \dfrac{freq(t_{[x:y]})}{freq(t_x) + freq(t_y) - freq(t_{[x:y]})}$，其中 $freq(t_{[x:y]})$ 表示符号对 $t_{[x:y]}$ 在训练数据 $\mathcal{D}$ 中的出现次数；
+当进行组合时，$P_\theta(t_{[x:y]}) = \dfrac{freq(t_{[x:y]})}{freq(t_x) + freq(t_y) - freq(t_{[x:y]})}$，其中 $freq(t_{[x:y]})$ 表示符号对 $t_{[x:y]}$ 在训练数据 $\mathcal{D}$ 中的出现次数；
 而 $freq(t_x) + freq(t_y) - freq(t_{[x:y]})$ 表示训练数据 $\mathcal{D}$ 中任意符号对中一个为 $t_x$ 的出现次数和任意符号对中一个为 $t_y$ 的出现次数减去符号对 $t_{[x:y]}$ 出现次数
 (因为符号对 $t_{[x:y]}$ 在任意符号对中一个为 $t_x$ 和任意符号对中一个为 $t_y$ 都统计了一次(一共两次)，因此需要减去一次)。</p>
