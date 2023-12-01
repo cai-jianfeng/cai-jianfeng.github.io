@@ -64,8 +64,7 @@ $\beta$ 表示权重，和一对一的 Translation 任务的计算公式相似�
 
 <h1>Tokenization</h1>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"><b><a href="https://arxiv.org/abs/1508.07909" target="_blank">BPE</a></b>：Byte Pair Encoding，是一种数据压缩技术 (
-<a href=""  target="_blank"><b>参考代码</b></a>)。
+<p style="text-align:justify; text-justify:inter-ideograph;"><b><a href="https://arxiv.org/abs/1508.07909" target="_blank">BPE</a></b>：Byte Pair Encoding，是一种数据压缩技术(<a href="https://github.com/cai-jianfeng/glossification_editing_programs/blob/main/data/BPE.py"  target="_blank"><b>参考代码</b></a>)：
 它使用单个<b>未使用</b>的字节迭代地替换序列中<b>最频繁</b>的字节对。
 首先，使用字符词汇表($26$ 个字母，character vocabulary)初始化符号词汇表(symbol vocabulary)，
 并将每个单词(word)表示为字符序列(character seq)，加上一个特殊的词尾符号 “·”，这使能够在翻译后恢复原始标记化，也就是从 subword 恢复成 word。
