@@ -123,3 +123,15 @@ $$t_z = \underset{t_x,t_y \in S}{arg\ max}{log\dfrac{P(t_{[x:y]})}{P(t_x)P(t_y)}
 当进行组合时，$P_\theta(t_{[x:y]}) = \dfrac{freq(t_{[x:y]})}{freq(t_x) + freq(t_y) - freq(t_{[x:y]})}$，其中 $freq(t_{[x:y]})$ 表示符号对 $t_{[x:y]}$ 在训练数据 $\mathcal{D}$ 中的出现次数；
 而 $freq(t_x) + freq(t_y) - freq(t_{[x:y]})$ 表示训练数据 $\mathcal{D}$ 中任意符号对中一个为 $t_x$ 的出现次数和任意符号对中一个为 $t_y$ 的出现次数减去符号对 $t_{[x:y]}$ 出现次数
 (因为符号对 $t_{[x:y]}$ 在任意符号对中一个为 $t_x$ 和任意符号对中一个为 $t_y$ 都统计了一次(一共两次)，因此需要减去一次)。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"><b><a href="https://arxiv.org/abs/1804.10959" target="_blank">ULM</a></b>：Unigram Language Model。
+其思想与 WordPiece 类似，都是使用<b>最大化似然函数</b>迭代更新符号词汇表。与 WordPiece 不同的是，ULM 使用的是从多到少的删减策略。
+由 WordPiece 可知，一般似然函数为 $P = (\vec{x}|X) = P(\vec{x}) = \prod_{i=1}^Mp(x_i)$，其中原始句子 $X$ 的分词结果为 $\vec{x} = (x_1,...,x_M)$。
+而对于一个预定义的符号词汇表 $V$，可以通过维特比算法计算关于句子 $X$ 最有可能的分词方式：$\vec{x}^* = \underset{x \in S(X)}{arg\ max}P(\vec{x})$，
+其中 $S(X)$ 是句子 $X$ 在符号词汇表 $V$ 下的所有不同分词结果集合。
+然后就可以通过 <b>EM</b> 算法来估计 $p(x_i)$，其中 M 步(Maxmize)是<b>最大化训练数据的所有句子的所有分词组合形成的概率</b>：</p>
+
+$$arg\ max\ \mathcal{L} =arg\ max \sum_{s=1}^{|\mathcal{D}|}log(P(X^{(s)})) =arg\ max \sum_{i=1}^{|\mathcal{D}|}log(\sum_{\vec{x} \in S(X^{(s)})}P(x))$$
+
+具体而言，首先构建一个足够大的符号词汇表。一般可用训练数据中的所有字符加上常见的子字符串初始化符号词汇表，也可以通过 BPE 算法初始化。
+然后，给定一个语言模型 $P_\theta(·)$，使用 EM 算法来优化 $p(x)$：
