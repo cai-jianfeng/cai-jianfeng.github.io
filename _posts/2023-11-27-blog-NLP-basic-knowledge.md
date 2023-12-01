@@ -82,7 +82,7 @@ $\beta$ 表示权重，和一对一的 Translation 任务的计算公式相似�
 由于前述将词尾符号一同进行合成，这里只需要将所有预测生成的符号序列按预测顺序进行排列，
 然后在 $2$ 个词尾符号 ”.“ (即代码中的 '<\w>')之间的即为一个完整的单词(<a href="https://zhuanlan.zhihu.com/p/424631681" target="_blank">参考资料</a>)。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"><b><a href="https://ojs.aaai.org/index.php/AAAI/article/view/6451" target="_blank">BBPE</a></b>：byte-level BPE，将 BPE 扩展到 byte 的层面上。
+<p style="text-align:justify; text-justify:inter-ideograph;"><b><a href="https://ojs.aaai.org/index.php/AAAI/article/view/6451" target="_blank">BBPE</a></b>：byte-level BPE，将 BPE 扩展到 byte 的层面上(<a href="https://github.com/cai-jianfeng/glossification_editing_programs/blob/main/data/BBPE.py" target="_blank">参考代码</a>)。
 具体而言，BBPE 将每个字符都使用 <b>UTF-8</b> 进行字节编码(使用 $16$ 进制表示)，然后将每个单词表示为字节序列(byte seq)，然后使用 BPE 以每个字节为符号(symbol)进行迭代编码。
 注意，其中特殊词尾符号 “·” 也进行字节编码并参与合成。
 而在使用阶段，首先将给定的单词表示为字节序列，然后遍历符号词汇表内的符号(从长到短)，
@@ -90,7 +90,9 @@ $\beta$ 表示权重，和一对一的 Translation 任务的计算公式相似�
 而在 inference 阶段，需要将模型预测生成的符号转化为原始的单词。
 由于前述将词尾符号一同进行合成，同时 UTF-8 的字节编码方式具有哈夫曼编码的唯一性(前缀唯一性)，所以转化的过程是唯一的。
 这里可以参考 BPE，只需要将所有预测生成的符号序列按预测顺序进行排列，然后找到序列中的每个词尾符号 ”.“ 的字节编码，在 $2$ 个词尾符号 ”.“ 的字节编码之间的即为一个完整的单词的字节编码。
-具体转化算法如下：对于一个给定的字节编码序列 $\{B\}_{k=1}^N$，定义改序列可转化出的最大字符数量为 $f(k)$ (即 $\{B\}_{k=1}^N$ 一共可以转化为 $f(N)$ 个单词)，可以使用如下 $DP$ 算法进行求解：</p>
+但是该方法的错误率较高，很可能 $2$ 个词尾符号 ”.“ 的字节编码之间的不止一个单词。
+由于 UTF-8 的这种字节编码特性，这里可以使用另一种基于递归的方法来实现转化，
+具体转化算法如下：对于一个给定的字节编码序列 $\{B\}_{k=1}^N$，定义该序列可转化出的最大字符数量为 $f(k)$ (即 $\{B\}_{k=1}^N$ 一共可以转化为 $f(N)$ 个单词)，可以使用如下 $DP$ 算法进行求解：</p>
 
 $$f(k) = \underset{t = 1,2,3,4}{max}\{f(k-t) + g(k-t+1,k)\}$$
 
