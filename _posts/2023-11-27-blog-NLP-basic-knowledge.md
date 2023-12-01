@@ -33,7 +33,8 @@ $r$ 表示 $\mathcal{D}_t$ 中所有 ground-truth 的句子 $y_i$ 的长度 $L_{
 则 $L_{ref}^i$ 表示与预测的句子 $\hat{y}_i$ 的长度最短的目标句子 $y_i^j$ 的长度 $L_{ref}^{i,j}$：$\underset{y_i^j, j = [1,...,J]}{arg\ min}{|L_{out}^i - L_{ref}^{i,j}|_1}$)。
 <b><span style="color: red">BlEU Score 是通过将整个测试/训练/验证集的文本作为一个整体来计算的。因此，不能对集合中的每个句子单独计算 BlEU Score，然后用某种方式平均得到最终的分数。</span></b></p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"><b>WER</b>：Word Error Rate，主要用于计算一对一的 Translation 的任务的质量，例如 Speech-to-text。这种任务通常只有一个 ground-truth (<a href="https://github.com/cai-jianfeng/glossification_editing_programs/blob/main/metrics/word_error_rate.py" target="_blank">参考代码</a>)。其计算公式如下：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>WER</b>：Word Error Rate，主要用于计算一对一的 Translation 的任务的质量，例如 Speech-to-text。
+这种任务通常只有一个 ground-truth (<a href="https://github.com/cai-jianfeng/glossification_editing_programs/blob/main/metrics/word_error_rate.py" target="_blank">参考代码</a>)。其计算公式如下：</p>
 
 $$WER = \dfrac{d_{Levenstein}}{L_{out}} = \dfrac{d_{insert} + d_{delete} + d_{substitute}}{L_{out}}$$
 
@@ -60,3 +61,25 @@ F_{lcs-multi} = \dfrac{(1+\beta^2)R_{lcs-multi}P_{lcs-multi}}{R_{lcs-multi} + \b
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，$c$ 表示预测的句子，$n$ 表示其长度，$r_{1,...,u}$ 表示对应的 $u$ 个 ground-truth，$m_j,j=[1,...,u]$ 表示 $r_j$ 的长度；
 $\beta$ 表示权重，和一对一的 Translation 任务的计算公式相似：$\beta = \dfrac{P_{lcs-multi}}{R_{lcs-multi}} \leftarrow \dfrac{\partial F_{lcs-multi}}{\partial R_{lcs-multi}} = \dfrac{\partial F_{lcs-multi}}{\partial P_{lcs-multi}}$。
 最长公共子序列的求解可以使用 <a href="https://github.com/cai-jianfeng/glossification_editing_programs/blob/main/metrics/ROUGE-L.py" target="_blank">DP</a> 算法，时间复杂度为 $O(mn)$。</p>
+
+<h1>Tokenization</h1>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"><b><a href="https://arxiv.org/abs/1508.07909" target="_blank">BPE</a></b>：Byte Pair Encoding，是一种数据压缩技术 (
+<a href=""  target="_blank"><b>参考代码</b></a>)。
+它使用单个<b>未使用</b>的字节迭代地替换序列中<b>最频繁</b>的字节对。
+首先，使用字符词汇表($26$ 个字母，character vocabulary)初始化符号词汇表(symbol vocabulary)，
+并将每个单词(word)表示为字符序列(character seq)，加上一个特殊的词尾符号 “·”，这使能够在翻译后恢复原始标记化，也就是从 subword 恢复成 word。
+然后，迭代计算所有符号对(symbol pair)，并用新符号(symbol) “AB” 替换最频繁的对 (’A‘, ’B‘) 的每次出现。每个合并操作都会生成一个表示字符 n-gram 的新符号(symbol)。
+最终的符号词汇表内的符号数量等于初始词汇量($26$ 个字母)加上合并操作生成的符号数量(超参数)。
+注意，特殊词尾符号 “·” 也进行合成步骤。伪代码算法如下图(其中 '<\w>' 表示词尾符号 ”.“)：</p>
+
+<img src="https://cai-jianfeng.github.io/images/BPE.png">
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在使用阶段，首先将给定的单词表示为字符序列，然后遍历符号词汇表内的符号(从长到短)，
+不断尝试将单词字符序列与符号进行匹配(即将字符序列进行合成)，直到字符序列内的所有字符都已合成为符号词汇表内的符号。
+而对于无法使用符号词汇表内的符号进行合成的单词，只需要在现有的符号词汇表上对其再进行一次 BPE 即可。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">而在 inference 阶段，需要将模型预测生成的符号转化为原始的单词。
+由于前述将词尾符号一同进行合成，这里只需要将所有预测生成的符号序列按预测顺序进行排列，
+然后在 $2$ 个词尾符号 ”.“ (即代码中的 '<\w>')之间的即为一个完整的单词(<a href="https://zhuanlan.zhihu.com/p/424631681" target="_blank">参考资料</a>)。</p>
+
