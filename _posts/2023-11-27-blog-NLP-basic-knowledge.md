@@ -124,7 +124,7 @@ $$t_z = \underset{t_x,t_y \in S}{arg\ max}{log\dfrac{P(t_{[x:y]})}{P(t_x)P(t_y)}
 而 $freq(t_x) + freq(t_y) - freq(t_{[x:y]})$ 表示训练数据 $\mathcal{D}$ 中任意符号对中一个为 $t_x$ 的出现次数和任意符号对中一个为 $t_y$ 的出现次数减去符号对 $t_{[x:y]}$ 出现次数
 (因为符号对 $t_{[x:y]}$ 在任意符号对中一个为 $t_x$ 和任意符号对中一个为 $t_y$ 都统计了一次(一共两次)，因此需要减去一次)。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"><b><a href="https://arxiv.org/abs/1804.10959" target="_blank">ULM</a></b>：Unigram Language Model。
+<p style="text-align:justify; text-justify:inter-ideograph;"><b><a href="https://arxiv.org/abs/1804.10959" target="_blank">Unigram</a></b>：Unigram Language Model (<a href="https://github.com/cai-jianfeng/glossification_editing_programs/blob/main/data/Unigram.py" target="_blank">参考代码</a>)。
 其思想与 WordPiece 类似，都是使用<b>最大化似然函数</b>迭代更新符号词汇表。与 WordPiece 不同的是，ULM 使用的是从多到少的删减策略。
 由 WordPiece 可知，一般似然函数为 $P = (\vec{x}|X) = P(\vec{x}) = \prod_{i=1}^Mp(x_i)$，其中原始句子 $X$ 的分词结果为 $\vec{x} = (x_1,...,x_M)$。
 而对于一个预定义的符号词汇表 $V$，可以通过<b>维特比算法</b>计算关于句子 $X$ 最有可能的分词方式：$\vec{x}^* = \underset{x \in S(X)}{arg\ max}P(\vec{x})$，
@@ -132,7 +132,7 @@ $$t_z = \underset{t_x,t_y \in S}{arg\ max}{log\dfrac{P(t_{[x:y]})}{P(t_x)P(t_y)}
 然后就可以通过 <b>EM</b> 算法来估计 $p(x_i)$，其中 E 步则是使用更新的符号词汇表 $\mathcal{V}$ 来更新每个符号的概率：$p(x_i) = \dfrac{freq(x_i)}{freq(any)}, x_i \in \mathcal{V}$。
 而 M 步(Maxmize)是在删除 $\eta$ 比例的符号后，<b>最大化训练数据的所有句子的所有分词组合形成的概率</b>：</p>
 
-$$\underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\mathcal{L} =\underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\sum_{s=1}^{|\mathcal{D}|}log(P(X^{(s)})) = \underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\sum_{i=1}^{|\mathcal{D}|}log(\sum_{\vec{x} \in S(X^{(s)})}P(\vec{x})) = \underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\sum_{i=1}^{|\mathcal{D}|}log(\sum_{\vec{x} \in S(X^{(s)})}\prod_{i=1}^{M_{\vec{x}}}p(x_i; \theta))$$
+$$\underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\mathcal{L} =\underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\sum_{s=1}^{|\mathcal{D}|}log(P(X^{(s)})) = \underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\sum_{i=1}^{|\mathcal{D}|}log(\sum_{\vec{x} \in S(X^{(s)})}P(\vec{x})) = \underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\sum_{i=1}^{|\mathcal{D}|}log(\sum_{\vec{x} \in S(X^{(s)})}\prod_{i=1}^{M_{\vec{x}}}p(x_i))$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">具体而言，在 M 步时，首先为每一个符号 $x_i$ 计算 $loss_i = \mathcal{L}_{\mathcal{V}} - \mathcal{L}_{\mathcal{V} - x_i}$，
 即 $loss_i$ 代表如果将第 $i$ 个符号去掉，上述似然函数值 $\mathcal{L}$ 的减少量。
