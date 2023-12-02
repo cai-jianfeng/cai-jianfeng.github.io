@@ -149,13 +149,13 @@ $$\underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\mathcal{L} =\underse
 Heuristically make a reasonably big seed vocabulary from the training corpus.
 </li>
 <li>
-Repeat the following steps until $|V|$ reaches a desired vocabulary size using EM algorithm.
+Repeat the following steps until $|\mathcal{V}|$ reaches a desired vocabulary size using EM algorithm.
 <ol type="a"><li>
 E step: Fixing the set of vocabulary, optimize $p(x)$.
 </li>
 <li>M step: Compute the $loss_i$ for each subword $x_i$, 
-where lossi represents how likely the likelihood $L$ is reduced when the subword $x_i$ is removed from the current vocabulary. 
-Sort the symbols by lossi and keep top η% of subwords (η is 80, for example). 
+where $loss_i$ represents how likely the likelihood $L$ is reduced when the subword $x_i$ is removed from the current vocabulary. 
+Sort the symbols by lossi and keep top $\eta\%$ of subwords ($\eta$ is $80$, for example). 
 Note that we always keep the subwords consisting of a single character to avoid out-of-vocabulary.
 </li></ol>
 </li></ol>
