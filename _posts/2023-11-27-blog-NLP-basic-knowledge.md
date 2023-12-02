@@ -6,7 +6,7 @@ tags:
   - 深度学习基础知识
 ---
 
-<p style="text-align:justify; text-justify:inter-ideograph;">这篇博客主要介绍了 NLP 任务中的基础知识，包括性能评价指标等。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">这篇博客主要介绍了 NLP 任务中的基础知识，包括性能评价指标(metrics)，分词算法(tokenization)等。</p>
 
 <h1>Metric</h1>
 
@@ -140,4 +140,22 @@ $$\underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\mathcal{L} =\underse
 最终得到删减后的符号词汇表 $\mathcal{V}' = \mathcal{V} - (1 - \eta)\mathcal{V}$。
 但是在刚开始时没有给定的符号词汇表，因此首先需要构建一个足够大的符号词汇表。一般可用训练数据中的所有字符加上常见的子字符串初始化符号词汇表，也可以通过 BPE 算法初始化。
 然后，给定一个 Unigram 语言模型 $p(x) = \dfrac{freq(x)}{freq(any)}$，迭代使用上述 EM 算法来优化 $p(x_i), x_i \in \mathcal{V}$ 和 $\mathcal{V}$，
-直到最终的符号词汇表 $\mathcal{V}$ 的符号数量达到阈值(<a href="https://huggingface.co/learn/nlp-course/en/chapter6/7" target="_blank">参考资料</a>)。</p>
+直到最终的符号词汇表 $\mathcal{V}$ 的符号数量达到阈值(<a href="https://huggingface.co/learn/nlp-course/en/chapter6/7" target="_blank">参考资料</a>)。
+<span style="color: red"><b>注意：虽然论文原文写的是 "Fixing the set of vocabulary, optimize $p(x)$ with the EM algorithm"，
+但是根据<a href="https://huggingface.co/learn/nlp-course/en/chapter6/7" target="_blank">参考资料</a>的实现来看，EM 算法是融合在整个符号词汇表 $\mathcal{V}$ 的更新中的。
+也就是说，论文第 $3$ 页的算法步骤描述应更改为如下更为恰当：</b></span></p>
+
+<ol type="1"><li>
+Heuristically make a reasonably big seed vocabulary from the training corpus.
+</li>
+<li>
+Repeat the following steps until $|V|$ reaches a desired vocabulary size using EM algorithm.
+<ol type="a"><li>
+E step: Fixing the set of vocabulary, optimize $p(x)$.
+</li>
+<li>M step: Compute the $loss_i$ for each subword $x_i$, 
+where lossi represents how likely the likelihood $L$ is reduced when the subword $x_i$ is removed from the current vocabulary. 
+Sort the symbols by lossi and keep top η% of subwords (η is 80, for example). 
+Note that we always keep the subwords consisting of a single character to avoid out-of-vocabulary.
+</li></ol>
+</li></ol>
