@@ -127,11 +127,17 @@ $$t_z = \underset{t_x,t_y \in S}{arg\ max}{log\dfrac{P(t_{[x:y]})}{P(t_x)P(t_y)}
 <p style="text-align:justify; text-justify:inter-ideograph;"><b><a href="https://arxiv.org/abs/1804.10959" target="_blank">ULM</a></b>：Unigram Language Model。
 其思想与 WordPiece 类似，都是使用<b>最大化似然函数</b>迭代更新符号词汇表。与 WordPiece 不同的是，ULM 使用的是从多到少的删减策略。
 由 WordPiece 可知，一般似然函数为 $P = (\vec{x}|X) = P(\vec{x}) = \prod_{i=1}^Mp(x_i)$，其中原始句子 $X$ 的分词结果为 $\vec{x} = (x_1,...,x_M)$。
-而对于一个预定义的符号词汇表 $V$，可以通过维特比算法计算关于句子 $X$ 最有可能的分词方式：$\vec{x}^* = \underset{x \in S(X)}{arg\ max}P(\vec{x})$，
-其中 $S(X)$ 是句子 $X$ 在符号词汇表 $V$ 下的所有不同分词结果集合。
-然后就可以通过 <b>EM</b> 算法来估计 $p(x_i)$，其中 M 步(Maxmize)是<b>最大化训练数据的所有句子的所有分词组合形成的概率</b>：</p>
+而对于一个预定义的符号词汇表 $V$，可以通过<b>维特比算法</b>计算关于句子 $X$ 最有可能的分词方式：$\vec{x}^* = \underset{x \in S(X)}{arg\ max}P(\vec{x})$，
+其中 $S(X)$ 是句子 $X$ 在符号词汇表 $\mathcal{V}$ 下的所有不同分词结果集合。
+然后就可以通过 <b>EM</b> 算法来估计 $p(x_i)$，其中 E 步则是使用更新的符号词汇表 $\mathcal{V}$ 来更新每个符号的概率：$p(x_i) = \dfrac{freq(x_i)}{freq(any)}, x_i \in \mathcal{V}$。
+而 M 步(Maxmize)是在删除 $\eta$ 比例的符号后，<b>最大化训练数据的所有句子的所有分词组合形成的概率</b>：</p>
 
-$$arg\ max\ \mathcal{L} =arg\ max \sum_{s=1}^{|\mathcal{D}|}log(P(X^{(s)})) =arg\ max \sum_{i=1}^{|\mathcal{D}|}log(\sum_{\vec{x} \in S(X^{(s)})}P(x))$$
+$$\underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\mathcal{L} =\underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\sum_{s=1}^{|\mathcal{D}|}log(P(X^{(s)})) = \underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\sum_{i=1}^{|\mathcal{D}|}log(\sum_{\vec{x} \in S(X^{(s)})}P(\vec{x})) = \underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\sum_{i=1}^{|\mathcal{D}|}log(\sum_{\vec{x} \in S(X^{(s)})}\prod_{i=1}^{M_{\vec{x}}}p(x_i; \theta))$$
 
-具体而言，首先构建一个足够大的符号词汇表。一般可用训练数据中的所有字符加上常见的子字符串初始化符号词汇表，也可以通过 BPE 算法初始化。
-然后，给定一个语言模型 $P_\theta(·)$，使用 EM 算法来优化 $p(x)$：
+<p style="text-align:justify; text-justify:inter-ideograph;">具体而言，在 M 步时，首先为每一个符号 $x_i$ 计算 $loss_i = \mathcal{L}_{\mathcal{V}} - \mathcal{L}_{\mathcal{V} - x_i}$，
+即 $loss_i$ 代表如果将第 $i$ 个符号去掉，上述似然函数值 $\mathcal{L}$ 的减少量。
+然后根据 $loss_i$ 进行排序(由小到大)，保留 $loss$ 最低的 $\eta$ 比例的符号(一般 $\eta = 80%$)。注意，需要保留所有的单字符符号(即 $26$ 个字符 $+$ 特殊字符)，从而避免 $OOV$ 的情况。
+最终得到删减后的符号词汇表 $\mathcal{V}' = \mathcal{V} - (1 - \eta)\mathcal{V}$。
+但是在刚开始时没有给定的符号词汇表，因此首先需要构建一个足够大的符号词汇表。一般可用训练数据中的所有字符加上常见的子字符串初始化符号词汇表，也可以通过 BPE 算法初始化。
+然后，给定一个 Unigram 语言模型 $p(x) = \dfrac{freq(x)}{freq(any)}$，迭代使用上述 EM 算法来优化 $p(x_i), x_i \in \mathcal{V}$ 和 $\mathcal{V}$，
+直到最终的符号词汇表 $\mathcal{V}$ 的符号数量达到阈值(<a href="https://huggingface.co/learn/nlp-course/en/chapter6/7" target="_blank">参考资料</a>)。</p>

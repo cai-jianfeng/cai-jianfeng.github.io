@@ -15,5 +15,5 @@ for i, sub_iterable in enumerate(iterables): # For each window,
 n_gram = zip(*iterables) # Unpack and flattens the iterables
 ```
 
-
+$$\underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\mathcal{L} =\underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\sum_{s=1}^{|\mathcal{D}|}log(P(X^{(s)})) = \underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\sum_{i=1}^{|\mathcal{D}|}log(\sum_{\vec{x} \in S(X^{(s)})}P(\vec{x})) = \underset{\mathcal{V}' = (1 - \eta)\mathcal{V}}{arg\ max}\sum_{i=1}^{|\mathcal{D}|}log(\sum_{\vec{x} \in S(X^{(s)})}\prod_{i=1}^{M_{\vec{x}}}p(x_i; \theta))$$
 
