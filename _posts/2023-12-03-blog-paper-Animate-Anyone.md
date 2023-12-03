@@ -58,3 +58,9 @@ SD 模型的每一层主要包括 self-attention 和 cross-attention。在第 $l
 促进模型在 $N \times c_d^l$ 维度上的学习，最终输出 $\{z_i^{l+1}\}_{1:N}$ 作为下一层的输入。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">最终经过 $T$ 次去噪过程后，生成的无噪 $\{z_i^0\}_{1:N}$ 使用 SD 模型中的 VAE decoder 将其还原为原始视频帧 $\{v_i\}_{1:N}$。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在训练阶段，本文采用两阶段的训练方式。第一阶段，使用单视频帧训练模型，首先使用预训练的 SD 模型初始化本文的 SD 模型和 ReferenceNet，
+Pose Guider 使用高斯分布初始化(最后一层使用 zero convolution 初始化)，同时训练时 VAE 和 CLIP image encoder 的权重保持不变(即不参与训练)。
+然后在视频片段中随机选择一张作为给定的角色图像 $\mathcal{I}$，并随机选择另一张 $v_r$ 及其对应的 pose 视频帧 $p_r$ 作为训练图像。
+在这一阶段没有训练 temporal-attention 层，即将 SD 模型作为标准的图像生成模型进行训练，$\mathcal{I}$ 和 $p_r$ 的融合方式和上述一致(只是 $\mathcal{I}_d^l$ 无需复制 $N$ 次)。
+而在第二阶段，引入 temporal-attention 层并使用 AnimateDiff 进行初始化，同时使用视频片段进行训练，且只训练 temporal-attention 层(固定其他模块参数权重)。</p>
