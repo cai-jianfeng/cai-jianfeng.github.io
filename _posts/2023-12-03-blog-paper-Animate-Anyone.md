@@ -47,19 +47,21 @@ SD 模型的每一层主要包括 self-attention 和 cross-attention。在第 $l
 <p style="text-align:justify; text-justify:inter-ideograph;">而在 $\{p_i\}_{1:N}$ 的条件处理中，本文使用 <b>Pose Guider</b> (一个简单的 2D 卷积块)将 $\{p_i\}_{1:N}$ 编码为 pose embedding $\{f_i\}_{1:N} \in \mathbb{R}^{N \times h_d \times w_d \times c_d}$。
 注意，$f_i$ 的维度和 $\mathcal{I}_d$ 一致，这样可以方便后续的融合。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">对于主体过程(即视频生成)，本文使用 SD 模型进行 $T$ 步的逆扩散过程学习。在第 $t$ 步时，首先将第 $t-1$ 步得到的含噪视频 $\{z_i^{t-1}\}_{1:N}$ 与 $\{f_i\}_{1:N}$ 进行逐元素相加，
-即 $\{z_i\}_{1:N} = \{z_i^{t-1} + f_i\}_{1:N}$ 作为 SD 模型的输入。在第 $l$ 层，输入 $\{z_i^l\}_{1:N}$，首先在经过 self-attention 时，
-本文将 $\{z_i^l\}_{1:N}$ 与 $\mathcal{I}_d^l$ 在 $w$ 的维度上进行 concat 以实现 $\mathcal{I}$ 的逐级细节信息的融合，
-即将 $\mathcal{I}_d^l$ 复制 $N$ 次，然后与 $\{z_i^l\}_{1:N}$ 在 $w$ 维度上 concat：$\{\hat{z}_i^l\}_{1:N} = concat(\{z_i^l\}_{1:N}, copy(\mathcal{I}_d^l, N)) \in \mathbb{R}^{N \times h_d^l \times 2*w_d^l \times c_d^l}$。
-然后将 $\{\hat{z}_i^l\}_{1:N}$ 输入到 self-attention 进行学习，且对于 self-attention 的输出在 $w_d^l$ 维度上仅取前 $w_d^l$ channel (输出中一个有 $2*w_d^l$ channel)，
-获得输出 $\{\bar{z}_i^l\}_{1:N} \in \mathbb{R}^{N \times h_d^l \times w_d^l \times c_d^l}$ (由于与普通的 self-attention 不同，本文称其该层为 spatial-attention)。
-接着与 $\mathcal{I}_s$ 进行 cross-attention 生成 $\{\tilde{z}_i^l\}_{1:N} \in \mathbb{R}^{N \times h_d^l \times w_d^l \times c_d^l}$。
+<p style="text-align:justify; text-justify:inter-ideograph;">对于主体过程(即视频生成)，本文使用 SD 模型进行 $T$ 步的逆扩散过程学习。在第 $t$ 步时，首先将第 $t-1$ 步得到的含噪视频 $\{z_i^{\color{red}{t-1}}\}_{1:N}$ 与 $\{f_i\}_{1:N}$ 进行逐元素相加，
+即 $\{z_i\}_{1:N} = \{z_i^{\color{red}{t-1}} + f_i\}_{1:N}$ 作为 SD 模型的输入(<span style="color: red">红色</span>上标表示代表逆扩散过程的步骤 $t$，
+<span style="color: green">绿色</span>上标表示代表 U-net 的层级 $l$)。
+在第 $l$ 层，输入 $\{z_i^\color{green}{l}\}_{1:N}$，首先在经过 self-attention 时，
+本文将 $\{z_i^\color{green}{l}\}_{1:N}$ 与 $\mathcal{I}_d^l$ 在 $w$ 的维度上进行 concat 以实现 $\mathcal{I}$ 的逐级细节信息的融合，
+即将 $\mathcal{I}_d^l$ 复制 $N$ 次，然后与 $\{z_i^\color{green}{l}\}_{1:N}$ 在 $w$ 维度上 concat：$\{\hat{z}_i^\color{green}{l}\}_{1:N} = concat(\{z_i^\color{green}{l}\}_{1:N}, copy(\mathcal{I}_d^l, N)) \in \mathbb{R}^{N \times h_d^l \times 2*w_d^l \times c_d^l}$。
+然后将 $\{\hat{z}_i^\color{green}{l}\}_{1:N}$ 输入到 self-attention 进行学习，且对于 self-attention 的输出在 $w$ 维度上仅取前 $w_d^l$ channel (输出中一个有 $2*w_d^l$ channel)，
+获得输出 $\{\bar{z}_i^\color{green}{l}\}_{1:N} \in \mathbb{R}^{N \times h_d^l \times w_d^l \times c_d^l}$ (由于与普通的 self-attention 不同，本文称该层为 spatial-attention)。
+接着与 $\mathcal{I}_s$ 进行 cross-attention 生成 $\{\tilde{z}_i^\color{green}{l}\}_{1:N} \in \mathbb{R}^{N \times h_d^l \times w_d^l \times c_d^l}$。
 由于 SD 模型是图像生成模型，而本文需要生成视频，因此还需要学习视频帧之间的一致性。为此，本文在 cross-attention 之后添加了一个 temporal-attention 层，
-促进模型在 $N \times c_d^l$ 维度上的学习，最终输出 $\{z_i^{l+1}\}_{1:N}$ 作为下一层的输入。</p>
+促进模型在 $N \times c$ 维度上的学习，最终输出 $\{z_i^{\color{green}{l+1}}\}_{1:N}$ 作为下一层的输入。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">最终经过 $T$ 次去噪过程后，生成的无噪 $\{z_i^0\}_{1:N}$ 使用 SD 模型中的 VAE decoder 将其还原为原始视频帧 $\{v_i\}_{1:N}$。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">最终经过 $T$ 次去噪过程后，生成的无噪 $\{z_i^\color{red}{0}\}_{1:N}$ 使用 SD 模型中的 VAE decoder 将其还原为原始视频帧 $\{v_i\}_{1:N}$。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">在训练阶段，本文采用两阶段的训练方式。第一阶段，使用单视频帧训练模型，首先使用预训练的 SD 模型初始化本文的 SD 模型和 ReferenceNet，
+<p style="text-align:justify; text-justify:inter-ideograph;">在训练阶段，本文采用两阶段的训练方式。第一阶段，使用单视频帧训练模型：首先使用预训练的 SD 模型初始化本文的 SD 模型和 ReferenceNet，
 Pose Guider 使用高斯分布初始化(最后一层使用 zero convolution 初始化)，同时训练时 VAE 和 CLIP image encoder 的权重保持不变(即不参与训练)。
 然后在视频片段中随机选择一张作为给定的角色图像 $\mathcal{I}$，并随机选择另一张 $v_r$ 及其对应的 pose 视频帧 $p_r$ 作为训练图像。
 在这一阶段没有训练 temporal-attention 层，即将 SD 模型作为标准的图像生成模型进行训练，$\mathcal{I}$ 和 $p_r$ 的融合方式和上述一致(只是 $\mathcal{I}_d^l$ 无需复制 $N$ 次)。
