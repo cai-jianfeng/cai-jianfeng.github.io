@@ -48,9 +48,9 @@ SD 模型的每一层主要包括 self-attention 和 cross-attention。在第 $l
 注意，$f_i$ 的维度和 $\mathcal{I}_d$ 一致，这样可以方便后续的融合。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">对于主体过程(即视频生成)，本文使用 SD 模型进行 $T$ 步的逆扩散过程学习。在第 $t$ 步时，首先将第 $t-1$ 步得到的含噪视频 $\{z_i^{t-1}\}_{1:N}$ 与 $\{f_i\}_{1:N}$ 进行逐元素相加，
-即 $\{z_i\}_{1:N} = \{z_i^{t-1} + f_i\}_{1:N}$ 作为 SD 模型的输入，在第 $l$ 层，输入 $\{z_i^l\}_{1:N}$，首先在经过 self-attention 时，
-本文将 $\{z_i^l\}_{1:N}$ 与 $\mathcal{I}_d^l$ 在 $w_d^l$ 的维度上进行 concat 以实现 $\mathcal{I}$ 的逐级细节信息的融合，
-即将 $\mathcal{I}_d^l$ 复制 $N$ 次，然后与 $\{z_i^l\}_{1:N}$ 在 $w_d^l$ 维度上 concat：$\{\hat{z}_i^l\}_{1:N} = concat(\{z_i^l'\}_{1:N}, copy(\mathcal{I}_d^l, N)) \in \mathbb{R}^{N \times h_d^l \times 2*w_d^l \times c_d^l}$。
+即 $\{z_i\}_{1:N} = \{z_i^{t-1} + f_i\}_{1:N}$ 作为 SD 模型的输入。在第 $l$ 层，输入 $\{z_i^l\}_{1:N}$，首先在经过 self-attention 时，
+本文将 $\{z_i^l\}_{1:N}$ 与 $\mathcal{I}_d^l$ 在 $w$ 的维度上进行 concat 以实现 $\mathcal{I}$ 的逐级细节信息的融合，
+即将 $\mathcal{I}_d^l$ 复制 $N$ 次，然后与 $\{z_i^l\}_{1:N}$ 在 $w$ 维度上 concat：$\{\hat{z}_i^l\}_{1:N} = concat(\{z_i^l\}_{1:N}, copy(\mathcal{I}_d^l, N)) \in \mathbb{R}^{N \times h_d^l \times 2*w_d^l \times c_d^l}$。
 然后将 $\{\hat{z}_i^l\}_{1:N}$ 输入到 self-attention 进行学习，且对于 self-attention 的输出在 $w_d^l$ 维度上仅取前 $w_d^l$ channel (输出中一个有 $2*w_d^l$ channel)，
 获得输出 $\{\bar{z}_i^l\}_{1:N} \in \mathbb{R}^{N \times h_d^l \times w_d^l \times c_d^l}$ (由于与普通的 self-attention 不同，本文称其该层为 spatial-attention)。
 接着与 $\mathcal{I}_s$ 进行 cross-attention 生成 $\{\tilde{z}_i^l\}_{1:N} \in \mathbb{R}^{N \times h_d^l \times w_d^l \times c_d^l}$。
