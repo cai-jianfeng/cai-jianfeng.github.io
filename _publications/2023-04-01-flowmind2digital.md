@@ -1,6 +1,7 @@
 ---
 title: "Flowmind2Digital"
-collection: under review
+collection: publications
+state: under review
 permalink: /publication/2023-04-01-flowmind2digital
 excerpt: 'This paper proposes the Flowmind2digital method and hdFlowmind dataset to address the convertion of hand-drawn flowchart/mindmap.'
 date: 2023-04-01
