@@ -5,7 +5,7 @@ permalink: /publication/2023-04-01-flowmind2digital
 excerpt: 'This paper proposes the Flowmind2digital method and hdFlowmind dataset to address the convertion of hand-drawn flowchart/mindmap.'
 date: 2023-04-01
 venue: 'Information Processing and Management'
-paperurl: 'http://cai-jianfeng.github.io/files/flowmind2digital.pdf'
+[//]: # (paperurl: 'http://cai-jianfeng.github.io/files/flowmind2digital.pdf')
 citation: 'Cai Jianfeng. (2023). &quot;Flowmind2Digital: The First Comprehensive Flowmind Recognition and Conversion Approach.&quot; <i>IPM</i>.'
 ---
 <p style="text-align:justify; text-justify:inter-ideograph;">This paper proposes the Flowmind2digital method and hdFlowmind dataset to address the convertion of hand-drawn flowchart/mindmap. 
