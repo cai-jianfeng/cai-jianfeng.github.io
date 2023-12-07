@@ -34,7 +34,7 @@ CPU
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>PCIE 总线</b>：串行总线，包含 PCIE 接口(如显卡接口)和 PCIE 通道(如 M.2 接口和雷电 3 接口)，
 通常包括 PCIE $\times 1 / 2 / 4 / 8 / 16$ 这 $5$ 种形式，并且 PCIE $\times 2x$ 的传输速率是 PCIE $\times x$ 的 $2$ 倍，其针脚数也会增加(虽然 PCIE 接口/通道有多个针脚，但是每个针脚都是独立的串行传输)。
-小 tips：残血雷电 3 / M.2 表示 PCIE $\times 2$；满血雷电 3 / M.2 表示 PCIE $\times 4$。</p>
+下表展示不同版本的 PCIE 接口的传输速率。(小 tips：残血雷电 3 / M.2 表示 PCIE $\times 2$；满血雷电 3 / M.2 表示 PCIE $\times 4$。)</p>
 
 |           | $\times 1$ | $\times 2$ | $\times 4$ | $\times 8$ | $\times 16$ |
 |:---------:|:----------:|:----------:|:----------:|:----------:|:-----------:|
@@ -42,3 +42,8 @@ CPU
 | PCI-e 2.0 | $500$MB/s  |  $1$GB/s   |  $2$GB/s   |  $4$GB/s   |   $8$GB/s   |
 | PCI-e 3.0 |  $1$GB/s   |  $2$GB/s   |  $4$GB/s   |  $8$GB/s   |  $16$GB/s   |
 | PCI-e 4.0 |  $2$GB/s   |  $4$GB/s   |  $8$GB/s   |  $16$GB/s  |  $32$GB/s   |
+
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>南桥芯片组</b>：在主板上，只有 PCIE 接口和内存是直接和 CPU 的 PCIE 处理器相连接；
+而其他的设备(如硬盘等)都是通过 PCIE 通道和南桥芯片组相连，再由南桥芯片组和 CPU 通过 PCIE 通道相连。下图展示 Intel 和 AMD 的总线布局：</p>
+
+![South Bridge Chipset](/images/hardware_South_Bridge_Chipset.png)
