@@ -52,9 +52,9 @@ CPU
 硬盘
 ===
 
-<p style="text-align:justify; text-justify:inter-ideograph;"><b>机械硬盘</b>：使用 FAT 表(File Allocation Table，文件分配表)来描述文件系统内存储单元的分配状态及文件内容的前后链接关系。
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>机械硬盘(HDD)</b>使用 FAT 表(File Allocation Table，文件分配表)来描述文件系统内存储单元的分配状态及文件内容的前后链接关系。
 由于它主要使用覆盖的方式写入数据，因此当对回收站进行清空操作时，只是删除 FAT 表中的记录，并没有直接删除机械硬盘对应位置的数据，等到下次系统重新写入数据到这个区域时，数据才会被覆盖。
-而固态硬盘(SSD)无法使用覆盖方式写入数据，只能先将数据进行擦除，然后再写入。因此其内部有一个特殊的回收指令：<b>TRIM</b> 回收指令，它可以在监测到当前 SSD 未进行读写操作时，
+而<b>固态硬盘(SSD)</b>无法使用覆盖方式写入数据，只能先将数据进行擦除，然后再写入。因此其内部有一个特殊的回收指令：<b>TRIM</b> 回收指令，它可以在监测到当前 SSD 未进行读写操作时，
 对之前删除的区域进行擦除，则下一次系统重新写入数据到这个区域时，原始数据已经被擦除了，只需直接写入即可。</p>
 
 ```windows
@@ -62,3 +62,15 @@ TRIM状态查询命令：fsutil behavior query disabledeletenotify
 TRIM关闭命令：fsutil behavior set disabledeletenotify 1
 TRIM打开命令：fsutil behavior set disabledeletenotify 0
 ```
+
+<p style="text-align:justify; text-justify:inter-ideograph;">机械硬盘有 LMR (Longitudinal Magnetic Recording)水平记录和 PMR (Perpendicular Magnetic Recording) 垂直记录；
+PMR 中又包括 CMR (Conventional Magnetic Recording) 传统记录和 SMR (Shingled Magnetic Recording) 瓦叠记录：</p>
+
+<ol><li>CMR：由于读写磁头是有大小的，所以磁道之间要给磁头预留空间，各个磁道之间存在空隙；
+同时写磁头比读磁头大，间隙也是以大的写磁头为标准预留。这样磁道宽度够大，读磁头或写磁头经过某一磁道，都不会干扰到其他磁道。</li>
+<li>SMR：为了提高密度，SMR 充分利用了磁道之间的空隙和读写磁头的相对大小，以较小的读磁头为标准来预留磁道宽度和间隙。
+当读取数据时，读取磁头经过某一磁道，和其他磁道没有干扰。
+但是写入数据时，由于写磁头更大且磁道宽度小，经过某一磁道时必定会覆盖下一个磁道的部分区域。
+所以数据写入目标磁道前，会先标记受影响的磁道，把受到影响的数据暂存到别的地方(即机械硬盘缓冲区)，等目标磁道写入完成，再把数据读写回来。
+而在写回暂存机械硬盘缓冲区的磁道数据时，又会影响下一磁道的数据，因此需要重复不断地暂存写回，直到到达最边缘的磁道。
+为此，SMR 通常是以每个扇区为分界，扇区内使用 SMR 技术。</li></ol>
