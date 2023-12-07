@@ -66,11 +66,11 @@ TRIM打开命令：fsutil behavior set disabledeletenotify 0
 <p style="text-align:justify; text-justify:inter-ideograph;">机械硬盘有 LMR (Longitudinal Magnetic Recording)水平记录和 PMR (Perpendicular Magnetic Recording) 垂直记录；
 PMR 中又包括 CMR (Conventional Magnetic Recording) 传统记录和 SMR (Shingled Magnetic Recording) 瓦叠记录：</p>
 
-<ol><li>CMR：由于读写磁头是有大小的，所以磁道之间要给磁头预留空间，各个磁道之间存在空隙；
-同时写磁头比读磁头大，间隙也是以大的写磁头为标准预留。这样磁道宽度够大，读磁头或写磁头经过某一磁道，都不会干扰到其他磁道。</li>
-<li>SMR：为了提高密度，SMR 充分利用了磁道之间的空隙和读写磁头的相对大小，以较小的读磁头为标准来预留磁道宽度和间隙。
+<ol><li><p style="text-align:justify; text-justify:inter-ideograph;">CMR：由于读写磁头是有大小的，所以磁道之间要给磁头预留空间，各个磁道之间存在空隙；
+同时写磁头比读磁头大，间隙也是以大的写磁头为标准预留。这样磁道宽度够大，读磁头或写磁头经过某一磁道，都不会干扰到其他磁道。</p></li>
+<li><p style="text-align:justify; text-justify:inter-ideograph;">SMR：为了提高密度，SMR 充分利用了磁道之间的空隙和读写磁头的相对大小，以较小的读磁头为标准来预留磁道宽度和间隙。
 当读取数据时，读取磁头经过某一磁道，和其他磁道没有干扰。
 但是写入数据时，由于写磁头更大且磁道宽度小，经过某一磁道时必定会覆盖下一个磁道的部分区域。
 所以数据写入目标磁道前，会先标记受影响的磁道，把受到影响的数据暂存到别的地方(即机械硬盘缓冲区)，等目标磁道写入完成，再把数据读写回来。
 而在写回暂存机械硬盘缓冲区的磁道数据时，又会影响下一磁道的数据，因此需要重复不断地暂存写回，直到到达最边缘的磁道。
-为此，SMR 通常是以每个扇区为分界，扇区内使用 SMR 技术。</li></ol>
+为此，SMR 通常是以每个扇区为分界，扇区内使用 SMR 技术。</p></li></ol>
