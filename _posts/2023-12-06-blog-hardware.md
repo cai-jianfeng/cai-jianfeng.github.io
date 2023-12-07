@@ -33,7 +33,7 @@ CPU
 ===
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>PCIE 总线</b>：串行总线，包含 PCIE 接口(如显卡接口)和 PCIE 通道(如 M.2 接口和雷电 3 接口)，
-通常包括 PCIE $\times 1 / 2 / 4 / 8 / 16$ 这 $5$ 种形式，并且 PCIE $\times 2x$ 的传输速率是 PCIE $\times x$ 的 $2$ 倍，其针脚数也会增加(虽然 PCIE 接口/通道有多个针脚，但是每个针脚都是独立的串行传输)。
+通常包括 PCIE $\times 1 / 2 / 4 / 8 / 16$ 这 $5$ 种形式，并且 PCIE $\times 2x$ 的传输速率是 PCIE $\times x$ 的 $2$ 倍，其针脚数也增加 $2$ 倍(虽然 PCIE 接口/通道有多个针脚，但是每个针脚都是独立的串行传输)。
 下表展示不同版本的 PCIE 接口的传输速率。(小 tips：残血雷电 3 / M.2 表示 PCIE $\times 2$；满血雷电 3 / M.2 表示 PCIE $\times 4$。)</p>
 
 |           | $\times 1$ | $\times 2$ | $\times 4$ | $\times 8$ | $\times 16$ |
@@ -47,3 +47,18 @@ CPU
 而其他的设备(如硬盘等)都是通过 PCIE 通道和南桥芯片组相连，再由南桥芯片组和 CPU 通过 PCIE 通道相连。下图展示 Intel 和 AMD 的总线布局：</p>
 
 ![South Bridge Chipset](/images/hardware_South_Bridge_Chipset.png)
+
+
+硬盘
+===
+
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>机械硬盘</b>：使用 FAT 表(File Allocation Table，文件分配表)来描述文件系统内存储单元的分配状态及文件内容的前后链接关系。
+由于它主要使用覆盖的方式写入数据，因此当对回收站进行清空操作时，只是删除 FAT 表中的记录，并没有直接删除机械硬盘对应位置的数据，等到下次系统重新写入数据到这个区域时，数据才会被覆盖。
+而固态硬盘(SSD)无法使用覆盖方式写入数据，只能先将数据进行擦除，然后再写入。因此其内部有一个特殊的回收指令：<b>TRIM</b> 回收指令，它可以在监测到当前 SSD 未进行读写操作时，
+对之前删除的区域进行擦除，则下一次系统重新写入数据到这个区域时，原始数据已经被擦除了，只需直接写入即可。</p>
+
+```windows
+TRIM状态查询命令：fsutil behavior query disabledeletenotify
+TRIM关闭命令：fsutil behavior set disabledeletenotify 1
+TRIM打开命令：fsutil behavior set disabledeletenotify 0
+```
