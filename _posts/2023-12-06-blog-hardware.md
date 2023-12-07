@@ -48,19 +48,18 @@ CPU
 
 ![South Bridge Chipset](/images/hardware_South_Bridge_Chipset.png)
 
-
 硬盘
 ===
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>机械硬盘(HDD)</b>使用 FAT 表(File Allocation Table，文件分配表)来描述文件系统内存储单元的分配状态及文件内容的前后链接关系。
 由于它主要使用覆盖的方式写入数据，因此当对回收站进行清空操作时，只是删除 FAT 表中的记录，并没有直接删除机械硬盘对应位置的数据，等到下次系统重新写入数据到这个区域时，数据才会被覆盖。
 而<b>固态硬盘(SSD)</b>无法使用覆盖方式写入数据，只能先将数据进行擦除，然后再写入。因此其内部有一个特殊的回收指令：<b>TRIM</b> 回收指令，它可以在监测到当前 SSD 未进行读写操作时，
-对之前删除的区域进行擦除，则下一次系统重新写入数据到这个区域时，原始数据已经被擦除了，只需直接写入即可。</p>
+对之前删除的区域进行擦除，则下一次系统重新写入数据到这个区域时，原始数据已经被擦除了，只需直接写入即可。注意，一般使用 SSD 时操作系统不使用 FAT 文件系统，而是其他更高级的文件系统。</p>
 
 ```windows
-TRIM状态查询命令：fsutil behavior query disabledeletenotify
-TRIM关闭命令：fsutil behavior set disabledeletenotify 1
-TRIM打开命令：fsutil behavior set disabledeletenotify 0
+TRIM 状态查询命令：fsutil behavior query disabledeletenotify
+TRIM 关闭命令：fsutil behavior set disabledeletenotify 1
+TRIM 打开命令：fsutil behavior set disabledeletenotify 0
 ```
 
 <p style="text-align:justify; text-justify:inter-ideograph;">机械硬盘有 LMR (Longitudinal Magnetic Recording)水平记录和 PMR (Perpendicular Magnetic Recording) 垂直记录；
