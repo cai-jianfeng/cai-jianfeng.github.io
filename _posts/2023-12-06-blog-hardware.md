@@ -83,6 +83,13 @@ PMR 中又包括 CMR (Conventional Magnetic Recording) 传统记录和 SMR (Shin
 <p style="text-align:justify; text-justify:inter-ideograph;">因此，由浮栅晶体管堆叠而成的区域称为 <b>NAND</b>。除此之外，SSD 一般还包括一个主控和一个缓存，其中主控主要控制数据的读写以及区域分配调度；缓存主要暂存需要写入 NAND 的数据/需要读入内存的数据。
 一般主控先使用缓存进行交互，当缓存写入已满/读取的数据不在缓存，才与 NAND 进行交互(缓存的读写速度 $\gg$ NAND)。</p>
 
+<h1>内存</h1>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>多通道内存</b>：内存带宽 $=$ 内存核心频率 $\times$ 内存总线位宽 $\times$ 倍增系数。CPU 中与内存交互的部分称为 Memory Controller I/O (IMC)。
+内存通道数由 IMC 决定。一般的 CPU 都只支持 $2$ 通道。此时，如果主板上有 $4$ 条内存槽，则 $1$ 和 $2$ 条内存槽为一通道，$3$ 和 $4$ 为二通道。
+同时，一般建议使用对称的双通道内存配置(即一通道的内存容量为 $X$，则二通道的内存容量也应为 $X$)；如果使用非对称双通道内存配置(假设一通道的内存容量为 $X$，则二通道的内存容量也应为 $Y$，且 $X < Y$)，
+此时一通道的所有内存容量 $X$ 和二通道的对应 $X$ 容量组成双通道，而二通道剩余的 $Y - X$ 容量自行组成单通道。</p>
+
 <h1>其他硬件设备</h1>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>视频采集卡</b>：在<b>硬件</b>层面进行视频采集。</p>
