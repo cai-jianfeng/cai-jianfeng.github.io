@@ -83,6 +83,36 @@ PMR 中又包括 CMR (Conventional Magnetic Recording) 传统记录和 SMR (Shin
 <p style="text-align:justify; text-justify:inter-ideograph;">因此，由浮栅晶体管堆叠而成的区域称为 <b>NAND</b>。除此之外，SSD 一般还包括一个主控和一个缓存，其中主控主要控制数据的读写以及区域分配调度；缓存主要暂存需要写入 NAND 的数据/需要读入内存的数据。
 一般主控先使用缓存进行交互，当缓存写入已满/读取的数据不在缓存，才与 NAND 进行交互(缓存的读写速度 $\gg$ NAND)。</p>
 
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>磁盘阵列</b>：RAID，是一种将多个磁盘进行组合来存储数据以实现数据保护的方法(这里的数据保护是指对数据有容错能力，当部分数据损毁时也可以恢复出完整数据)。
+其分为 $0 \sim 7$ 中方式：</p>
+
+<ol><li>
+<p style="text-align:justify; text-justify:inter-ideograph;">RAID $0$：假设有 $X$ 块磁盘，RAID $0$ 通过将需要存储的数据平均分成 $X$ 份分别存储到 $X$ 块磁盘中，以实现快速的数据读取。
+对于连续读写性能，RAID $0$ 可以提升速度到 $X$ 倍(相对于一块磁盘，但是其上限为南桥芯片组的带宽)，是所有 RAID 中速度最快的；
+但是相对的，RAID $0$ 完全没有数据容错能力，一旦某个磁盘的数据损坏，则整个 RAID $0$ 都无法正常读取。</p></li>
+
+<li><p style="text-align:justify; text-justify:inter-ideograph;">RAID $1$：也被称为镜像阵列。假设有 $X$ 块磁盘，RAID $1$ 通过将每一份数据都存储到每块磁盘中，相当于使用 $X-1$ 块磁盘进行备份。
+它的优劣性和 RAID $1$ 刚好相反：拥有良好的容错性能，但是连续读写性能较低。</p></li>
+
+<li><p style="text-align:justify; text-justify:inter-ideograph;">RAID $2$：使用<b>海明校验码</b>来实现数据校验(甚至恢复)。假设有 $X$ 块磁盘，则它将需要存储的数据平均分成 $X - \llcorner log_2X \lrcorner - 1$ 份分别存储到 $X$ 块磁盘中，
+而剩下的 $\llcorner log_2X \lrcorner + 1$ 分别存储海明校验码的校验文件(存储在 $2^0, 2^1, ..., 2^{\llcorner log_2X \lrcorner}$)。
+虽然提高了数据容错能力，但是读取和写入时都需要计算校验码，造成读写性能较低。</p></li>
+
+<li><p style="text-align:justify; text-justify:inter-ideograph;">RAID $3$：使用<b>恢复码</b>来实现数据恢复。假设有 $X$ 块磁盘，RAID $3$ 通过将需要存储的数据平均分成 $X - 1$ 份分别存储到 $X - 1$ 块磁盘中，
+而在最后一个磁盘存储数据的恢复码，当有一个磁盘损坏时，可以提高其余 $X - 2$ 个磁盘的数据 $+$ 恢复码实现数据恢复。
+虽然提供了一块磁盘的数据容错能力，但是写入时需要计算恢复码，导致存储恢复码的磁盘写入性能较低，从而拖累了整体的性能。</p></li>
+
+<li><p style="text-align:justify; text-justify:inter-ideograph;">RAID $4$：类似于 RAID $3$，同样使用<b>恢复码</b>来实现数据恢复；但是与其不同的是，RAID $3$ 是对每个数据计算恢复码，而 RAID $4$ 是对多份数据的总体计算恢复码。
+举个例子，假设有 $X$ 块磁盘，有 $D_{1:M}$ $M$ 份数据，RAID $3$ 是将每个数据 $D_i$ 平均分成 $X - 1$ 份平均存储到 $X - 1$ 块磁盘中(第 $j$ 块磁盘存储 $D_i^j$)，
+而在最后一个磁盘存储数据的恢复码 $R_i$，因此需要生成 $M$ 个恢复码；而RAID $3$ 是将每个数据 $D_i$ 平均分成 $X - 1$ 份平均存储到 $X - 1$ 块磁盘中(第 $j$ 块磁盘存储 $D_i^j$)，
+然后将每个磁盘中的数据进行重新组合($D^j = [D_1^j,...,D_M^j]$)，形成一份数据块，然后在最后一个磁盘存储数据块 $[D^1,...,D^M]$ 的恢复码 $R$，因此只需要生成 $1$ 个恢复码。
+因此 RAID $4$ 只需要计算较少的恢复码，提高了写入性能，但是在读取时，需要读取整个数据块(可能只需要其中的一部分)，导致读取性能较低。</p></li>
+
+<li><p style="text-align:justify; text-justify:inter-ideograph;">RAID $5$：由于 RAID $3$ 中的恢复码磁盘会拖累整体性能，因此可以通过<b>平摊</b>的方式来减轻影响，即每次存储数据时，都随机地选择 $1$ 个磁盘作为恢复码磁盘。
+这样可以避免刚好选到一个性能较差的磁盘一直作为恢复码磁盘，从而提高了读写性能。(它也是私有 NAS 服务器最常见的磁盘阵列形式)</p></li>
+
+<li><p style="text-align:justify; text-justify:inter-ideograph;">RAID $6$：由于 RAID $5$ 只能容错一块磁盘，因此 RAID $6$ 使用 $2$ 块磁盘作为恢复码磁盘，同时在每次存储数据时，也是随机地选择 $2$ 个磁盘作为恢复码磁盘。</p></li></ol>
+
 <h1>内存</h1>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>多通道内存</b>：内存带宽 $=$ 内存核心频率 $\times$ 内存总线位宽 $\times$ 倍增系数。CPU 中与内存交互的部分称为 Memory Controller I/O (IMC)。
