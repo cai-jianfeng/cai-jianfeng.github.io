@@ -83,6 +83,6 @@ PMR 中又包括 CMR (Conventional Magnetic Recording) 传统记录和 SMR (Shin
 <p style="text-align:justify; text-justify:inter-ideograph;">因此，由浮栅晶体管堆叠而成的区域称为 <b>NAND</b>。除此之外，SSD 一般还包括一个主控和一个缓存，其中主控主要控制数据的读写以及区域分配调度；缓存主要暂存需要写入 NAND 的数据/需要读入内存的数据。
 一般主控先使用缓存进行交互，当缓存写入已满/读取的数据不在缓存，才与 NAND 进行交互(缓存的读写速度 $\gg$ NAND)。</p>
 
-<h1>视频采集卡</h1>
+<h1>其他硬件设备</h1>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>视频采集卡</b>：在<b>硬件</b>层面进行视频采集。</p>
