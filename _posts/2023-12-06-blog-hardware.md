@@ -120,6 +120,25 @@ PMR 中又包括 CMR (Conventional Magnetic Recording) 传统记录和 SMR (Shin
 同时，一般建议使用对称的双通道内存配置(即一通道的内存容量为 $X$，则二通道的内存容量也应为 $X$)；如果使用非对称双通道内存配置(假设一通道的内存容量为 $X$，则二通道的内存容量也应为 $Y$，且 $X < Y$)，
 此时一通道的所有内存容量 $X$ 和二通道的对应 $X$ 容量组成双通道，而二通道剩余的 $Y - X$ 容量自行组成单通道。</p>
 
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>内存频率</b>：影响内存频率的因素主要包括<b>内存体质</b>、<b>IMC 性能</b>、<b>CPU 默认频率</b>以及<b>主板布线与电气性能</b>：</p>
+
+<ol><li>
+<p style="text-align:justify; text-justify:inter-ideograph;">在其他因素不构成瓶颈的情况下，内存标注的频率为该内存的保底值，代表该内存厂家保证<b>小于等于</b>这个频率可以毫无压力运行，此时内存上限取决于内存体质(即决定可以超频的程度)；</p>
+</li>
+
+<li>
+<p style="text-align:justify; text-justify:inter-ideograph;">在主板<b>不能超频</b>的情况下，内存频率的下限由内存本身决定，内存频率的上限由 CPU 默认内存频率与内存体质两者较低的那个决定，即 $min($CPU 默认内存频率 $,$内存标注频率$)$；</p>
+</li>
+
+<li>
+<p style="text-align:justify; text-justify:inter-ideograph;">在对内存<b>超频</b>的情况下，，内存频率将无视 CPU 的默认频率，此时内存频率的下限由内存本身决定，内存频率上限由内存体质，IMC 性能/体质，主板布线与电气性能这三者最低的值决定。</p>
+</li>
+
+<li>
+<p style="text-align:justify; text-justify:inter-ideograph;">对于多根不同标注频率的内存(以 $2$ 根为例)，主板 BIOS 默认将较高频率的内存降低至和较低频率的内存相同频率；也可以手动将较低频率的内存调高至较高频率的内存相同频率；
+甚至将两者都调高至比它们自身标注内存都高的频率。具体调节程度取决于内存体质。(注意：主板<b>允许多个内存运行在不同的频率</b>下，但是性能极差，因此主板厂商基本没开放这个功能。)</p>
+</li></ol>
+
 <h1>其他硬件设备</h1>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>视频采集卡</b>：在<b>硬件</b>层面进行视频采集。</p>
