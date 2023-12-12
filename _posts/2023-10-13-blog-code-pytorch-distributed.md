@@ -28,9 +28,13 @@ tags:
 
 <p style="text-align:justify; text-justify:inter-ideograph;">由上述单 GPU 训练过程可以看到，该训练范式存在多个可以进行划分的维度：</p>
 
-1. <p style="text-align:justify; text-justify:inter-ideograph;">将 $b$ 进行划分($B = [B_1,...,B_M]$)，然后将不同的输入数据 $X_m \in \mathbb{R}^{B_m \times N}$ 和 $label_m \in \mathbb{R}^{B_m \times 1}, m = [1,...,M]$ 分布到不同的 GPU 进行计算，即可得到 Data Parallelism；</p>
+1. <p style="text-align:justify; text-justify:inter-ideograph;">将 $B$ 进行划分($B = [B_1,...,B_M]$)，然后将不同的输入数据 $X_m \in \mathbb{R}^{B_m \times N}$ 和 $label_m \in \mathbb{R}^{B_m \times 1}, m = [1,...,M]$ 分布到不同的 GPU 进行计算，即可得到 Data Parallelism；</p>
 2. <p style="text-align:justify; text-justify:inter-ideograph;">将 $N$ 进行划分($N = [N_1,...,N_H]$)，然后将不同的输入数据 $X_h \in \mathbb{R}^{B \times N_h}$ 和 $label_h \in \mathbb{R}^{B \times 1}, h = [1,...,H]$ 分布到不同的 GPU 进行计算；即可得到 Sequence Parallelism；</p>
 3. <p style="text-align:justify; text-justify:inter-ideograph;">将 $L$ 进行划分($L = [L_1,...,L_I]$)，然后将不同的模型模块 $\mathbf{M}_i \in \mathbb{R}^{L_i \times D}, i=[1,...,I]$ 分布到不同的 GPU 进行计算，即可得到 Parallelism Parallelism；</p>
 4. <p style="text-align:justify; text-justify:inter-ideograph;">将 $D$ 进行划分($D = [D_1,...,D_J]$)，然后将不同的模型参数 $\mathbf{M}_j \in \mathbb{R}^{L \times D_j}, j=[1,...,J]$ 分布到不同的 GPU 进行计算，即可得到 Tensor Parallelism。</p>
 
 
+Data Parallelism (DP) $\rightarrow$ Distributed Data Parallelism (DDP)
+===
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
