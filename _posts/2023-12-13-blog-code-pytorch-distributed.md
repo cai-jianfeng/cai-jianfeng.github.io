@@ -1,7 +1,7 @@
 ---
 title: 'pytorch distributed'
-date: 23-10-13
-permalink: /posts/2023/10/blog-code-pytorch-distributed/
+date: 23-12-13
+permalink: /posts/2023/12/blog-code-pytorch-distributed/
 tags:
   - 深度学习基本知识
 ---
@@ -81,9 +81,9 @@ hook 会在累加器更新梯度后触发，并检查它所属的组(bucket)。�
 
 1. <p style="text-align:justify; text-justify:inter-ideograph;">如何分组：PyTorch v1.5 选择将模型的连续参数组成一个组，比如对于 Transformer 来说，将每个 Transformer Block 的参数组成一个组，而不是所有的 self-attention 的参数组成一个组。并且，PyTorch v1.5 通过使用 model.parameters() 的逆序作为组顺序，因为在模型前向传递中，每个层都是按照调用的先后顺序构建的图。因此，它的反向顺序(即逆序)应该近似表示反向过程中的梯度计算顺序。</p>
 
-2. <p style="text-align:justify; text-justify:inter-ideograph;">如何保证每个 AllReduce 操作通信时的组相互对应：因为上述实现中是只要一个组内的所有梯度均计算完成，变发起一个 AllReduce 操作。这就可能出现第 $i$ 个 worker 的第 $a$ 个组的梯度计算完成，发起一个 AllReduce 操作；而第 $j$ 个 worker 是第 $b$ 个组的梯度先计算完成，发起一个 AllReduce 操作，从而导致本次的 AllReduce 操作是第 $i$ 个 worker 的第 $a$ 个组的梯度和第 $j$ 个 worker 的第 $b$ 个组的梯度进行计算均值，造成计算错误。如下图 $(a)$ 所示。为此，PyTorch 规定所有 worker 必须使用相同的组顺序，并且在每个 worker 中，组 $i+1$ 无法在第 $i$ 个组之前启动 AllReduce。由于 1 中的组顺序近似反向过程中的梯度计算顺序，因此根据这种组的顺序依次启动 AllReduce 尽可能保证了计算和通信的重叠。</p>
+2. <p style="text-align:justify; text-justify:inter-ideograph;">如何保证每个 AllReduce 操作通信时的组相互对应：因为上述实现中是只要一个组内的所有梯度均计算完成，便发起一个 AllReduce 操作。这就可能出现第 $i$ 个 worker 的第 $a$ 个组的梯度计算完成，发起一个 AllReduce 操作；而第 $j$ 个 worker 是第 $b$ 个组的梯度先计算完成，发起一个 AllReduce 操作，从而导致本次的 AllReduce 操作是第 $i$ 个 worker 的第 $a$ 个组的梯度和第 $j$ 个 worker 的第 $b$ 个组的梯度进行计算均值，造成计算错误。如下图 $(a)$ 所示。为此，PyTorch 规定所有 worker 必须使用相同的组顺序，并且在每个 worker 中，组 $i+1$ 无法在第 $i$ 个组之前启动 AllReduce。由于 1 中的组顺序近似反向过程中的梯度计算顺序，因此根据这种组的顺序依次启动 AllReduce 尽可能保证了计算和通信的重叠。</p>
 
-3. <p style="text-align:justify; text-justify:inter-ideograph;">如何处理子模型训练：在模型训练时，有可能只训练模型的一部分参数，但是在分组时是将所有的参数进行了分组，这就有可能导致一个组内有部分参数本次不参与训练，也就没有计算梯度，而一个组发起 AllReduce 的条件是组内的所有参数都计算完成梯度，造成该组始终无法发起 AllReduce。如下图 $(b)$ 所示。为此，PyTorch 在 forward 过程构建好求导图后，由根据从上到下的顺序遍历一遍求导图，找到所有参与本次训练的参数，然后将剩下没参与训练的参数直接标记为 ready (即直接触发对应的 hook)。这样，在 backward 过程时，由于没参与训练的参数已经准备好，只需要每个组内的参与训练的参数计算完梯度，就能够发起 AllReduce 操作。</p>
+3. <p style="text-align:justify; text-justify:inter-ideograph;">如何处理子模型训练：在模型训练时，有可能只训练模型的一部分参数，但是在分组时是将所有的参数进行了分组，这就有可能导致一个组内有部分参数本次不参与训练，也就没有计算梯度，而一个组发起 AllReduce 的条件是组内的所有参数都计算完成梯度，造成该组始终无法发起 AllReduce。如下图 $(b)$ 所示。为此，PyTorch 在 forward 过程构建好求导图后，又根据从上到下的顺序遍历一遍求导图，找到所有参与本次训练的参数，然后将剩下没参与训练的参数直接标记为 ready (即直接触发对应的 hook)。这样，在 backward 过程时，由于没参与训练的参数已经准备好，只需要每个组内的参与训练的参数计算完梯度，就能够发起 AllReduce 操作。</p>
 
 4. <p style="text-align:justify; text-justify:inter-ideograph;">如何处理显式取消梯度求解：在 PyTorch 模型训练时，可以通过设置 <b>required_grad = False</b> 来显式要求取消该参数的梯度计算。与子模型不同，该参数通常也会存在在模型的 forward 计算中，即会存在在求导图中，无法通过遍历求导图进行剔除。同时，有可能每个 worker 的设置参数不一致(即 worker $1$ 设置 $p_1$ 的 required_grad = False；而 worker $2$ 设置的是 $p_2$ 的 required_grad = False)。此时，虽然 worker $1$ 的 $p_1$ 没有梯度，也需要发起 AllReduce 操作将其他 worker (如 $2$) 的 $p_1$ 的梯度进行求平均并进行梯度更新。为此，PyTorch 专门为其使用位图(bitmap) $B_i$ 来追踪每个参数的参与情况，然后发起一个额外的 AllReduce 操作来获得全局的位图，从而获得全局未使用的参数：$B_{global} = B_1 | ... | B_M$。其中位图表示每个参数是否需要求导，而将每个位图相与获得全局位图表示对于任意参数 $p_i$，只要 $M$ 个 worker 中有一个要求对其进行求导，则就表示它是需要求导的，后续需要发起 AllReduce 操作来对其进行平均梯度；而对于所有 worker 都无需求导的参数(即所有 worker 都设置其 required_grad = False)，便无需对其进行求导和 AllReduce 操作。</p>
 
@@ -93,11 +93,12 @@ hook 会在累加器更新梯度后触发，并检查它所属的组(bucket)。�
 
 ![torch algorithm](/images/paper_torch_DDP.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">除此之外，还使用 <b>skipping gradient synchronization</b> 来进一步提高训练速度。
+<p style="text-align:justify; text-justify:inter-ideograph;">除此之外，还可以使用 <b>skipping gradient synchronization</b> 来进一步提高训练速度。
 一种常见加速分布式数据并行训练的技术是降低梯度同步频率，即发起 AllReduce 的频率。因此，可以在全局同步梯度之前进行 $n$ 次局部训练迭代，而不是在每次迭代中都启动 AllReduce。
 也就是进行多次模型的 forward 和 backward 操作，每次都将计算的梯度存在梯度累加器中；等到 $n$ 次之后才进行 AllReduce 计算平均梯度并更新参数。
-PyTorch 实现了 ```no_sync()``` 来满足这种情况。在使用 hook 的情况下，```no_sync``` 的实现非常简单。
-只需要上下文管理器在进入和退出上下文时切换一个标志，该标志将在 DDP 模式的 forward 函数中使用。
-在 ```no_sync``` 模式下，所有的 hook 都被禁用，第一个不在上下文中的 backward 将同步累积的梯度，即发起 AllReduce 操作。
+PyTorch 实现了 <b>no_sync()</b> 来满足这种情况。在使用 hook 的情况下，no_sync 的实现非常简单。
+只需要上下文管理器在进入和退出上下文时切换一个标志 $\mathcal{F}$，该标志管理前述的 hook 是否可用，它一般在 DDP 模式的 forward 函数中使用。
+在 no_sync 模式下，即进入上下文时，设置 $\mathcal{F} = False$，表示所有的 hook 都被禁用；
+直到退出上下文时，设置 $\mathcal{F} = True$，所有的 hook 都重新可用，此时出现第一个不在上下文中的 backward 时便会同步累积的梯度，即发起 AllReduce 操作。
 同时，全局未使用的参数信息也会累积到位图中，用于下一次通信。</p>
 
