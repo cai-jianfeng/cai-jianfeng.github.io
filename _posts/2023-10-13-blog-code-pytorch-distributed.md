@@ -45,9 +45,8 @@ Data Parallelism (DP) $\rightarrow$ Distributed Data Parallelism (DDP)
 2. 对所有 worker 的梯度进行收集并平均：$\mathcal{G} = \dfrac{\sum_{m=1}^M{\mathcal{G}_m}}{M}$；
 3. 在每个 worker 上独立使用 optimizer 计算新参数：$\hat{\mathbf{M}} = \mathbf{M} - \eta \times \mathcal{G}$。
 
-<p style="text-align:justify; text-justify:inter-ideograph;">因此，DP 本身仍然要求设计的模型适合单个 GPU 的内存(也就是在 batch_size$= 1$ 的情况下，模型必须能在单 GPU 的训练范式下成功训练，而不会爆 OOM)，
+<p style="text-align:justify; text-justify:inter-ideograph;">因此，DP 本身仍然要求设计的模型适合单个 GPU 的内存(也就是在 batch_size $= 1$ 的情况下，模型必须能在单 GPU 的训练范式下成功训练，而不会爆 OOM)，
 只是允许利用多个 GPU 的计算能力来在单位时间内处理更多的训练数据(即处理更大的 $B$)，且其代价是存储许多重复的参数副本(每个 GPU 都存储一份)。
-也就是说，有一些策略可以增加 GPU 可用的有效 RAM，例如在使用之间临时将参数卸载到 CPU 内存。
 同时，当每个 worker 更新其参数副本时，它们需要协调以确保每个 worker 在更新后仍然拥有相同的参数，即更新后的 $\hat{\mathbf{M}}$ 也应该相同。
 最简单的方法是在 worker 的各个阶段引入阻塞式通信(block communication)。可以看到，步骤 $2$ 是一个求梯度平均值的操作，可以在这里进行阻塞通信，
 即等到所有的 worker 都计算完成各自的梯度 $\mathcal{G}_m$，然后在进行通信获得平均的梯度 $\mathcal{G}$。
@@ -74,36 +73,21 @@ Data Parallelism (DP) $\rightarrow$ Distributed Data Parallelism (DDP)
 其使用了 <b>bucketing gradients + overlapping computation with communication</b> 的块梯度传输方式进行改进：它将模型梯度进行分组操作，当每组内的所有梯度都计算完成后，使用一个 AllReduce 集合通信调用来计算平均梯度，而组与组之间的通信是独立的。
 具体而言，首先，PyTorch 通过实验分析，发现了一般的模型的 backward (既计算梯度)的时间和高级通信工具包的通信时间(既计算平均梯度)具有相同的数量级。
 这说明可以通过合理的设计实现 backward 和 communication 的时间重叠(既同一时间内，worker 既在计算梯度，也在通信梯度)。
-然后，DDP 为每个梯度累加器(gradient accumulator)注册一个 autograd hook，类似于 autograd map 的每个节点(每个节点表示一个参数)注册一个 hook。
+然后，PyTorch 为每个参数的梯度累加器(gradient accumulator)注册一个 autograd hook，类似于 autograd map 的每个节点(每个节点表示一个参数)注册一个 hook。
 hook 会在累加器更新梯度后触发，并检查它所属的组(bucket)。如果同一个组中所有梯度累加器的 hook 都被触发了，那么最后一个触发的 hook 将触发该组上的异步 AllReduce 操作，
 计算所有 worker 的对应组的平均梯度，并将其写回组内的对应参数的梯度张量中。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">这里存在 $3$ 个问题，即如何分组、如何保证每个 AllReduce 操作通信时的组时相互对应的以及如何处理子模型训练问题。</p>
 
-1. <p style="text-align:justify; text-justify:inter-ideograph;">如何分组：PyTorch v1.5 选择将模型的连续参数组成一个组，比如对于 Transformer 来说，将每个 Transformer Block 的参数组成一个组，而不是所有的 self-attention 的参数组成一个组。
-并且，PyTorch v1.5 通过使用 model.parameters() 的逆序作为组顺序，因为在模型前向传递中，每个层都是按照调用的先后顺序构建的图。因此，它的反向顺序(即逆序)应该近似表示反向过程中的梯度计算顺序。</p>
+1. <p style="text-align:justify; text-justify:inter-ideograph;">如何分组：PyTorch v1.5 选择将模型的连续参数组成一个组，比如对于 Transformer 来说，将每个 Transformer Block 的参数组成一个组，而不是所有的 self-attention 的参数组成一个组。并且，PyTorch v1.5 通过使用 model.parameters() 的逆序作为组顺序，因为在模型前向传递中，每个层都是按照调用的先后顺序构建的图。因此，它的反向顺序(即逆序)应该近似表示反向过程中的梯度计算顺序。</p>
 
-2. <p style="text-align:justify; text-justify:inter-ideograph;">如何保证每个 AllReduce 操作通信时的组相互对应：因为上述实现中是只要一个组内的所有梯度均计算完成，变发起一个 AllReduce 操作。
-这就可能出现第 $i$ 个 worker 的第 $a$ 个组的梯度计算完成，发起一个 AllReduce 操作；而第 $j$ 个 worker 是第 $b$ 个组的梯度先计算完成，发起一个 AllReduce 操作，
-从而导致本次的 AllReduce 操作是第 $i$ 个 worker 的第 $a$ 个组的梯度和第 $j$ 个 worker 的第 $b$ 个组的梯度进行计算均值，造成计算错误。如下图 $(a)$ 所示。
-为此，PyTorch 规定所有 worker 必须使用相同的组顺序，并且在每个 worker 中，组 $i+1$ 无法在第 $i$ 个组之前启动 AllReduce。
-由于 1 中的组顺序近似反向过程中的梯度计算顺序，因此根据这种组的顺序依次启动 AllReduce 尽可能保证了计算和通信的重叠。</p>
+2. <p style="text-align:justify; text-justify:inter-ideograph;">如何保证每个 AllReduce 操作通信时的组相互对应：因为上述实现中是只要一个组内的所有梯度均计算完成，变发起一个 AllReduce 操作。这就可能出现第 $i$ 个 worker 的第 $a$ 个组的梯度计算完成，发起一个 AllReduce 操作；而第 $j$ 个 worker 是第 $b$ 个组的梯度先计算完成，发起一个 AllReduce 操作，从而导致本次的 AllReduce 操作是第 $i$ 个 worker 的第 $a$ 个组的梯度和第 $j$ 个 worker 的第 $b$ 个组的梯度进行计算均值，造成计算错误。如下图 $(a)$ 所示。为此，PyTorch 规定所有 worker 必须使用相同的组顺序，并且在每个 worker 中，组 $i+1$ 无法在第 $i$ 个组之前启动 AllReduce。由于 1 中的组顺序近似反向过程中的梯度计算顺序，因此根据这种组的顺序依次启动 AllReduce 尽可能保证了计算和通信的重叠。</p>
 
-3. <p style="text-align:justify; text-justify:inter-ideograph;">如何处理子模型训练：在模型训练时，有可能只训练模型的一部分参数，但是在分组时是将所有的参数进行了分组，
-这就有可能导致一个组内有部分参数本次不参与训练，也就没有计算梯度，而一个组发起 AllReduce 的条件是组内的所有参数都计算完成梯度，造成该组始终无法发起 AllReduce。如下图 $(b)$ 所示。
-为此，PyTorch 在 forward 过程构建好求导图后，由根据从上到下的顺序遍历一遍求导图，找到所有参与本次训练的参数，然后将剩下没参与训练的参数直接标记为 ready (即直接触发对应的 hook)。
-这样，在 backward 过程时，由于没参与训练的参数已经准备好，只需要每个组内的参与训练的参数计算完梯度，就能够发起 AllReduce 操作。</p>
+3. <p style="text-align:justify; text-justify:inter-ideograph;">如何处理子模型训练：在模型训练时，有可能只训练模型的一部分参数，但是在分组时是将所有的参数进行了分组，这就有可能导致一个组内有部分参数本次不参与训练，也就没有计算梯度，而一个组发起 AllReduce 的条件是组内的所有参数都计算完成梯度，造成该组始终无法发起 AllReduce。如下图 $(b)$ 所示。为此，PyTorch 在 forward 过程构建好求导图后，由根据从上到下的顺序遍历一遍求导图，找到所有参与本次训练的参数，然后将剩下没参与训练的参数直接标记为 ready (即直接触发对应的 hook)。这样，在 backward 过程时，由于没参与训练的参数已经准备好，只需要每个组内的参与训练的参数计算完梯度，就能够发起 AllReduce 操作。</p>
+
+4. <p style="text-align:justify; text-justify:inter-ideograph;">如何处理显式取消梯度求解：在 PyTorch 模型训练时，可以通过设置 <b>required_grad = False</b> 来显式要求取消该参数的梯度计算。与子模型不同，该参数通常也会存在在模型的 forward 计算中，即会存在在求导图中，无法通过遍历求导图进行剔除。同时，有可能每个 worker 的设置参数不一致(即 worker $1$ 设置 $p_1$ 的 required_grad = False；而 worker $2$ 设置的是 $p_2$ 的 required_grad = False)。此时，虽然 worker $1$ 的 $p_1$ 没有梯度，也需要发起 AllReduce 操作将其他 worker (如 $2$) 的 $p_1$ 的梯度进行求平均并进行梯度更新。为此，PyTorch 专门为其使用位图(bitmap) $B_i$ 来追踪每个参数的参与情况，然后发起一个额外的 AllReduce 操作来获得全局的位图，从而获得全局未使用的参数：$B_{global} = B_1 | ... | B_M$。其中位图表示每个参数是否需要求导，而将每个位图相与获得全局位图表示对于任意参数 $p_i$，只要 $M$ 个 worker 中有一个要求对其进行求导，则就表示它是需要求导的，后续需要发起 AllReduce 操作来对其进行平均梯度；而对于所有 worker 都无需求导的参数(即所有 worker 都设置其 required_grad = False)，便无需对其进行求导和 AllReduce 操作。</p>
 
 ![torch_error](/images/torch_DDP_error.png)
-
-4. <p style="text-align:justify; text-justify:inter-ideograph;">如何处理显式取消梯度求解：在 PyTorch 模型训练时，可以通过设置 <b>required_grad = False</b> 来显式要求取消该参数的梯度计算。
-与子模型不同，该参数通常也会存在在模型的 forward 计算中，即会存在在求导图中，无法通过遍历求导图进行剔除。
-同时，有可能每个 worker 的设置参数不一致(即 worker $1$ 设置 $p_1$ 的 required_grad = False；而 worker $2$ 设置的是 $p_2$ 的 required_grad = False)。
-此时，虽然 worker $1$ 的 $p_1$ 没有梯度，也需要发起 AllReduce 操作将其他 worker (如 $2$) 的 $p_1$ 的梯度进行求平均并进行梯度更新。
-为此，PyTorch 专门为其使用位图(bitmap) $B_i$ 来追踪每个参数的参与情况，然后发起一个额外的 AllReduce 操作来获得全局的位图，从而获得全局未使用的参数：
-$B_{global} = B_1 | ... | B_M$。其中位图表示每个参数是否需要求导，而将每个位图相与获得全局位图表示对于任意参数 $p_i$，
-只要 $M$ 个 worker 中有一个要求对其进行求导，则就表示它是需要求导的，后续需要发起 AllReduce 操作来对其进行平均梯度；
-而对于所有 worker 都无需求导的参数(即所有 worker 都设置其 required_grad = False)，便无需对其进行求导和 AllReduce 操作。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">最终，PyTorch v1.5 的 DDP 算法实现和框架如下所示：</p>
 
