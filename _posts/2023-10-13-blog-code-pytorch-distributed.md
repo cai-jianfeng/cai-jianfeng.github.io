@@ -62,6 +62,9 @@ Data Parallelism (DP) $\rightarrow$ Distributed Data Parallelism (DDP)
 由于 backward 时是从上到下遍历 autograd map 并计算每个节点的梯度，因此，当计算完成一个节点后，其注册的 hook 便会触发(即 flag 值改变)，
 然后扫描所有 worker 中模型的对应节点，并从参数中检索梯度张量，即判断其梯度是否也已经计算完成。
 然后，使用 <b>AllReduce</b> 集合通信调用来计算所有 worker 上每个参数的平均梯度，并将结果写回各自的梯度张量中。
-总结而言，即
+总结而言，即对于模型 $\mathcbf{M}$ 的每一个参数 $p_i$，都独立使用一个 <b>AllReduce</b> 集合通信调用来计算平均梯度 $\mathcal{G}_{p_i} = \dfrac{\sum_i}{p_i.grad}$，
+然后将结果写回参数 $p_i$ 的 $.grad$ 属性中，并使用 optimizer 进行参数更新：$p_i = p_i - \eta \times p_i.grad$。
+这样每个参数 $p_i$ 只需等待其他 worker 中的模型的对应 $p_i$ 参数的梯度计算，并且在 $p_i$ 通信期间，剩下的未计算完成梯度的参数 $p_{i-1},...,p_1$ 可以继续计算自身梯度，
+实现了通信和计算资源的充分利用(即在同一时间内既存在计算也存在通信)。
 在 <a href="https://arxiv.org/abs/2006.15704" target="_blank">Pytorch v1.5</a> 中，
-其使用了 $bucketing gradients$，$overlapping computation with communication$ 和 $skipping gradient synchronization$ 进行改进。</p>
+其使用了 <b>bucketing gradients</b>，<b>overlapping computation with communication</b> 和 <b>skipping gradient synchronization</b> 进行改进。</p>
