@@ -102,8 +102,15 @@ PyTorch 实现了 <b>no_sync()</b> 来满足这种情况。在使用 hook 的情
 直到退出上下文时，设置 $\mathcal{F} = True$，所有的 hook 都重新可用，此时出现第一个不在上下文中的 backward 时便会同步累积的梯度，即发起 AllReduce 操作。
 同时，全局未使用的参数信息也会累积到位图中，用于下一次通信。</p>
 
+Code Implementation
+===
+
+
+
 References
 ===
 1. [Techniques for training large neural networks](https://openai.com/research/techniques-for-training-large-neural-networks)
 
 2. [How to Train Really Large Models on Many GPUs?](https://lilianweng.github.io/posts/2021-09-25-train-large/)
+
+3. [pytorch DDP overview](https://pytorch.org/tutorials/beginner/dist_overview.html)
