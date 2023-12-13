@@ -54,7 +54,7 @@ Data Parallelism (DP) $\rightarrow$ Distributed Data Parallelism (DDP)
 这极大地阻碍了 GPU 计算资源的利用(因为在等待期间 worker 什么也没干，即空闲时间)。因此 <b>PyTorch</b> 实现更为复杂的通信方法来尽可能减少 worker 的空闲时间。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">(注意：在 PyTorch 中，DP 和 DDP 都表示广义 DP 的实现方式，其中 DP 是在一台机器(即所有使用的 GPU 都在一台服务器内，无需考虑服务器间的通信)内的<b>单进程多线程</b>实现方式；
-而 DPP 是在多台机器内的<b>多进程</b>实现方式。由于 DDP 方式较为先进，现在已经基本摒弃了 DP 方式，因此下面只讲解 PyTorch 在 DDP 方式上的实现。)
+而 DPP 是在多台机器内的<b>多进程</b>实现方式。由于 DDP 方式较为先进，现在已经基本摒弃了 DP 方式，因此下面只讲解 PyTorch 在 DDP 方式上的实现。)</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">具体而言，由于 PyTorch 在 forward 过程中创建了一个自动求导图(autograd map)，
 一种简单的实现方式是 DDP 可以在 autograd map 的每个节点(每个节点表示一个参数)注册一个 hook (PyTorch autograd engine 接受自定义的 backward hook，类似于 flag)，以便在每次 backward 后触发计算。
