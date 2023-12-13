@@ -12,7 +12,7 @@ tags:
 通过将不同维度分布到 GPUs 上，可以实现不同的并行训练方式。
 具体而言，主要包括 <b>Data Parallelism</b>、<b>Pipeline Parallelism</b>、<b>Tensor Parallelism</b> 和 <b>Expert Parallelism</b>。</p>
 
-![types of parallelism](images/train_parallelism.png)
+![types of parallelism](/images/train_parallelism.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">首先回顾一下在单个 GPU 上训练模型的范式。
 通常而言，主要包括 $3$ 个步骤：</p>
@@ -54,4 +54,14 @@ Data Parallelism (DP) $\rightarrow$ Distributed Data Parallelism (DDP)
 也就是说，对于任意一个 worker，在它计算完成自己的梯度之后，只能等待其他 worker 计算完成它们的梯度，并得到最终的均值梯度后，才能使用自己的 optimizer 进行参数更新并进行下一轮迭代。
 这极大地阻碍了 GPU 计算资源的利用(因为在等待期间 worker 什么也没干，即空闲时间)。因此 <b>PyTorch</b> 实现更为复杂的通信方法来尽可能减少 worker 的空闲时间。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+<p style="text-align:justify; text-justify:inter-ideograph;">(注意：在 PyTorch 中，DP 和 DDP 都表示广义 DP 的实现方式，其中 DP 是在一台机器(即所有使用的 GPU 都在一台服务器内，无需考虑服务器间的通信)内的<b>单进程多线程</b>实现方式；
+而 DPP 是在多台机器内的<b>多进程</b>实现方式。由于 DDP 方式较为先进，现在已经基本摒弃了 DP 方式，因此下面只讲解 PyTorch 在 DDP 方式上的实现。)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">具体而言，由于 PyTorch 在 forward 过程中创建了一个自动求导图(autograd map)，
+一种简单的实现方式是 DDP 可以在 autograd map 的每个节点(每个节点表示一个参数)注册一个 hook (PyTorch autograd engine 接受自定义的 backward hook，类似于 flag)，以便在每次 backward 后触发计算。
+由于 backward 时是从上到下遍历 autograd map 并计算每个节点的梯度，因此，当计算完成一个节点后，其注册的 hook 便会触发(即 flag 值改变)，
+然后扫描所有 worker 中模型的对应节点，并从参数中检索梯度张量，即判断其梯度是否也已经计算完成。
+然后，使用 <b>AllReduce</b> 集合通信调用来计算所有 worker 上每个参数的平均梯度，并将结果写回各自的梯度张量中。
+总结而言，即
+在 <a href="https://arxiv.org/abs/2006.15704" target="_blank">Pytorch v1.5</a> 中，
+其使用了 $bucketing gradients$，$overlapping computation with communication$ 和 $skipping gradient synchronization$ 进行改进。</p>
