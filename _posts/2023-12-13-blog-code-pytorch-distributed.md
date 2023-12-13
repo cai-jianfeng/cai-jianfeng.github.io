@@ -114,3 +114,5 @@ References
 2. [How to Train Really Large Models on Many GPUs?](https://lilianweng.github.io/posts/2021-09-25-train-large/)
 
 3. [pytorch DDP overview](https://pytorch.org/tutorials/beginner/dist_overview.html)
+
+4. [all reduce theory](https://tech.preferred.jp/en/blog/technologies-behind-distributed-deep-learning-allreduce/)
