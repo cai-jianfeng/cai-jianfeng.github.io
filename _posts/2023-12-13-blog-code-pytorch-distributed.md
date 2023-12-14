@@ -100,7 +100,9 @@ PyTorch 实现了 <b>no_sync()</b> 来满足这种情况。在使用 hook 的情
 只需要上下文管理器在进入和退出上下文时切换一个标志 $\mathcal{F}$，该标志管理前述的 hook 是否可用，它一般在 DDP 模式的 forward 函数中使用。
 在 no_sync 模式下，即进入上下文时，设置 $\mathcal{F} = False$，表示所有的 hook 都被禁用；
 直到退出上下文时，设置 $\mathcal{F} = True$，所有的 hook 都重新可用，此时出现第一个不在上下文中的 backward 时便会同步累积的梯度，即发起 AllReduce 操作。
-同时，全局未使用的参数信息也会累积到位图中，用于下一次通信。</p>
+同时，全局未使用的参数信息也会累积到位图中，用于下一次通信。其具体代码是实现如下图所示：(左图表示由单 GPU 代码修改为 DPP 代码所需的改动；右图表示如何使用 skipping gradient synchronization。)</p>
+
+![torch_code](/images/paper_torch_example.png)
 
 Code Implementation
 ===
