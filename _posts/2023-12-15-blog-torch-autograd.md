@@ -18,7 +18,15 @@ tags:
 然后在 backward 的时候触发每个节点的 gradient 计算，并将计算完成的 gradient 存储在各自对应的<code style="color: #B58900">.grad</code>属性内。
 最后 optim 的 step 执行时将每个参数的值使用对应<code style="color: #B58900">.grad</code>属性内的 gradient 进行更新计算：<code style="color: #B58900">p = p - lr * p.grad</code>。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">```.backward()``` 只能对数求导，不能对向量求导。因此，对于向量 $Q$ 的求导需要添加初始梯度 ```Q.backward(gradient = init_gradient)```</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">第一步便是如何构建计算图？首先，torch 构造的计算图是一个有向无环图(DAG)。
+其中，叶子节点为输入的 tensor，包括输入的数据和参与计算的模型参数，根节点为输出的 tensor，而中间节点是模型执行的每个初等函数运算。
+假设<code style="color: #B58900">a</code>和<code style="color: #B58900">b</code>是<code style="color: #B58900">torch.Tensor</code>变量，
+且<code style="color: #B58900">M = lambda x, y: 3*x**3 - y**2</code>，则在<code style="color: #B58900">out=M(a,b)</code>时，<code style="color: #B58900">torch.autograd</code>构造了如下的 DAG，
+其中每一个节点表示一个初等函数：</p>
+
+![DAG](/images/torch_autograd_DAG.png)
+
+```.backward()``` 只能对数求导，不能对向量求导。因此，对于向量 $Q$ 的求导需要添加初始梯度 ```Q.backward(gradient = init_gradient)```
 
 back propagate $\rightarrow$ Jacobian matrix $J$ $\times$ vector $\vec{v}$: $J^T · \vec{v}$ by chain rule
 
