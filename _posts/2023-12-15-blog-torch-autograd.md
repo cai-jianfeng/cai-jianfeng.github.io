@@ -26,6 +26,25 @@ tags:
 
 ![DAG](/images/torch_autograd_DAG.png)
 
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，<span style="color: blue">蓝色</span>节点表示初等函数运算节点，在<code style="color: #B58900">torch.autograd</code>中使用<code style="color: #B58900">Function</code>类来实现。
+每个初等函数都实现了一个<code style="color: #B58900">Function</code>子类，例如幂函数为<code style="color: #B58900">PowBackward0</code>类。在</p>
+
+<code display: block; white-space: pre; font-family: 'Courier New', monospace; padding: 10px; background-color: #f4f4f4; border: 1px solid #ddd; margin: 10px 0;>
+class Exp(Function):
+    @staticmethod
+    def forward(ctx, i):
+        result = i.exp()
+        ctx.save_for_backward(result)
+        return result
+    @staticmethod
+    def backward(ctx, grad_output):
+        result, = ctx.saved_tensors
+        return grad_output * result
+# Use it by calling the apply method:
+output = Exp.apply(input)
+</code>
+
+
 ```.backward()``` 只能对数求导，不能对向量求导。因此，对于向量 $Q$ 的求导需要添加初始梯度 ```Q.backward(gradient = init_gradient)```
 
 back propagate $\rightarrow$ Jacobian matrix $J$ $\times$ vector $\vec{v}$: $J^T · \vec{v}$ by chain rule
