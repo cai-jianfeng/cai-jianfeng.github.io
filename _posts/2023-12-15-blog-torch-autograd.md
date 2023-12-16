@@ -132,12 +132,15 @@ Appendix
 <p style="text-align:justify; text-justify:inter-ideograph;">In a forward pass, autograd does two things simultaneously:</p>
 
 - <p style="text-align:justify; text-justify:inter-ideograph;">run the requested operation to compute a resulting tensor; </p>
+
 - <p style="text-align:justify; text-justify:inter-ideograph;">maintain the operation’s gradient function in the DAG, the .grad_fn attribute of each torch.Tensor is an entry point into this graph. </p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">The backward pass kicks off when .backward() is called on the DAG root. autograd then trace DAG from roots to leaves to compute gradient: </p>
 
 - <p style="text-align:justify; text-justify:inter-ideograph;">computes the gradients from each .grad_fn; </p>
+
 - <p style="text-align:justify; text-justify:inter-ideograph;">accumulates them in the respective tensor’s .grad attribute; </p>
+
 - <p style="text-align:justify; text-justify:inter-ideograph;">using the chain rule, propagates all the way to the leaf tensors. </p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">DAGs are dynamic in PyTorch. An important thing to note is that the graph is recreated from scratch; after each .backward() call, autograd starts populating a new graph.</p>
