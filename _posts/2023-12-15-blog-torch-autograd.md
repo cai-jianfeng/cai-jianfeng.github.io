@@ -14,7 +14,7 @@ tags:
 
 <p style="text-align:justify; text-justify:inter-ideograph;">那么 PyTorch 是如何计算每个参数的梯度的，即 PyTorch 的自动求导机制(<code style="color: #B58900">torch.autograd</code>)？
 通俗而言，<code style="color: #B58900">torch.autograd</code>在模型 forward 的同时构造了一个 computational graph: DAG (由 Function 组成)；
-其中的叶子节点表示输入数据和模型参数，而非叶子节点表示模型对这些输入数据和参数进行的数学操作(加法，乘法等)。
+其中的叶子节点表示输入数据和模型参数，而非叶子节点表示模型对这些输入数据和参数进行的初等函数运算(加法，乘法等)。
 然后在 backward 的时候触发每个节点的 gradient 计算，并将计算完成的 gradient 存储在各自对应的<code style="color: #B58900">.grad</code>属性内。
 最后 optim 的 step 执行时将每个参数的值使用对应<code style="color: #B58900">.grad</code>属性内的 gradient 进行更新计算：<code style="color: #B58900">p = p - lr * p.grad</code>。</p>
 
@@ -31,7 +31,7 @@ tags:
 在<code style="color: #B58900">Function</code>类中，需要实现<code style="color: #B58900">forward</code>和<code style="color: #B58900">backward</code>函数，
 其中前者在模型前向运算时使用，而后者在 loss 后向运算时使用。以下为指数函数的<code style="color: #B58900">Function</code>类简易实现：</p>
 
-<code display: block white-space: pre >
+```python
 class Exp(Function):
     @staticmethod
     def forward(ctx, i):
@@ -45,7 +45,7 @@ class Exp(Function):
 # Use it by calling the apply method:
 # 使用 Function 函数时，应调用 .apply() 函数代替 .forward() 函数；无法直接调用 .forward() 函数
 output = Exp.apply(input)
-</code>
+```
 
 <p style="text-align:justify; text-justify:inter-ideograph;">而且每个执行操作<code style="color: #B58900">Function</code>实例都保存在其输出 tensor 的<code style="color: #B58900">.grad_fn</code>属性上。
 因此，PyTorch 中的模型训练范式为 forward 时，输入数据和模型参数，对于每一个执行操作，构建一个对于的<code style="color: #B58900">Function</code>实例，
