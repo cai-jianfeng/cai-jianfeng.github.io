@@ -27,9 +27,11 @@ tags:
 ![DAG](/images/torch_autograd_DAG.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">其中，<span style="color: blue">蓝色</span>节点表示初等函数运算节点，在<code style="color: #B58900">torch.autograd</code>中使用<code style="color: #B58900">Function</code>类来实现。
-每个初等函数都实现了一个<code style="color: #B58900">Function</code>子类，例如幂函数为<code style="color: #B58900">PowBackward0</code>类。在</p>
+每个初等函数都实现了一个<code style="color: #B58900">Function</code>子类，例如幂函数为<code style="color: #B58900">PowBackward0</code>类。
+在<code style="color: #B58900">Function</code>类中，需要实现<code style="color: #B58900">forward</code>和<code style="color: #B58900">backward</code>函数，
+其中前者在模型前向运算时使用，而后者在 loss 后向运算时使用。以下为指数函数的<code style="color: #B58900">Function</code>类简易实现：</p>
 
-<code display: block; white-space: pre; font-family: 'Courier New', monospace; padding: 10px; background-color: #f4f4f4; border: 1px solid #ddd; margin: 10px 0;>
+<code>
 class Exp(Function):
     @staticmethod
     def forward(ctx, i):
@@ -41,6 +43,7 @@ class Exp(Function):
         result, = ctx.saved_tensors
         return grad_output * result
 # Use it by calling the apply method:
+# 使用 Function 函数时，应调用 .apply() 函数代替 .forward() 函数；无法直接调用 .forward() 函数
 output = Exp.apply(input)
 </code>
 
