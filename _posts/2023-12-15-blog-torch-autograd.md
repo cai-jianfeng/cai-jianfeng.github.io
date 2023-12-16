@@ -8,10 +8,11 @@ tags:
 
 <p style="text-align:justify; text-justify:inter-ideograph;">这篇博客主要介绍了 PyTorch 的 autograd 机制及其具体实现方式。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">```.forward()``` 计算 loss 同时构造 computational graph: DAG (由 Function 组成)；
+<p style="text-align:justify; text-justify:inter-ideograph;">训练一个模型的范式是构造模型 $\mathcal{M}$ 和数据 $\mathcal{D} = \{x_i,y_i\}_{1:N}$，
+使用模型的前向过程计算损失：<code>.forward()</code> 计算 loss 同时构造 computational graph: DAG (由 Function 组成)；
 ```.backward()``` 触发 gradient 计算，并将 gradient 存储在 ```.grad```</p>
 
-.backward() 只能对数求导，不能对向量求导。因此，对于向量 $Q$ 的求导需要添加初始梯度 Q.backward(gradient = init_gradient)
+<p style="text-align:justify; text-justify:inter-ideograph;">```.backward()``` 只能对数求导，不能对向量求导。因此，对于向量 $Q$ 的求导需要添加初始梯度 ```Q.backward(gradient = init_gradient)```</p>
 
 back propagate $\rightarrow$ Jacobian matrix $J$ $\times$ vector $\vec{v}$: $J^T · \vec{v}$ by chain rule
 
