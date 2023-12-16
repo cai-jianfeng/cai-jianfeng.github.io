@@ -86,29 +86,37 @@ $$J=\left(\begin{array}{ccc}\frac{\partial \mathbf{y}}{\partial x_1} & \cdots & 
 Torch Grad Mode
 ===
 
-torch.autograd tracks operations on all tensors which have requires_grad flag set to True. 
-For tensors that don’t require gradients, setting this attribute to False excludes it from the gradient computation DAG.
+<p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">torch.autograd</code> tracks operations on all tensors which have requires_grad flag set to True. 
+For tensors that don’t require gradients, setting this attribute to False excludes it from the gradient computation DAG.</p>
 
-torch.no_grad(): In this mode, the result of every computation will have requires_grad=False, even when the inputs have requires_grad=True. 
-All factory functions, or functions that create a new Tensor and take a requires_grad kwarg, will NOT be affected by this mode.
+<p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">torch.no_grad()</code>: In this mode, the result of every computation will have <code style="color: #B58900">requires_grad=False</code>, 
+even when the inputs have <code style="color: #B58900">requires_grad=True</code>. 
+All factory functions, or functions that create a new Tensor and take a requires_grad kwarg, will NOT be affected by this mode.</p>
 
-Locally disabling gradient computation: requires_grad, grad mode, no_grad mode, inference mode
+<p style="text-align:justify; text-justify:inter-ideograph;">Locally disabling gradient computation: requires_grad, grad mode, no_grad mode, inference mode</p>
 
-1. ```requires_grad``` is a flag, defaulting to false unless wrapped in a ```nn.Parameter```. 
+1. <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">requires_grad</code> is a flag, defaulting to false unless wrapped in a <code style="color: #B58900">nn.Parameter</code>. 
 During the forward pass, an operation is only recorded in the backward graph if at least one of its input tensors require grad. 
-During the backward pass (```.backward()```), only leaf tensors with ```requires_grad=True``` will have gradients accumulated into their ```.grad``` fields.
-Setting ```requires_grad``` only makes sense for leaf tensors (tensors that do not have a ```grad_fn```, e.g., a ```nn.Module```’s parameters),
-all non-leaf tensors will automatically have ```require_grad=True```.
-apply `````.requires_grad_(False)````` to the parameters / ```nn.Module```
-2. grad mode (default) is the only mode in which ```requires_grad``` takes effect
-3. no_grad mode: computations in no-grad mode are never recorded in the backward graph even if there are inputs that have ```requires_grad=True```.
+During the backward pass (<code style="color: #B58900">.backward()</code>), 
+only leaf tensors with <code style="color: #B58900">requires_grad=True</code> will have gradients accumulated into their <code style="color: #B58900">.grad</code> fields.
+Setting <code style="color: #B58900">requires_grad</code> only makes sense for leaf tensors (tensors that do not have a <code style="color: #B58900">grad_fn</code>, 
+e.g., a <code style="color: #B58900">nn.Module</code>’s parameters),
+all non-leaf tensors will automatically have <code style="color: #B58900">require_grad=True</code>.
+apply <code style="color: #B58900">.requires_grad_(False)</code> to the parameters / <code style="color: #B58900">nn.Module</code>.</p>
+
+2. <p style="text-align:justify; text-justify:inter-ideograph;">grad mode (default) is the only mode in which <code style="color: #B58900">requires_grad</code> takes effect.</p>
+
+3. <p style="text-align:justify; text-justify:inter-ideograph;">no_grad mode: computations in no-grad mode are never recorded in the backward graph even if there are inputs that have <code style="color: #B58900">requires_grad=True</code>.</p>
 can use the outputs of these computations in grad mode later.
 optimizer: when performing the training update you’d like to update parameters in-place without the update being recorded by autograd. 
 You also intend to use the updated parameters for computations in grad mode in the next forward pass.
-torch.nn.init: rely on no-grad mode when initializing the parameters as to avoid autograd tracking when updating the initialized parameters in-place.
-4. inference mode: computations in inference mode are not recorded in the backward graph. 
-tensors created in inference mode will not be able to be used in computations to be recorded by autograd after exiting inference mode.
-5. evaluation mode(```nn.Moudle.eval()``` equivalently ```module.train(False)```):  ```torch.nn.Dropout``` and ```torch.nn.BatchNorm2d``` that may behave differently depending on training mode
+torch.nn.init: rely on no-grad mode when initializing the parameters as to avoid autograd tracking when updating the initialized parameters in-place.</p>
+
+4. <p style="text-align:justify; text-justify:inter-ideograph;">inference mode: computations in inference mode are not recorded in the backward graph. 
+tensors created in inference mode will not be able to be used in computations to be recorded by autograd after exiting inference mode.</p>
+
+5. <p style="text-align:justify; text-justify:inter-ideograph;">evaluation mode(<code style="color: #B58900">nn.Moudle.eval()</code> equivalently <code style="color: #B58900">module.train(False)</code>): 
+<code style="color: #B58900">torch.nn.Dropout</code> and <code style="color: #B58900">torch.nn.BatchNorm2d</code> that may behave differently depending on training mode. </p>
 
 |   Mode    | Excludes operations from being recorded in backward graph | Skips additional autograd tracking overhead | Tensors created while the mode is enabled can be used in grad-mode later |             Examples              |
 |:---------:|:---------------------------------------------------------:|:-------------------------------------------:|:------------------------------------------------------------------------:|:---------------------------------:|
