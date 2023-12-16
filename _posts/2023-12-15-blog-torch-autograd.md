@@ -72,7 +72,7 @@ $$J=\left(\begin{array}{ccc}\frac{\partial \mathbf{y}}{\partial x_1} & \cdots & 
 \frac{\partial l}{\partial x_1} \\
 \vdots \\
 \frac{\partial l}{\partial x_n}
-\end{array}\right)$$$
+\end{array}\right)$$
 
 因此<code style="color: #B58900">.backward()</code>>理论上只能对数求导，不能对向量求导，
 即 $l.backward()$ 中 $l$ 理论上只能是一个数。为了实现向量 $Q$ 的求导，需要添加与 $Q$ 形状相同的初始梯度<code style="color: #B58900">Q.backward(gradient = init_gradient)</code>。</p>
