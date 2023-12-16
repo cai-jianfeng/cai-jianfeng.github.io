@@ -48,11 +48,13 @@ output = Exp.apply(input)
 ```
 
 <p style="text-align:justify; text-justify:inter-ideograph;">而且每个执行操作<code style="color: #B58900">Function</code>实例都保存在其输出 tensor 的<code style="color: #B58900">.grad_fn</code>属性上。
-因此，PyTorch 中的模型训练范式为 forward 时，输入数据和模型参数，对于每一个执行操作，构建一个对于的<code style="color: #B58900">Function</code>实例，
+因此，PyTorch 中的模型训练范式为 forward 时，输入数据和模型参数，对于每一个执行操作，构建一个对应的<code style="color: #B58900">Function</code>实例，
 并调用<code style="color: #B58900">.apply()</code>输出结果作为下一个执行操作的输入数据，并将<code style="color: #B58900">Function</code>实例保存在输出结果的<code style="color: #B58900">.grad_fn</code>属性上。
 而在 backward 时，首先使用<code style="color: #B58900">l.grad_fn</code>确定输出节点的<code style="color: #B58900">Function</code>实例，
-然后调用其<code style="color: #B58900">.backward()</code>计算对于输出数据的 gradient，并将输出结果保存在对应输入的<code style="color: #B58900">.grad</code>属性中。
-接着找到 DAG 中与其相邻的下一个节点(即前一个节点的输入数据)，重复上述操作，直到达到 DAG 的叶子节点，表明所有的 gradient 都已计算完成。</p>
+然后调用其<code style="color: #B58900">.backward()</code>计算对于输入数据的 gradient，并将 gradient 结果传递给下一个节点，
+即前一个节点的输入数据所对应的<code style="color: #B58900">Function</code>实例。重复上述操作，直到达到 DAG 的叶子节点，表明所有的 gradient 都已计算到输入数据。
+此时，将最终计算得到的 gradient 保存到其<code style="color: #B58900">.grad</code>属性中。
+因此，默认情况下，PyTorch 不保存中间计算结果的 gradient (即中间结果的<code style="color: #B58900">.grad_fn</code>属性中为<code style="color: #B58900">None</code>)。</p>
 
 ```.backward()``` 只能对数求导，不能对向量求导。因此，对于向量 $Q$ 的求导需要添加初始梯度 ```Q.backward(gradient = init_gradient)```
 
