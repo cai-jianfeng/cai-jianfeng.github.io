@@ -124,6 +124,7 @@ tensors created in inference mode will not be able to be used in computations to
 |  no-grad  |                             √                             |                      ×                      |                                    √                                     |         Optimizer updates         |
 | inference |                             √                             |                      √                      |                                    ×                                     | Data processing, model evaluation |
 
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 Appendix
 ===
