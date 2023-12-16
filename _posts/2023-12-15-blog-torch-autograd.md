@@ -12,8 +12,11 @@ tags:
 使用模型的前向过程计算 loss：<code style="color: #B58900">l = M.forward(xi,yi)</code>，然后使用<code style="color: #B58900">l.backward()</code>计算 gradient，
 最后使用<code style="color: #B58900">optim.step()</code>更新模型参数。</p>
 
-同时构造 computational graph: DAG (由 Function 组成)；
-```.backward()``` 触发 gradient 计算，并将 gradient 存储在 ```.grad```
+<p style="text-align:justify; text-justify:inter-ideograph;">那么 PyTorch 是如何计算每个参数的梯度的，即 PyTorch 的自动求导机制(<code style="color: #B58900">torch.autograd</code>)？
+通俗而言，<code style="color: #B58900">torch.autograd</code>在模型 forward 的同时构造了一个 computational graph: DAG (由 Function 组成)；
+其中的叶子节点表示输入数据和模型参数，而非叶子节点表示模型对这些输入数据和参数进行的数学操作(加法，乘法等)。
+然后在 backward 的时候触发每个节点的 gradient 计算，并将计算完成的 gradient 存储在各自对应的<code style="color: #B58900">.grad</code>属性内。
+最后 optim 的 step 执行时将每个参数的值使用对应<code style="color: #B58900">.grad</code>属性内的 gradient 进行更新计算：<code style="color: #B58900">p = p - lr * p.grad</code>。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">```.backward()``` 只能对数求导，不能对向量求导。因此，对于向量 $Q$ 的求导需要添加初始梯度 ```Q.backward(gradient = init_gradient)```</p>
 
