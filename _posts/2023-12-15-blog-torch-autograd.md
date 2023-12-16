@@ -256,3 +256,4 @@ References
 1. [Pytorch Autograd In-Deep Introduction Video](https://www.youtube.com/watch?v=MswxJw-8PvE)
 2. [A Gentle Introduction to torch.autograd](https://pytorch.org/tutorials/beginner/blitz/autograd_tutorial.html?highlight=torch%20autograd)
 3. [Autograd Mechanics](https://pytorch.org/docs/stable/notes/autograd.html)
+4. [Pytorch Autograd API Documentation](https://pytorch.org/docs/stable/autograd.html)
