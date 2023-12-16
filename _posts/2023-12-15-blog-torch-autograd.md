@@ -31,22 +31,6 @@ tags:
 在<code style="color: #B58900">Function</code>类中，需要实现<code style="color: #B58900">forward</code>和<code style="color: #B58900">backward</code>函数，
 其中前者在模型前向运算时使用，而后者在 loss 后向运算时使用。以下为指数函数的<code style="color: #B58900">Function</code>类简易实现：</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"><code style="display: block; white-space: pre; font-family: 'Courier New', monospace;">
-class Exp(Function):
-    @staticmethod
-    def forward(ctx, i):
-        result = i.exp()
-        ctx.save_for_backward(result)
-        return result
-    @staticmethod
-    def backward(ctx, grad_output):
-        result, = ctx.saved_tensors
-        return grad_output * result
-# Use it by calling the apply method:
-# 使用 Function 函数时，应调用 .apply() 函数代替 .forward() 函数；无法直接调用 .forward() 函数
-output = Exp.apply(input)
-</code></p>
-
 ```python
 class Exp(Function):
     @staticmethod
@@ -72,9 +56,26 @@ output = Exp.apply(input)
 此时，将最终计算得到的 gradient 保存到其<code style="color: #B58900">.grad</code>属性中。
 可以看到，默认情况下，PyTorch 不保存中间计算结果的 gradient (即中间结果的<code style="color: #B58900">.grad</code>属性中为<code style="color: #B58900">None</code>)。</p>
 
-```.backward()``` 只能对数求导，不能对向量求导。因此，对于向量 $Q$ 的求导需要添加初始梯度 ```Q.backward(gradient = init_gradient)```
+<p style="text-align:justify; text-justify:inter-ideograph;">此外，PyTorch 的求导是通过计算雅可比矩阵(Jacobian matrix) $J$ 和向量 $\vec{v}$ 的乘积来实现链式法则的反向传播(back propagate)，即：
 
-back propagate $\rightarrow$ Jacobian matrix $J$ $\times$ vector $\vec{v}$: $J^T · \vec{v}$ by chain rule
+$$J=\left(\begin{array}{ccc}\frac{\partial \mathbf{y}}{\partial x_1} & \cdots & \frac{\partial \mathbf{y}}{\partial x_n}\end{array}\right)=\left(\begin{array}{ccc}\frac{\partial y_1}{\partial x_1} & \cdots & \frac{\partial y_1}{\partial x_n} \\ \vdots & \ddots & \vdots \\ \frac{\partial y_m}{\partial x_1} & \cdots & \frac{\partial y_m}{\partial x_n}\end{array}\right), \vec{v}=\left(\begin{array}{ccc}
+\frac{\partial l}{\partial y_1} & \cdots & \frac{\partial l}{\partial y_m}
+\end{array}\right)^T \\ J^T \cdot \vec{v}=\left(\begin{array}{ccc}
+\frac{\partial y_1}{\partial x_1} & \cdots & \frac{\partial y_m}{\partial x_1} \\
+\vdots & \ddots & \vdots \\
+\frac{\partial y_1}{\partial x_n} & \cdots & \frac{\partial y_m}{\partial x_n}
+\end{array}\right)\left(\begin{array}{c}
+\frac{\partial l}{\partial y_1} \\
+\vdots \\
+\frac{\partial l}{\partial y_m}
+\end{array}\right)=\left(\begin{array}{c}
+\frac{\partial l}{\partial x_1} \\
+\vdots \\
+\frac{\partial l}{\partial x_n}
+\end{array}\right)$$$
+
+因此<code style="color: #B58900">.backward()</code>>理论上只能对数求导，不能对向量求导，
+即 $l.backward()$ 中 $l$ 理论上只能是一个数。为了实现向量 $Q$ 的求导，需要添加与 $Q$ 形状相同的初始梯度<code style="color: #B58900">Q.backward(gradient = init_gradient)</code>。</p>
 
 computational graph: input data (tensor) & executed operations (elementary operations, Function) in DAG, leaves are input tensors, roots are output tensors
 
