@@ -106,7 +106,7 @@ apply <code style="color: #B58900">.requires_grad_(False)</code> to the paramete
 
 2. <p style="text-align:justify; text-justify:inter-ideograph;">grad mode (default) is the only mode in which <code style="color: #B58900">requires_grad</code> takes effect.</p>
 
-3. <p style="text-align:justify; text-justify:inter-ideograph;">no_grad mode: computations in no-grad mode are never recorded in the backward graph even if there are inputs that have <code style="color: #B58900">requires_grad=True</code>.</p>
+3. <p style="text-align:justify; text-justify:inter-ideograph;">no_grad mode: computations in no-grad mode are never recorded in the backward graph even if there are inputs that have <code style="color: #B58900">requires_grad=True</code>.
 can use the outputs of these computations in grad mode later.
 optimizer: when performing the training update you’d like to update parameters in-place without the update being recorded by autograd. 
 You also intend to use the updated parameters for computations in grad mode in the next forward pass.
@@ -127,7 +127,9 @@ tensors created in inference mode will not be able to be used in computations to
 Appendix
 ===
 
-1. <p style="text-align:justify; text-justify:inter-ideograph;">computational graph: input data (tensor) & executed operations (elementary operations, Function) in DAG, leaves are input tensors, roots are output tensors.</p>
+## torch.autograd
+
+<p style="text-align:justify; text-justify:inter-ideograph;">computational graph: input data (tensor) & executed operations (elementary operations, Function) in DAG, leaves are input tensors, roots are output tensors.</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">In a forward pass, autograd does two things simultaneously:</p>
 
@@ -145,7 +147,9 @@ Appendix
 
 <p style="text-align:justify; text-justify:inter-ideograph;">DAGs are dynamic in PyTorch. An important thing to note is that the graph is recreated from scratch; after each .backward() call, autograd starts populating a new graph.</p>
 
-2. <p style="text-align:justify; text-justify:inter-ideograph;">Function objects (really expressions), which can be apply() ed to compute the result of evaluating the graph. </p>
+## torch.autograd.Function
+
+<p style="text-align:justify; text-justify:inter-ideograph;">Function objects (really expressions), which can be apply() ed to compute the result of evaluating the graph. </p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">Some operations need intermediary results to be saved during the forward pass in order to execute the backward pass ($x \mapsto x^2$).
 When defining a custom Python Function, you can use <code style="color: #B58900">save_for_backward()</code> to save tensors during the forward pass and <code style="color: #B58900">saved_tensors to</code>> retrieve them during the backward pass.</p>
@@ -231,16 +235,16 @@ model = Model()
 net = nn.DataParallel(model)
 ```
 
+## Computational Graph Implementation
+
 <p style="text-align:justify; text-justify:inter-ideograph;">Gradients for non-differentiable functions: </p>
 
-    1. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is differentiable and thus a gradient exists at the current point, use it.</p>
-    2. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is convex (at least locally), use the sub-gradient of minimum norm (it is the steepest descent direction).</p>
-    3. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is concave (at least locally), use the super-gradient of minimum norm (consider -f(x) and apply the previous point).</p>
-    4. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is defined, define the gradient at the current point by continuity (note that inf is possible here, for example for sqrt(0)). If multiple values are possible, pick one arbitrarily.</p>
-    5. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is not defined (sqrt(-1), log(-1) or most functions when the input is NaN, for example) then the value used as the gradient is arbitrary (we might also raise an error but that is not guaranteed). Most functions will use NaN as the gradient, but for performance reasons, some functions will use other values (log(-1), for example).</p>
-    6. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is not a deterministic mapping (i.e. it is not a mathematical function), it will be marked as non-differentiable. This will make it error out in the backward if used on tensors that require grad outside of a no_grad environment.</p>
-
-3. <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">torch.autograd</code>具体实现：</p>
+1. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is differentiable and thus a gradient exists at the current point, use it.</p>
+2. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is convex (at least locally), use the sub-gradient of minimum norm (it is the steepest descent direction).</p>
+3. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is concave (at least locally), use the super-gradient of minimum norm (consider -f(x) and apply the previous point).</p>
+4. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is defined, define the gradient at the current point by continuity (note that inf is possible here, for example for sqrt(0)). If multiple values are possible, pick one arbitrarily.</p>
+5. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is not defined (sqrt(-1), log(-1) or most functions when the input is NaN, for example) then the value used as the gradient is arbitrary (we might also raise an error but that is not guaranteed). Most functions will use NaN as the gradient, but for performance reasons, some functions will use other values (log(-1), for example).</p>
+6. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is not a deterministic mapping (i.e. it is not a mathematical function), it will be marked as non-differentiable. This will make it error out in the backward if used on tensors that require grad outside of a no_grad environment.</p>
 
 ![DAG2](/images/torch_autograd_DAG2.png)
 
