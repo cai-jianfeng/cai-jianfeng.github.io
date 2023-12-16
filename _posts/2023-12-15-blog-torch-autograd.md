@@ -8,9 +8,8 @@ tags:
 
 <p style="text-align:justify; text-justify:inter-ideograph;">这篇博客主要介绍了 PyTorch 的 autograd 机制及其具体实现方式。</p>
 
-forward() 计算 loss 同时构造 computational graph: DAG (由 Function 组成)
-
-.backward() 触发 gradient 计算，并将 gradient 存储在 .grad
+<p style="text-align:justify; text-justify:inter-ideograph;">```.forward()``` 计算 loss 同时构造 computational graph: DAG (由 Function 组成)；
+```.backward()``` 触发 gradient 计算，并将 gradient 存储在 ```.grad```</p>
 
 .backward() 只能对数求导，不能对向量求导。因此，对于向量 $Q$ 的求导需要添加初始梯度 Q.backward(gradient = init_gradient)
 
