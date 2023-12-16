@@ -240,7 +240,7 @@ net = nn.DataParallel(model)
     5. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is not defined (sqrt(-1), log(-1) or most functions when the input is NaN, for example) then the value used as the gradient is arbitrary (we might also raise an error but that is not guaranteed). Most functions will use NaN as the gradient, but for performance reasons, some functions will use other values (log(-1), for example).</p>
     6. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is not a deterministic mapping (i.e. it is not a mathematical function), it will be marked as non-differentiable. This will make it error out in the backward if used on tensors that require grad outside of a no_grad environment.</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">torch.autograd</code>具体实现：</p>
+3. <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">torch.autograd</code>具体实现：</p>
 
 ![DAG2](/images/torch_autograd_DAG2.png)
 
