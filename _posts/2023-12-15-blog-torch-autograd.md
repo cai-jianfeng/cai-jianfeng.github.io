@@ -56,7 +56,7 @@ output = Exp.apply(input)
 此时，将最终计算得到的 gradient 保存到其<code style="color: #B58900">.grad</code>属性中。
 可以看到，默认情况下，PyTorch 不保存中间计算结果的 gradient (即中间结果的<code style="color: #B58900">.grad</code>属性中为<code style="color: #B58900">None</code>)。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">此外，PyTorch 的求导是通过计算雅可比矩阵(Jacobian matrix) $J$ 和向量 $\vec{v}$ 的乘积来实现链式法则的反向传播(back propagate)，即：
+<p style="text-align:justify; text-justify:inter-ideograph;">此外，PyTorch 的求导是通过计算雅可比矩阵(Jacobian matrix) $J$ 和向量 $\vec{v}$ 的乘积来实现链式法则的反向传播(back propagate)，即：</p>
 
 $$J=\left(\begin{array}{ccc}\frac{\partial \mathbf{y}}{\partial x_1} & \cdots & \frac{\partial \mathbf{y}}{\partial x_n}\end{array}\right)=\left(\begin{array}{ccc}\frac{\partial y_1}{\partial x_1} & \cdots & \frac{\partial y_1}{\partial x_n} \\ \vdots & \ddots & \vdots \\ \frac{\partial y_m}{\partial x_1} & \cdots & \frac{\partial y_m}{\partial x_n}\end{array}\right), \vec{v}=\left(\begin{array}{ccc}
 \frac{\partial l}{\partial y_1} & \cdots & \frac{\partial l}{\partial y_m}
@@ -74,7 +74,7 @@ $$J=\left(\begin{array}{ccc}\frac{\partial \mathbf{y}}{\partial x_1} & \cdots & 
 \frac{\partial l}{\partial x_n}
 \end{array}\right)$$
 
-因此<code style="color: #B58900">.backward()</code>>理论上只能对数求导，不能对向量求导，
+<p style="text-align:justify; text-justify:inter-ideograph;">因此<code style="color: #B58900">.backward()</code>>理论上只能对数求导，不能对向量求导，
 即 $l.backward()$ 中 $l$ 理论上只能是一个数。为了实现向量 $Q$ 的求导，需要添加与 $Q$ 形状相同的初始梯度<code style="color: #B58900">Q.backward(gradient = init_gradient)</code>。</p>
 
 computational graph: input data (tensor) & executed operations (elementary operations, Function) in DAG, leaves are input tensors, roots are output tensors
