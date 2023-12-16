@@ -86,14 +86,14 @@ $$J=\left(\begin{array}{ccc}\frac{\partial \mathbf{y}}{\partial x_1} & \cdots & 
 Torch Grad Mode
 ===
 
-<p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">torch.autograd</code> tracks operations on all tensors which have requires_grad flag set to True. 
+<p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">torch.autograd</code> tracks operations on all tensors which have <code style="color: #B58900">requires_grad</code> flag set to True. 
 For tensors that don’t require gradients, setting this attribute to False excludes it from the gradient computation DAG.</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">torch.no_grad()</code>: In this mode, the result of every computation will have <code style="color: #B58900">requires_grad=False</code>, 
 even when the inputs have <code style="color: #B58900">requires_grad=True</code>. 
-All factory functions, or functions that create a new Tensor and take a requires_grad kwarg, will NOT be affected by this mode.</p>
+All factory functions, or functions that create a new Tensor and take a <code style="color: #B58900">requires_grad</code> kwarg, will <b>NOT</b> be affected by this mode.</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">Locally disabling gradient computation: requires_grad, grad mode, no_grad mode, inference mode</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">Locally disabling gradient computation: requires_grad, grad mode, no_grad mode, inference mode:</p>
 
 1. <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">requires_grad</code> is a flag, defaulting to false unless wrapped in a <code style="color: #B58900">nn.Parameter</code>. 
 During the forward pass, an operation is only recorded in the backward graph if at least one of its input tensors require grad. 
@@ -124,6 +124,7 @@ tensors created in inference mode will not be able to be used in computations to
 |  no-grad  |                             √                             |                      ×                      |                                    √                                     |         Optimizer updates         |
 | inference |                             √                             |                      √                      |                                    ×                                     | Data processing, model evaluation |
 
+
 Appendix
 ===
 
@@ -137,24 +138,25 @@ Appendix
 
 - <p style="text-align:justify; text-justify:inter-ideograph;">maintain the operation’s gradient function in the DAG, the .grad_fn attribute of each torch.Tensor is an entry point into this graph. </p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">The backward pass kicks off when .backward() is called on the DAG root. autograd then trace DAG from roots to leaves to compute gradient: </p>
+<p style="text-align:justify; text-justify:inter-ideograph;">The backward pass kicks off when <code style="color: #B58900">.backward()</code> is called on the DAG root. autograd then trace DAG from roots to leaves to compute gradient: </p>
 
-- <p style="text-align:justify; text-justify:inter-ideograph;">computes the gradients from each .grad_fn; </p>
+- <p style="text-align:justify; text-justify:inter-ideograph;">computes the gradients from each <code style="color: #B58900">.grad_fn</code>; </p>
 
-- <p style="text-align:justify; text-justify:inter-ideograph;">accumulates them in the respective tensor’s .grad attribute; </p>
+- <p style="text-align:justify; text-justify:inter-ideograph;">accumulates them in the respective tensor’s <code style="color: #B58900">.grad</code> attribute; </p>
 
 - <p style="text-align:justify; text-justify:inter-ideograph;">using the chain rule, propagates all the way to the leaf tensors. </p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">DAGs are dynamic in PyTorch. An important thing to note is that the graph is recreated from scratch; after each .backward() call, autograd starts populating a new graph.</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">DAGs are dynamic in PyTorch. An important thing to note is that the graph is recreated from scratch; after each <code style="color: #B58900">.backward() call</code>, 
+autograd starts populating a new graph.</p>
 
 ## torch.autograd.Function
 
-<p style="text-align:justify; text-justify:inter-ideograph;">Function objects (really expressions), which can be apply() ed to compute the result of evaluating the graph. </p>
+<p style="text-align:justify; text-justify:inter-ideograph;">Function objects (really expressions), which can be <code style="color: #B58900">apply()</code> ed to compute the result of evaluating the graph. </p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">Some operations need intermediary results to be saved during the forward pass in order to execute the backward pass ($x \mapsto x^2$).
-When defining a custom Python Function, you can use <code style="color: #B58900">save_for_backward()</code> to save tensors during the forward pass and <code style="color: #B58900">saved_tensors to</code>> retrieve them during the backward pass.</p>
+When defining a custom Python Function, you can use <code style="color: #B58900">save_for_backward()</code> to save tensors during the forward pass and <code style="color: #B58900">saved_tensors to</code> retrieve them during the backward pass.</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">You can explore which tensors are saved by a certain <code style="color: #B58900">grad_fn</code> by looking for its attributes starting with the prefix <code style="color: #B58900">_saved</code> (<code style="color: #B58900">_saved_self / _saved_result</code>).
+<p style="text-align:justify; text-justify:inter-ideograph;">You can explore which tensors are saved by a certain <code style="color: #B58900">grad_fn</code> by looking for its attributes starting with the prefix <code style="color: #B58900">_saved</code> (<code style="color: #B58900">_saved_self</code> / <code style="color: #B58900">_saved_result</code>).
 To create a custom <code style="color: #B58900">autograd.Function</code>>, subclass this class and implement the <code style="color: #B58900">forward()</code> and <code style="color: #B58900">backward()</code> static methods. 
 Then, to use your custom op in the forward pass, call the class method <code style="color: #B58900">apply()</code>: </p>
 
@@ -205,7 +207,7 @@ register a pair of hooks on a saved tensor by calling the <code style="color: #B
 param.grad_fn._raw_saved_self.register_hooks(pack_hook, unpack_hook)
 ```
 
-<p style="text-align:justify; text-justify:inter-ideograph;">use the context-manager saved_tensors_hooks to register a pair of hooks which will be applied to all saved tensors that are created in that context.
+<p style="text-align:justify; text-justify:inter-ideograph;">use the context-manager <code style="color: #B58900">saved_tensors_hooks</code> to register a pair of hooks which will be applied to all saved tensors that are created in that context.
 The hooks defined with this context manager are thread-local, using those hooks disables all the optimization in place to reduce Tensor object creation.</p>
 
 ```python
@@ -248,3 +250,9 @@ net = nn.DataParallel(model)
 
 ![DAG2](/images/torch_autograd_DAG2.png)
 
+References
+===
+
+1. [Pytorch Autograd In-Deep Introduction Video](https://www.youtube.com/watch?v=MswxJw-8PvE)
+2. [A Gentle Introduction to torch.autograd](https://pytorch.org/tutorials/beginner/blitz/autograd_tutorial.html?highlight=torch%20autograd)
+3. [Autograd Mechanics](https://pytorch.org/docs/stable/notes/autograd.html)
