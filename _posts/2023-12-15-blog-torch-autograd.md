@@ -31,7 +31,7 @@ tags:
 在<code style="color: #B58900">Function</code>类中，需要实现<code style="color: #B58900">forward</code>和<code style="color: #B58900">backward</code>函数，
 其中前者在模型前向运算时使用，而后者在 loss 后向运算时使用。以下为指数函数的<code style="color: #B58900">Function</code>类简易实现：</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"><code style="display: block; white-space: pre; font-family: 'Courier New', monospace; padding: 10px; background-color: #f4f4f4; border: 1px solid #ddd; margin: 10px 0;">
+<p style="text-align:justify; text-justify:inter-ideograph;"><code style="display: block; white-space: pre; font-family: 'Courier New', monospace;">
 class Exp(Function):
     @staticmethod
     def forward(ctx, i):
@@ -222,7 +222,7 @@ tensors created in inference mode will not be able to be used in computations to
 Appendix
 ===
 
-1. <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">torch.autograd</code></p>
+1. <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">torch.autograd</code>具体实现：</p>
 
 ![DAG2](/images/torch_autograd_DAG2.png)
 
