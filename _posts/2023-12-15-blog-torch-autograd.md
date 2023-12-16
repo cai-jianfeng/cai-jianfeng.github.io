@@ -18,7 +18,7 @@ tags:
 然后在 backward 的时候触发每个节点的 gradient 计算，并将计算完成的 gradient 存储在各自对应的<code style="color: #B58900">.grad</code>属性内。
 最后 optim 的 step 执行时将每个参数的值使用对应<code style="color: #B58900">.grad</code>属性内的 gradient 进行更新计算：<code style="color: #B58900">p = p - lr * p.grad</code>。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">第一步便是如何构建计算图？首先，torch 构造的计算图是一个有向无环图(DAG)。
+<p style="text-align:justify; text-justify:inter-ideograph;">如何构建计算图？首先，torch 构造的计算图是一个有向无环图(DAG)。
 其中，叶子节点为输入的 tensor，包括输入的数据和参与计算的模型参数，根节点为输出的 tensor，而中间节点是模型执行的每个初等函数运算(简称为执行操作)。
 假设<code style="color: #B58900">a</code>和<code style="color: #B58900">b</code>是<code style="color: #B58900">torch.Tensor</code>变量，
 且<code style="color: #B58900">M = lambda x, y: 3*x**3 - y**2</code>，则在<code style="color: #B58900">out=M(a,b)</code>时，<code style="color: #B58900">torch.autograd</code>构造了如下的 DAG，
@@ -30,6 +30,22 @@ tags:
 每个初等函数都实现了一个<code style="color: #B58900">Function</code>子类，例如幂函数为<code style="color: #B58900">PowBackward0</code>类。
 在<code style="color: #B58900">Function</code>类中，需要实现<code style="color: #B58900">forward</code>和<code style="color: #B58900">backward</code>函数，
 其中前者在模型前向运算时使用，而后者在 loss 后向运算时使用。以下为指数函数的<code style="color: #B58900">Function</code>类简易实现：</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"><code display: block; white-space: pre;>
+class Exp(Function):
+    @staticmethod
+    def forward(ctx, i):
+        result = i.exp()
+        ctx.save_for_backward(result)
+        return result
+    @staticmethod
+    def backward(ctx, grad_output):
+        result, = ctx.saved_tensors
+        return grad_output * result
+# Use it by calling the apply method:
+# 使用 Function 函数时，应调用 .apply() 函数代替 .forward() 函数；无法直接调用 .forward() 函数
+output = Exp.apply(input)
+</code></p>
 
 ```python
 class Exp(Function):
@@ -52,9 +68,9 @@ output = Exp.apply(input)
 并调用<code style="color: #B58900">.apply()</code>输出结果作为下一个执行操作的输入数据，并将<code style="color: #B58900">Function</code>实例保存在输出结果的<code style="color: #B58900">.grad_fn</code>属性上。
 而在 backward 时，首先使用<code style="color: #B58900">l.grad_fn</code>确定输出节点的<code style="color: #B58900">Function</code>实例，
 然后调用其<code style="color: #B58900">.backward()</code>计算对于输入数据的 gradient，并将 gradient 结果传递给下一个节点，
-即前一个节点的输入数据所对应的<code style="color: #B58900">Function</code>实例。重复上述操作，直到达到 DAG 的叶子节点，表明所有的 gradient 都已计算到输入数据。
+即前一个节点的输入数据所对应的<code style="color: #B58900">Function</code>实例。重复上述操作，直到达到 DAG 的叶子节点，表明 gradient 已计算到输入数据/模型参数。
 此时，将最终计算得到的 gradient 保存到其<code style="color: #B58900">.grad</code>属性中。
-因此，默认情况下，PyTorch 不保存中间计算结果的 gradient (即中间结果的<code style="color: #B58900">.grad_fn</code>属性中为<code style="color: #B58900">None</code>)。</p>
+可以看到，默认情况下，PyTorch 不保存中间计算结果的 gradient (即中间结果的<code style="color: #B58900">.grad</code>属性中为<code style="color: #B58900">None</code>)。</p>
 
 ```.backward()``` 只能对数求导，不能对向量求导。因此，对于向量 $Q$ 的求导需要添加初始梯度 ```Q.backward(gradient = init_gradient)```
 
@@ -203,4 +219,10 @@ tensors created in inference mode will not be able to be used in computations to
 |  no-grad  |                             √                             |                      ×                      |                                    √                                     |         Optimizer updates         |
 | inference |                             √                             |                      √                      |                                    ×                                     | Data processing, model evaluation |
 
+Appendix
+===
+
+1. <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">torch.autograd</code></p>
+
 ![DAG2](/images/torch_autograd_DAG2.png)
+
