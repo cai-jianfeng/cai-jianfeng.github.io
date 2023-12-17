@@ -1,5 +1,5 @@
 ---
-title: 'pytorch autograd'
+title: 'PyTorch Autograd'
 date: 23-12-15
 permalink: /posts/2023/12/blog-code-pytorch-autograd/
 tags:
@@ -72,9 +72,18 @@ $$J=\left(\begin{array}{ccc}\frac{\partial \mathbf{y}}{\partial x_1} & \cdots & 
 Computational Graph Implementation
 ===
 
+<p style="text-align:justify; text-justify:inter-ideograph;">下面的代码简单地实现了<code style="color: #B58900">torch.autograd</code>关于模型训练的过程，包括前向构建计算图并计算出模型输出；利用计算图反向传播并存储梯度。</p>
+
 ![implement](/images/torch_autograd_implement.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">Gradients for non-differentiable functions: </p>
+<p style="text-align:justify; text-justify:inter-ideograph;">下图展示了一个<code style="color: #B58900">torch.autograd</code>构建计算图的实例，其中<span style="color: yellow">黄色</span>节点表示无需计算梯度的输入数据；
+<span style="color: green">绿色</span>节点表示计算图的叶子节点对应的数据；<span style="color: saddlebrown">褐色</span>节点表示中间计算节点所对应的数据；
+<span style="color: blue">蓝色</span>节点表示<code style="color: #B58900">torch.autograd</code>构建的计算图：
+
+![DAG2](/images/torch_autograd_DAG2.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">torch.autograd</code>理论上需要可微函数才能计算梯度，但是并不是所有的函数在其定义域内都是可微的，例如 $ReLU$ 在 $x=0$ 时不可微。
+为此，PyTorch 使用如下的优先级来计算不可微函数的梯度: </p>
 
 1. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is differentiable and thus a gradient exists at the current point, use it.</p>
 2. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is convex (at least locally), use the sub-gradient of minimum norm (it is the steepest descent direction).</p>
@@ -82,8 +91,6 @@ Computational Graph Implementation
 4. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is defined, define the gradient at the current point by continuity (note that inf is possible here, for example for sqrt(0)). If multiple values are possible, pick one arbitrarily.</p>
 5. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is not defined (sqrt(-1), log(-1) or most functions when the input is NaN, for example) then the value used as the gradient is arbitrary (we might also raise an error but that is not guaranteed). Most functions will use NaN as the gradient, but for performance reasons, some functions will use other values (log(-1), for example).</p>
 6. <p style="text-align:justify; text-justify:inter-ideograph;">If the function is not a deterministic mapping (i.e. it is not a mathematical function), it will be marked as non-differentiable. This will make it error out in the backward if used on tensors that require grad outside of a no_grad environment.</p>
-
-![DAG2](/images/torch_autograd_DAG2.png)
 
 Torch Grad Mode
 ===
