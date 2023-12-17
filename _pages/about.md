@@ -41,3 +41,20 @@ Studying
 Skills
 ======
 <p style="text-align:justify; text-justify:inter-ideograph;">Programming Capability | Innovation and Creativity | Team-Work Ability</p>
+
+Blog Posts
+======
+
+<ul><li><a href="https://cai-jianfeng.github.io/posts/2023/09/blog-post-graduate-interview-experience/" target="_blank">保研经验分享(夏令营+预推免)</a></li>
+<li><a href="https://cai-jianfeng.github.io/posts/2023/10/blog-latex-basic/" target="_blank">latex 基础知识</a></li>
+<li><a href="https://cai-jianfeng.github.io/posts/2023/10/blog-latex-basic-2/" target="_blank">latex 基础知识2</a></li>
+<li><a href="https://cai-jianfeng.github.io/posts/2023/11/blog-ssd-replacement/" target="_blank">笔记本电脑固态硬盘更换扩容</a></li>
+<li><a href="https://cai-jianfeng.github.io/posts/2023/11/blog-diffusion-model/" target="_blank">The Basic Knowledge of Diffusion Model (DM)</a></li>
+<li><a href="https://cai-jianfeng.github.io/posts/2023/11/blog-improved-diffusion-model/" target="_blank">The Advanced Knowledge of Diffusion Model (DM)</a></li>
+<li><a href="https://cai-jianfeng.github.io/posts/2023/11/blog-score-based-generative-model/" target="_blank">The Basic Knowledge of Scored-based Generative Model</a></li>
+<li><a href="https://cai-jianfeng.github.io/posts/2023/11/blog-NLP-basic-knowledge" target="_blank">The Basic Knowledge of NLP</a></li>
+<li><a href="https://cai-jianfeng.github.io/posts/2023/12/blog-em_algorithm" target="_blank">The Basic Knowledge of Expectation Maximization Algorithm</a></li>
+<li><a href="https://cai-jianfeng.github.io/posts/2023/12/blog-llm" target="_blank">The Basic Knowledge of LLM</a></li>
+<li><a href="https://cai-jianfeng.github.io/post/2023/12/blog-hardware" target="_blank">The Basic Knowledge of Computer Hardware</a></li>
+<li><a href="https://cai-jianfeng.github.io/posts/2023/12/blog-code-pytorch-distributed/" target="_blank">PyTorch Distributed</a></li>
+<li><a href="https://cai-jianfeng.github.io/posts/2023/12/blog-code-pytorch-autograd/" target="_blank">PyTorch Autograd</a></li></ul>
