@@ -170,15 +170,34 @@ DataParallel Code Implementation
 在 DDP 中需要指定模型所使用的 GPU <code style="color: #B58900">device_ids</code>，每个 GPU 在各自的主机内都是从 $0$ 开始命名。
 一般而言，每个进程都使用一个 GPU，则每个模型也使用一个 GPU，这时可以使用 $local\ rank$ 来表示<code style="color: #B58900">device_ids</code>，即<code style="color: #B58900">device_ids=local_rank</code>。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">最后，需要在每个主机上启动多进程的代码，主要包括<b><code style="color: #B58900">torch.multiprocessing</code></b>和<b><code style="color: #B58900">torch.distributed.launch</code></b> $2$ 种启动方式。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">最后，需要在每个主机上启动多进程的代码，主要包括<b><code style="color: #B58900">torch.multiprocessing</code></b>、<b><code style="color: #B58900">torch.distributed.launch</code></b>和<b><code style="color: #B58900">torchrun</code></b> $3$ 种启动方式。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">假设使用<code style="color: #B58900">gloo</code>后端数据传输模式，<b>env</b>通信方式的初始化，则使用<code style="color: #B58900">torch.multiprocessing</code>启动的代码为：</p>
 
 ![torch DDP init_processgroup](/images/torch_DDP_init_processgroup.png)
 
+![torch DDP multiprocessing](/images/torch_DDP_multiprocessing.png)
+
 <p style="text-align:justify; text-justify:inter-ideograph;">使用<code style="color: #B58900">torch.distributed.launch</code>启动的代码为：</p>
 
 ![torch DDP launch](/images/torch_DDP_launch.png)
+
+![torch DDP launch2](/images/torch_DDP_launch2.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">使用<code style="color: #B58900">torchrun</code>启动的代码为：</p>
+
+![torch DDP torchrun](/images/torch_DDP_torchrun.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">保存模型参数：当使用DDP时，一种优化是将仅保存一个进程的模型参数，然后需要使用时将其加载到所有进程中，以减少写入开销。
+因为所有进程都从相同的参数开始，并且梯度在反向传递中是同步的，因此优化器应该将参数设置为相同的值，即所有进程的模型参数是一致的。
+使用此方法需要确保在模型参数保存完成之前没有进程开始加载。此外，在加载模型时，需要提供适当的<code style="color: #B58900">map_location</code>参数，以防止进程进入其他进程的 GPU。
+如果缺少<code style="color: #B58900">map_location</code>，则<code style="color: #B58900">torch.load</code>首先将模块加载到 CPU，然后将每个参数复制到保存它时的 GPU 上，这将导致同一机器上的所有进程使用同一个 GPU。</p>
+
+![torch DDP save model](/images/torch_DDP_savemodel.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">将 DDP 与 MP (Model Parallel) 结合起来，即可实现更加大型的模型训练：</p>
+
+![torch DDP + MP](/images/torch_DDP_MP.png)
 
 Appendix
 ===
