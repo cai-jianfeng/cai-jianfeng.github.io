@@ -1,5 +1,5 @@
 ---
-title: 'PyTorch Autograd'
+title: 'The Basic Knowledge of PyTorch Autograd'
 date: 23-12-15
 permalink: /posts/2023/12/blog-code-pytorch-autograd/
 tags:
