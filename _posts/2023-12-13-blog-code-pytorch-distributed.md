@@ -107,7 +107,33 @@ PyTorch 实现了 <b>no_sync()</b> 来满足这种情况。在使用 hook 的情
 Code Implementation
 ===
 
+## DataParallel (DP)
 
+<p style="text-align:justify; text-justify:inter-ideograph;">PyTorch 的 DP 实现非常简单，只需要在模型构建后使用<code style="color: #B58900">nn.DataParallel</code>对其进行包装(warp)即可。如下所示：</p>
+
+![torch_DP](/images/torch_DP_code.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在使用 DP 包装模型后，模型的属性(例如自定义方法)变得不可访问。
+这是因为 DP 中相对于原本的模型定义了一些新成员，而此时如果允许使用模型自定义属性可能会导致它们的名称和 DP 中定义的成员名称发生冲突。
+如果仍然想要访问属性，解决方法是使用如下所示 DataParallel 的子类来包装模型：</p>
+
+![torch_DP_attribute](/images/torch_DP_attribute.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">DP 模型的具体实现方式较为简单，它使用<code style="color: #B58900">cuda:0</code>作为通讯设备：在每次训练迭代时：</p>
+
+1. <p style="text-align:justify; text-justify:inter-ideograph;">首先使用<code style="color: #B58900">replicate</code>将<code style="color: #B58900">cuda:0</code>的模型复制到其他<code style="color: #B58900">cuda</code>上；</p>
+
+2. <p style="text-align:justify; text-justify:inter-ideograph;">然后使用<code style="color: #B58900">scatter</code>将输入数据沿第一维度(batch 维度)划分到各个<code style="color: #B58900">cuda</code>上；</p>
+
+3. <p style="text-align:justify; text-justify:inter-ideograph;">接着使用<code style="color: #B58900">parallel_apply</code>在各个<code style="color: #B58900">cuda</code>上执行模型针对给定数据的前向过程，输出各自的结果，并进行反向传播计算梯度；</p>
+
+4. <p style="text-align:justify; text-justify:inter-ideograph;">然后使用<code style="color: #B58900">gather</code>收集各个<code style="color: #B58900">cuda</code>上的模型梯度到<code style="color: #B58900">cuda:0</code>，并将其沿第一维度进行 concat。</p>
+
+5. <p style="text-align:justify; text-justify:inter-ideograph;">最后在<code style="color: #B58900">cuda:0</code>上使用优化器针对收集到的梯度进行更新模型参数。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">使用 PyTorch 自带的 MPI 语句，可以如下所示简单实现 DP：</p>
+
+![torch_DP_implement](/images/torch_DP_implement.png)
 
 References
 ===
