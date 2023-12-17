@@ -245,3 +245,5 @@ References
 11. [Torch Distributed Elastic Quickstart](https://pytorch.org/docs/stable/elastic/quickstart.html)
 
 12. [Saving and Loading Models](https://pytorch.org/tutorials/beginner/saving_loading_models.html)
+
+13. [All_Reduce 原理](https://tech.preferred.jp/en/blog/technologies-behind-distributed-deep-learning-allreduce/)

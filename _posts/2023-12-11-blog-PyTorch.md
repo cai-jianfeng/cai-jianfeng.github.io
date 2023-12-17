@@ -87,7 +87,3 @@ world_size = int(os.environ["WORLD_SIZE"])
 addr = os.environ["MASTER_ADDR"]
 port = os.environ["MASTER_PORT"]
 ```
-
-[```all_reduce```原理](https://tech.preferred.jp/en/blog/technologies-behind-distributed-deep-learning-allreduce/)
-
-[保存和加载模型](https://pytorch.org/tutorials/beginner/saving_loading_models.html)
