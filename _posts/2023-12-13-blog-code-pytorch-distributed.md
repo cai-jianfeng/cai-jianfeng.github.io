@@ -1,5 +1,5 @@
 ---
-title: 'pytorch distributed'
+title: 'PyTorch Distributed'
 date: 23-12-13
 permalink: /posts/2023/12/blog-code-pytorch-distributed/
 tags:
