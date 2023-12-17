@@ -56,5 +56,5 @@ Selected Blog Posts
 <li><a href="https://cai-jianfeng.github.io/posts/2023/12/blog-em_algorithm" target="_blank">The Basic Knowledge of Expectation Maximization Algorithm</a></li>
 <li><a href="https://cai-jianfeng.github.io/posts/2023/12/blog-llm" target="_blank">The Basic Knowledge of LLM</a></li>
 <li><a href="https://cai-jianfeng.github.io/post/2023/12/blog-hardware" target="_blank">The Basic Knowledge of Computer Hardware</a></li>
-<li><a href="https://cai-jianfeng.github.io/posts/2023/12/blog-code-pytorch-distributed/" target="_blank">PyTorch Distributed</a></li>
-<li><a href="https://cai-jianfeng.github.io/posts/2023/12/blog-code-pytorch-autograd/" target="_blank">PyTorch Autograd</a></li></ul>
+<li><a href="https://cai-jianfeng.github.io/posts/2023/12/blog-code-pytorch-distributed/" target="_blank">The Basic Knowledge of PyTorch Distributed</a></li>
+<li><a href="https://cai-jianfeng.github.io/posts/2023/12/blog-code-pytorch-autograd/" target="_blank">The Basic Knowledge of PyTorch Autograd</a></li></ul>
