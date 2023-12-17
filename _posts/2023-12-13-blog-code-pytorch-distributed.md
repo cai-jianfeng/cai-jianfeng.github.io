@@ -161,7 +161,7 @@ DataParallel Code Implementation
     
     3. <p style="text-align:justify; text-justify:inter-ideograph;">对于<b>环境变量(env)</b>的通信方式，其与 TCP 的通信方式相似，都是以<code style="color: #B58900">rank 0</code>作为通信主机，不过该方法是从环境变量中读取配置，从而允许完全自定义获取信息的方式。要设置的变量有:
 
-        <p style="text-align:justify; text-justify:inter-ideograph;">MASTER_PORT：<code style="color: #B58900">rank 0</code>的可用端口，默认 $29500$；</p>
+        <p style="text-align:justify; text-justify:inter-ideograph;">MASTER_PORT：<code style="color: #B58900">rank 0</code>的可用端口，默认 $29400$；</p>
         <p style="text-align:justify; text-justify:inter-ideograph;">MASTER_ADDR：<code style="color: #B58900">rank 0</code>的地址，默认 $localhost$；</p>
         <p style="text-align:justify; text-justify:inter-ideograph;">WORLD_SIZE：所有节点的进程的数量之和(也可在<code style="color: #B58900">init_process_group</code>中设置)；</p>
         <p style="text-align:justify; text-justify:inter-ideograph;">RANK：每个进程在全局进程中的位置(也可在<code style="color: #B58900">init_process_group</code>中设置)。</p>
@@ -195,9 +195,20 @@ DataParallel Code Implementation
 
 ![torch DDP save model](/images/torch_DDP_savemodel.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">将 DDP 与 MP (Model Parallel) 结合起来，即可实现更加大型的模型训练：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">将 DDP 与 MP (Model Parallel) 结合起来，即可实现更加大型的模型训练。
+如下所示，假设 MP 的 GPU 数为 $2$，则<code style="color: #B58900">world_size</code>$=$所有 node 的 GPU 数 $/2$，
+然后使用<code style="color: #B58900">rank</code>来标记当前的 GPU 组数，即第 $rank$ 个进程的 MP 使用的 GPU 为 $[rank, rank+1$。
+需要注意的是，由于模型使用的是 MP，即 multi-device，因此<code style="color: #B58900">DDP</code>中的<code style="color: #B58900">device_ids</code>参数不能设置，只能使用默认值<code style="color: #B58900">None</code>；
+且模型的输入数据必须显式将其设置到指定的 device 上：<code style="color: #B58900">x=x.to(self.dev0)</code>。</p>
 
 ![torch DDP + MP](/images/torch_DDP_MP.png)
+
+Conclusion
+===
+
+<p style="text-align:justify; text-justify:inter-ideograph;">因此，一个 DDP + MP 的 PyTorch 实现框架如下：</p>
+
+![torch DDP + MP architecture](/images/torch_DDP_MP_architecture.png)
 
 Appendix
 ===
