@@ -232,3 +232,5 @@ References
 10. [Torch Distributed Elastic](https://pytorch.org/docs/stable/distributed.elastic.html)
 
 11. [Torch Distributed Elastic Quickstart](https://pytorch.org/docs/stable/elastic/quickstart.html)
+
+12. [Saving and Loading Models](https://pytorch.org/tutorials/beginner/saving_loading_models.html)
