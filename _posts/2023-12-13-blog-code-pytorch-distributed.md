@@ -202,7 +202,7 @@ DataParallel Code Implementation
 Appendix
 ===
 
-<p style="text-align:justify; text-justify:inter-ideograph;">Data Parallelism 运用在序列数据上的差异，即在使用 DP 或 data_parallel() 的模型中使用 <b>打包序列 $\rightarrow$ 循环网络 $\rightarrow$ 解包序列</b> 的模式有一个不同之处：
+1. <p style="text-align:justify; text-justify:inter-ideograph;">Data Parallelism 运用在序列数据上的差异，即在使用 DP 或 data_parallel() 的模型中使用 <b>打包序列 $\rightarrow$ 循环网络 $\rightarrow$ 解包序列</b> 的模式有一个不同之处：
 每个设备上的forward()的输入将只是整个输入的一部分。因为解包操作<code style="color: #B58900">torch.nn.utils.rnn.pad_packed_sequence()</code>默认情况下只填充到它看到的最长输入，
 即当前设备上最长的输入(而且有可能每个设备上的最长输出的长度不一致)，所以当输出结果聚集在一起时将发生长度不匹配，无法 concat。
 为此，可以利用<code style="color: #B58900">pad_packed_sequence()</code>的<code style="color: #B58900">total_length</code>参数来确保 forward() 调用返回相同长度的序列，如下所示：</p>
