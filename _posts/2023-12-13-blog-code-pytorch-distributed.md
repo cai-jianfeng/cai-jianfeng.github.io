@@ -8,6 +8,9 @@ tags:
 
 <p style="text-align:justify; text-justify:inter-ideograph;">这篇博客主要介绍了 LLM 分布式并行的训练方式，并着重讲解了 PyTorch 代码的实现 DDP 的方式。</p>
 
+LLM Train Overview
+===
+
 <p style="text-align:justify; text-justify:inter-ideograph;">Large Language Model 的训练需要众多 GPU 或其他 AI accumulator 的联合训练(即 GPU 集群)。
 通过将不同维度分布到 GPUs 上，可以实现不同的并行训练方式。
 具体而言，主要包括 <b>Data Parallelism</b>、<b>Pipeline Parallelism</b>、<b>Tensor Parallelism</b> 和 <b>Expert Parallelism</b>。</p>
@@ -104,7 +107,7 @@ PyTorch 实现了 <b>no_sync()</b> 来满足这种情况。在使用 hook 的情
 
 ![torch_code](/images/paper_torch_example.png)
 
-Code Implementation
+DataParallel Code Implementation
 ===
 
 ## DataParallel (DP)
@@ -135,6 +138,27 @@ Code Implementation
 
 ![torch_DP_implement](/images/torch_DP_implement.png)
 
+## Distributed Data Parallel (DDP)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">通常而言，将每个主机称为 <b>node</b>；每个主机上运行的进程数称为 <b>Local World Size (L)</b>；所有主机上运行的进程之和称为 <b>World Size (W)</b>。
+每个进程需要 $2$ 个 IDs 来识别：一个是它在全局进程中的位置 $global\ rank \in [0, W - 1]$，另一个是它在主机内的进程中的位置 $local\ rank \in [0,L-1]$。
+关于每个进程的 GPU 数，一个经验法则是一个进程对应一个 GPU。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">如 <b>Data Parallelism (DP) $\rightarrow$ Distributed Data Parallelism (DDP)</b> 中所述，DDP 使用多个进程实现。
+因此，首先需要初始化进程组：<code style="color: #B58900">dist.init_process_group</code>。它包括多个需要设置的参数：</p>
+
+- <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">backend</code>：后端数据传输的模式，一般情况下 multi-CPU 使用<code style="color: #B58900">gloo</code>，multi-GPU 使用<code style="color: #B58900">nccl</code>；而<code style="color: #B58900">mpi</code>需要额外的下载配置，即 mpi 需要现在主机上配置好 mpi 通信，然后使用 PyTorch 源码包进行编译。</p>
+
+- <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">world_size</code>：所有节点的进程的数量之和，即进程组内的进程数量。</p>
+
+- <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">rank</code>：每个进程在全局进程中的位置 $\in [0, world\_size-1]$。</p>
+
+- <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">init_method</code>：后端的通信方式，包括<b>使用共享文件</b>、<b>使用网络</b>等。它是一个 URL 的形式，对于不同的通信方式的格式不同：</p>
+
+- 1. <p style="text-align:justify; text-justify:inter-ideograph;">对于 <b>TCP</b> 的通信方式，其格式为<code style="color: #B58900">tcp://rank 0 主机的地址:端口</code>。这种初始化方式使用<code style="color: #B58900">rank 0</code>作为通信主机，并且需要指定<code style="color: #B58900">rank</code>和<code style="color: #B58900">world_size</code>参数。</p>
+    
+- 2. 
+    
 Appendix
 ===
 
@@ -154,3 +178,5 @@ References
 3. [pytorch DDP overview](https://pytorch.org/tutorials/beginner/dist_overview.html)
 
 4. [all reduce theory](https://tech.preferred.jp/en/blog/technologies-behind-distributed-deep-learning-allreduce/)
+
+5. [init_method 定义的 GPU 之间的通信模式](https://pytorch.org/docs/stable/distributed.html#tcp-initialization)
