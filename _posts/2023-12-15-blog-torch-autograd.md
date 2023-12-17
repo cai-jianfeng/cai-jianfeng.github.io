@@ -142,6 +142,8 @@ tensors created in inference mode will not be able to be used in computations to
 
 <p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
 Appendix
 ===
 
@@ -163,7 +165,7 @@ Appendix
 
 - <p style="text-align:justify; text-justify:inter-ideograph;">using the chain rule, propagates all the way to the leaf tensors. </p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">DAGs are dynamic in PyTorch. An important thing to note is that the graph is recreated from scratch; after each <code style="color: #B58900">.backward() call</code>, 
+<p style="text-align:justify; text-justify:inter-ideograph;">DAGs are dynamic in PyTorch. An important thing to note is that the graph is recreated from scratch; after each <code style="color: #B58900">.backward()</code> call, 
 autograd starts populating a new graph.</p>
 
 ## torch.autograd.Function
