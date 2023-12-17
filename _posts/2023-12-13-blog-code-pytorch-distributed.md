@@ -220,3 +220,15 @@ References
 4. [all reduce theory](https://tech.preferred.jp/en/blog/technologies-behind-distributed-deep-learning-allreduce/)
 
 5. [init_method 定义的 GPU 之间的通信模式](https://pytorch.org/docs/stable/distributed.html#tcp-initialization)
+
+6. [Launching and configuring distributed data parallel applications](https://github.com/pytorch/examples/blob/main/distributed/ddp/README.md)
+
+7. [distributed launch.py](https://github.com/pytorch/pytorch/blob/main/torch/distributed/launch.py)
+
+8. [Getting Started with Distributed Data Parallel](https://pytorch.org/tutorials/intermediate/ddp_tutorial.html)
+
+9. [Distributed Data Parallel](https://pytorch.org/docs/master/notes/ddp.html)
+
+10. [Torch Distributed Elastic](https://pytorch.org/docs/stable/distributed.elastic.html)
+
+11. [Torch Distributed Elastic Quickstart](https://pytorch.org/docs/stable/elastic/quickstart.html)
