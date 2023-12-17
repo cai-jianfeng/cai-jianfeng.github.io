@@ -159,12 +159,13 @@ DataParallel Code Implementation
 
     2. <p style="text-align:justify; text-justify:inter-ideograph;">对于 <b>共享文件</b> 的通信方式，它利用了文件系统，这个文件系统是共享的，并且对进程组中的所有主机都是可见的，其格式为<code style="color: #B58900">file://文件系统中存在的文件名/文件(不存在)</code>。然后文件系统初始化将自动创建该文件来实现通信，但不会删除该文件。因此，需要确保在对相同的文件路径/名称进行下一次<code style="color: #B58900">init_process_group()</code>调用之前清理文件。同时，需要指定<code style="color: #B58900">rank</code>和<code style="color: #B58900">world_size</code>参数。例如：<code style="color: #B58900">dist.init_process_group(backend, init_method='file:///mnt/nfs/sharedfile', world_size=4, rank=args.rank)</code></p>
     
-    3. <p style="text-align:justify; text-justify:inter-ideograph;">对于<b>环境变量</b>的通信方式，该方法将从环境变量中读取配置，从而允许完全自定义获取信息的方式。要设置的变量有:
+    3. <p style="text-align:justify; text-justify:inter-ideograph;">对于<b>环境变量</b>的通信方式，其与 TCP 的通信方式相似，都是以<code style="color: #B58900">rank 0</code>作为通信主机，不过该方法是从环境变量中读取配置，从而允许完全自定义获取信息的方式。要设置的变量有:
 
-        - <p style="text-align:justify; text-justify:inter-ideograph;">MASTER_PORT</p>
-        - <p style="text-align:justify; text-justify:inter-ideograph;">MASTER_ADDR</p>
-        - <p style="text-align:justify; text-justify:inter-ideograph;">WORLD_SIZE</p>
-        - <p style="text-align:justify; text-justify:inter-ideograph;">RANK</p>
+        - <p style="text-align:justify; text-justify:inter-ideograph;">MASTER_PORT：<code style="color: #B58900">rank 0</code>的可用端口；</p>
+        - <p style="text-align:justify; text-justify:inter-ideograph;">MASTER_ADDR<code style="color: #B58900">rank 0</code>的地址；</p>
+        - <p style="text-align:justify; text-justify:inter-ideograph;">WORLD_SIZE：所有节点的进程的数量之和(也可在<code style="color: #B58900">init_process_group</code>中设置)；</p>
+        - <p style="text-align:justify; text-justify:inter-ideograph;">RANK：每个进程在全局进程中的位置(也可在<code style="color: #B58900">init_process_group</code>中设置)。</p>
+    
 Appendix
 ===
 
