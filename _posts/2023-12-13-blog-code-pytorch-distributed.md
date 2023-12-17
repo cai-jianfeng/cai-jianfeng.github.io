@@ -166,10 +166,20 @@ DataParallel Code Implementation
         <p style="text-align:justify; text-justify:inter-ideograph;">WORLD_SIZE：所有节点的进程的数量之和(也可在<code style="color: #B58900">init_process_group</code>中设置)；</p>
         <p style="text-align:justify; text-justify:inter-ideograph;">RANK：每个进程在全局进程中的位置(也可在<code style="color: #B58900">init_process_group</code>中设置)。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">举个例子，使用<code style="color: #B58900">gloo</code>后端数据传输模式，<b>env</b>通信方式的初始化代码为：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">然后需要将模型使用 DDP 进行包装(warp)：<code style="color: #B58900">ddp_model = DDP(model, device_ids=[cuda 0 ~ n])</code>，
+在 DDP 中需要指定模型所使用的 GPU <code style="color: #B58900">device_ids</code>，每个 GPU 在各自的主机内都是从 $0$ 开始命名。
+一般而言，每个进程都使用一个 GPU，则每个模型也使用一个 GPU，这时可以使用 $local\ rank$ 来表示<code style="color: #B58900">device_ids</code>，即<code style="color: #B58900">device_ids=local_rank</code>。</p>
 
+<p style="text-align:justify; text-justify:inter-ideograph;">最后，需要在每个主机上启动多进程的代码，主要包括<b><code style="color: #B58900">torch.multiprocessing</code></b>和<b><code style="color: #B58900">torch.distributed.launch</code></b> $2$ 种启动方式。</p>
 
-    
+<p style="text-align:justify; text-justify:inter-ideograph;">假设使用<code style="color: #B58900">gloo</code>后端数据传输模式，<b>env</b>通信方式的初始化，则使用<code style="color: #B58900">torch.multiprocessing</code>启动的代码为：</p>
+
+![torch DDP init_processgroup](/images/torch_DDP_init_processgroup.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">使用<code style="color: #B58900">torch.distributed.launch</code>启动的代码为：</p>
+
+![torch DDP launch](/images/torch_DDP_launch.png)
+
 Appendix
 ===
 
