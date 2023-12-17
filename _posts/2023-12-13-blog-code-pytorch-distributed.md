@@ -155,10 +155,11 @@ DataParallel Code Implementation
 
 - <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">init_method</code>：后端的通信方式，包括<b>使用共享文件</b>、<b>使用网络</b>等。它是一个 URL 的形式，对于不同的通信方式的格式不同：</p>
 
-- 1. <p style="text-align:justify; text-justify:inter-ideograph;">对于 <b>TCP</b> 的通信方式，其格式为<code style="color: #B58900">tcp://rank 0 主机的地址:端口</code>。这种初始化方式使用<code style="color: #B58900">rank 0</code>作为通信主机，并且需要指定<code style="color: #B58900">rank</code>和<code style="color: #B58900">world_size</code>参数。</p>
+    1. <p style="text-align:justify; text-justify:inter-ideograph;">对于 <b>TCP</b> 的通信方式，其格式为<code style="color: #B58900">tcp://rank 0 主机的地址:端口</code>。这种初始化方式使用<code style="color: #B58900">rank 0</code>作为通信主机，并且需要指定<code style="color: #B58900">rank</code>和<code style="color: #B58900">world_size</code>参数。</p>
+
+    2. <p style="text-align:justify; text-justify:inter-ideograph;">对于 <b>共享文件</b> 的通信方式，它利用了文件系统，这个文件系统是共享的，并且对进程组中的所有主机都是可见的，其格式为<code style="color: #B58900">file://文件系统中存在的文件名/文件(不存在)</code>。然后文件系统初始化将自动创建该文件来实现通信，但不会删除该文件。因此，需要确保在对相同的文件路径/名称进行下一次<code style="color: #B58900">init_process_group()</code>调用之前清理文件。</p>
     
-- 2. 
-    
+    3. 
 Appendix
 ===
 
