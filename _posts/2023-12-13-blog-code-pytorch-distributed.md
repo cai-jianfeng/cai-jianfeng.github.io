@@ -128,11 +128,11 @@ DataParallel Code Implementation
 
 2. <p style="text-align:justify; text-justify:inter-ideograph;">然后使用<code style="color: #B58900">scatter</code>将输入数据沿第一维度(batch 维度)划分到各个<code style="color: #B58900">cuda</code>上；</p>
 
-3. <p style="text-align:justify; text-justify:inter-ideograph;">接着使用<code style="color: #B58900">parallel_apply</code>在各个<code style="color: #B58900">cuda</code>上执行模型针对给定数据的前向过程，输出各自的结果，并进行反向传播计算梯度；</p>
+3. <p style="text-align:justify; text-justify:inter-ideograph;">接着使用<code style="color: #B58900">parallel_apply</code>在各个<code style="color: #B58900">cuda</code>上执行模型针对给定数据的前向过程，输出各自的结果；</p>
 
-4. <p style="text-align:justify; text-justify:inter-ideograph;">然后使用<code style="color: #B58900">gather</code>收集各个<code style="color: #B58900">cuda</code>上的模型梯度到<code style="color: #B58900">cuda:0</code>，并将其沿第一维度进行 concat。</p>
+4. <p style="text-align:justify; text-justify:inter-ideograph;">然后使用<code style="color: #B58900">gather</code>收集各个<code style="color: #B58900">cuda</code>上的模型输出结果到<code style="color: #B58900">cuda:0</code>，并将其沿第一维度进行 concat。</p>
 
-5. <p style="text-align:justify; text-justify:inter-ideograph;">最后在<code style="color: #B58900">cuda:0</code>上使用优化器针对收集到的梯度进行更新模型参数。</p>
+5. <p style="text-align:justify; text-justify:inter-ideograph;">最后，在<code style="color: #B58900">cuda:0</code>上使用整个输入数据和输出结果进行反向传播计算梯度，并使用优化器针对梯度进行更新模型参数。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">使用 PyTorch 自带的 MPI 语句，可以如下所示简单实现 DP：</p>
 
@@ -153,7 +153,7 @@ DataParallel Code Implementation
 
 - <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">rank</code>：每个进程在全局进程中的位置 $\in [0, world\_size-1]$。</p>
 
-- <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">init_method</code>：后端的通信方式，包括<b>使用共享文件</b>、<b>使用网络</b>等。它是一个 URL 的形式，对于不同的通信方式的格式不同，其中默认的方式为<b>env</b>：</p>
+- <p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">init_method</code>：后端的通信方式，包括<b>使用共享文件</b>、<b>使用网络</b>等。它是一个 URL 的形式，对于不同的通信方式的格式不同，其中默认的方式为 <b>env</b>：</p>
 
     1. <p style="text-align:justify; text-justify:inter-ideograph;">对于 <b>TCP</b> 的通信方式，其格式为<code style="color: #B58900">tcp://rank 0 主机的地址:端口</code>。这种初始化方式使用<code style="color: #B58900">rank 0</code>作为通信主机，并且需要指定<code style="color: #B58900">rank</code>和<code style="color: #B58900">world_size</code>参数。例如：<code style="color: #B58900">dist.init_process_group(backend, init_method='tcp://10.1.1.20:23456',rank=args.rank, world_size=4)</code></p>
 
@@ -161,18 +161,18 @@ DataParallel Code Implementation
     
     3. <p style="text-align:justify; text-justify:inter-ideograph;">对于<b>环境变量(env)</b>的通信方式，其与 TCP 的通信方式相似，都是以<code style="color: #B58900">rank 0</code>作为通信主机，不过该方法是从环境变量中读取配置，从而允许完全自定义获取信息的方式。要设置的变量有:
 
-        <p style="text-align:justify; text-justify:inter-ideograph;">MASTER_PORT：<code style="color: #B58900">rank 0</code>的可用端口；</p>
-        <p style="text-align:justify; text-justify:inter-ideograph;">MASTER_ADDR<code style="color: #B58900">rank 0</code>的地址；</p>
+        <p style="text-align:justify; text-justify:inter-ideograph;">MASTER_PORT：<code style="color: #B58900">rank 0</code>的可用端口，默认 $29500$；</p>
+        <p style="text-align:justify; text-justify:inter-ideograph;">MASTER_ADDR：<code style="color: #B58900">rank 0</code>的地址，默认 $localhost$；</p>
         <p style="text-align:justify; text-justify:inter-ideograph;">WORLD_SIZE：所有节点的进程的数量之和(也可在<code style="color: #B58900">init_process_group</code>中设置)；</p>
         <p style="text-align:justify; text-justify:inter-ideograph;">RANK：每个进程在全局进程中的位置(也可在<code style="color: #B58900">init_process_group</code>中设置)。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">然后需要将模型使用 DDP 进行包装(warp)：<code style="color: #B58900">ddp_model = DDP(model, device_ids=[cuda 0 ~ n])</code>，
 在 DDP 中需要指定模型所使用的 GPU <code style="color: #B58900">device_ids</code>，每个 GPU 在各自的主机内都是从 $0$ 开始命名。
-一般而言，每个进程都使用一个 GPU，则每个模型也使用一个 GPU，这时可以使用 $local\ rank$ 来表示<code style="color: #B58900">device_ids</code>，即<code style="color: #B58900">device_ids=local_rank</code>。</p>
+一般而言，每个进程都使用一个 GPU，则每个模型也使用一个 GPU，这时可以使用 $local\ rank$ 来表示<code style="color: #B58900">device_ids</code>，即<code style="color: #B58900">device_ids=[local_rank]</code>。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">最后，需要在每个主机上启动多进程的代码，主要包括<b><code style="color: #B58900">torch.multiprocessing</code></b>、<b><code style="color: #B58900">torch.distributed.launch</code></b>和<b><code style="color: #B58900">torchrun</code></b> $3$ 种启动方式。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">假设使用<code style="color: #B58900">gloo</code>后端数据传输模式，<b>env</b>通信方式的初始化，则使用<code style="color: #B58900">torch.multiprocessing</code>启动的代码为：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">假设使用<code style="color: #B58900">gloo</code>后端数据传输模式，<b>env</b> 通信方式的初始化，则使用<code style="color: #B58900">torch.multiprocessing</code>启动的代码为：</p>
 
 ![torch DDP init_processgroup](/images/torch_DDP_init_processgroup.png)
 
