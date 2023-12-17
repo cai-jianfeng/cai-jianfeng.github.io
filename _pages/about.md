@@ -42,7 +42,7 @@ Skills
 ======
 <p style="text-align:justify; text-justify:inter-ideograph;">Programming Capability | Innovation and Creativity | Team-Work Ability</p>
 
-Blog Posts
+Selected Blog Posts
 ======
 
 <ul><li><a href="https://cai-jianfeng.github.io/posts/2023/09/blog-post-graduate-interview-experience/" target="_blank">保研经验分享(夏令营+预推免)</a></li>
