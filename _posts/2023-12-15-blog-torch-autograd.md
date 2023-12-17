@@ -76,9 +76,9 @@ Computational Graph Implementation
 
 ![implement](/images/torch_autograd_implement.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">下图展示了一个<code style="color: #B58900">torch.autograd</code>构建计算图的实例，其中<span style="color: yellow">黄色</span>节点表示无需计算梯度的输入数据；
+<p style="text-align:justify; text-justify:inter-ideograph;">下图展示了一个<code style="color: #B58900">torch.autograd</code>构建计算图的实例，其中<span style="color: #B58900">黄色</span>节点表示无需计算梯度的输入数据；
 <span style="color: green">绿色</span>节点表示计算图的叶子节点对应的数据；<span style="color: saddlebrown">褐色</span>节点表示中间计算节点所对应的数据；
-<span style="color: blue">蓝色</span>节点表示<code style="color: #B58900">torch.autograd</code>构建的计算图：
+<span style="color: blue">蓝色</span>节点表示<code style="color: #B58900">torch.autograd</code>构建的计算图：</p>
 
 ![DAG2](/images/torch_autograd_DAG2.png)
 
