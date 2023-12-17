@@ -34,21 +34,7 @@ Torch Autograd
 在<code style="color: #B58900">Function</code>类中，需要实现<code style="color: #B58900">forward</code>和<code style="color: #B58900">backward</code>函数，
 其中前者在模型前向运算时使用，而后者在 loss 后向运算时使用。以下为指数函数的<code style="color: #B58900">Function</code>类简易实现：</p>
 
-```python
-class Exp(Function):
-    @staticmethod
-    def forward(ctx, i):
-        result = i.exp()
-        ctx.save_for_backward(result)
-        return result
-    @staticmethod
-    def backward(ctx, grad_output):
-        result, = ctx.saved_tensors
-        return grad_output * result
-# Use it by calling the apply method:
-# 使用 Function 函数时，应调用 .apply() 函数代替 .forward() 函数；无法直接调用 .forward() 函数
-output = Exp.apply(input)
-```
+![exp Function](/images/torch_autograd_Function.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">而且每个执行操作<code style="color: #B58900">Function</code>实例都保存在其输出 tensor 的<code style="color: #B58900">.grad_fn</code>属性上。
 因此，PyTorch 中的模型训练范式为 forward 时，输入数据和模型参数，对于每一个执行操作，构建一个对应的<code style="color: #B58900">Function</code>实例，
@@ -179,20 +165,7 @@ When defining a custom Python Function, you can use <code style="color: #B58900"
 To create a custom <code style="color: #B58900">autograd.Function</code>>, subclass this class and implement the <code style="color: #B58900">forward()</code> and <code style="color: #B58900">backward()</code> static methods. 
 Then, to use your custom op in the forward pass, call the class method <code style="color: #B58900">apply()</code>: </p>
 
-```python
-class Exp(Function):
-    @staticmethod
-    def forward(ctx, i):
-        result = i.exp()
-        ctx.save_for_backward(result)
-        return result
-    @staticmethod
-    def backward(ctx, grad_output):
-        result, = ctx.saved_tensors
-        return grad_output * result
-# Use it by calling the apply method:
-output = Exp.apply(input)
-```
+![exp Function](/images/torch_autograd_Function.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">You can control how saved tensors are packed / unpacked by defining a pair of <code style="color: #B58900">pack_hook</code> / <code style="color: #B58900">unpack_hook</code> hooks.</p>
 
@@ -201,60 +174,20 @@ a tuple, or even a string containing a filename).
 The <code style="color: #B58900">unpack_hook</code> function takes as its single argument the output of <code style="color: #B58900">pack_hook</code> and should return a tensor to be used in the backward pass. 
 The tensor returned by <code style="color: #B58900">unpack_hook</code> only needs to have the same content as the tensor passed as input to <code style="color: #B58900">pack_hook</code>. </p>
 
-```python
-class SelfDeletingTempFile():
-    def __init__(self):
-        self.name = os.path.join(tmp_dir, str(uuid.uuid4()))
-
-    def __del__(self):
-        os.remove(self.name)
-
-def pack_hook(tensor):
-    temp_file = SelfDeletingTempFile()
-    torch.save(tensor, temp_file.name)
-    return temp_file
-
-def unpack_hook(temp_file):
-    return torch.load(temp_file.name)
-```
+![pack / unpack](/images/torch_autograd_pack.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">the <code style="color: #B58900">unpack_hook</code> should not delete the temporary file because it might be called multiple times: 
 the temporary file should be alive for as long as the returned <code style="color: #B58900">SelfDeletingTempFile</code> object is alive.
 register a pair of hooks on a saved tensor by calling the <code style="color: #B58900">register_hooks()</code> method on a SavedTensor object.</p>
 
-```python
+<p style="text-align:justify; text-justify:inter-ideograph;"><code style="color: #B58900">
 param.grad_fn._raw_saved_self.register_hooks(pack_hook, unpack_hook)
-```
+</code></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">use the context-manager <code style="color: #B58900">saved_tensors_hooks</code> to register a pair of hooks which will be applied to all saved tensors that are created in that context.
 The hooks defined with this context manager are thread-local, using those hooks disables all the optimization in place to reduce Tensor object creation.</p>
 
-```python
-# Only save on disk tensors that have size >= 1000
-SAVE_ON_DISK_THRESHOLD = 1000
-
-def pack_hook(x):
-    if x.numel() < SAVE_ON_DISK_THRESHOLD:
-        return x
-    temp_file = SelfDeletingTempFile()
-    torch.save(tensor, temp_file.name)
-    return temp_file
-
-def unpack_hook(tensor_or_sctf):
-    if isinstance(tensor_or_sctf, torch.Tensor):
-        return tensor_or_sctf
-    return torch.load(tensor_or_sctf.name)
-
-class Model(nn.Module):
-    def forward(self, x):
-        with torch.autograd.graph.saved_tensors_hooks(pack_hook, unpack_hook):
-          # ... compute output
-          output = x
-        return output
-
-model = Model()
-net = nn.DataParallel(model)
-```
+![torch pack](/images/torch_autograd_pack_DDP.png)
 
 References
 ===
