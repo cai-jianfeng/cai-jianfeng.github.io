@@ -254,7 +254,6 @@ model = Model()
 net = nn.DataParallel(model)
 ```
 
-
 References
 ===
 
