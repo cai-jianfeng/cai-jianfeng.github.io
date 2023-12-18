@@ -2,11 +2,14 @@
 title: '保研经验分享(夏令营+预推免)'
 date: 23-09-29
 permalink: /posts/2023/09/blog-post-graduate-interview-experience/
+star: superior
 tags:
   - 夏令营
   - 预推免
   - 保研
 ---
+
+<p style="text-align:justify; text-justify:inter-ideograph;">这篇博客主要介绍了我在 2023 年期间保研夏令营和预推免的经历，包括提前陶瓷，夏令营情况和预推免情况等。</p>
 
 背景介绍：
 ===
