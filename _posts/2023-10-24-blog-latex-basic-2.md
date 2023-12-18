@@ -1,5 +1,5 @@
 ---
-title: 'latex 基础知识2'
+title: 'The Basic Knowledge Of Latex 2'
 date: 23-10-24
 permalink: /posts/2023/10/blog-latex-basic-2/
 star: superior
