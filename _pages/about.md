@@ -48,6 +48,7 @@ Selected Blog Posts
 <ul>{% for post in site.posts %}
     {% if post.star == "superior" %}
         {% include archive-single-cv.html %}
+    {% endif %}
   {% endfor %}</ul>
 
 [//]: # (<ul><li><a href="https://cai-jianfeng.github.io/posts/2023/09/blog-post-graduate-interview-experience/" target="_blank">保研经验分享&#40;夏令营+预推免&#41;</a></li>)
