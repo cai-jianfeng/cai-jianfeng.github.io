@@ -2,6 +2,7 @@
 title: 'latex 基础知识2'
 date: 23-10-24
 permalink: /posts/2023/10/blog-latex-basic-2/
+star: superior
 tags:
   - 论文写作工具
 ---

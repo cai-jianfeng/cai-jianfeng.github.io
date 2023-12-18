@@ -2,6 +2,7 @@
 title: 'The Basic Knowledge of PyTorch Distributed'
 date: 23-12-13
 permalink: /posts/2023/12/blog-code-pytorch-distributed/
+star: superior
 tags:
   - 深度学习基本知识
 ---

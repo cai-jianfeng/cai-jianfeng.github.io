@@ -2,6 +2,7 @@
 title: 'The Basic Knowledge of Scored-based Generative Model'
 date: 23-11-16
 permalink: /posts/2023/11/blog-score-based-generative-model/
+star: superior
 tags:
   - 深度学习基础知识
 ---

@@ -2,6 +2,7 @@
 title: 'The Advanced Knowledge of Diffusion Model (DM)'
 date: 23-11-24
 permalink: /posts/2023/11/blog-improved-diffusion-model/
+star: superior
 tags:
   - 深度学习基础知识
 ---

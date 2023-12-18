@@ -2,6 +2,7 @@
 title: '笔记本电脑固态硬盘更换扩容'
 date: 23-11-06
 permalink: /posts/2023/11/blog-ssd-replacement/
+star: superior
 tags:
   - 电脑硬件
 ---

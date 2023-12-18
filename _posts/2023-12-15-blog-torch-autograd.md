@@ -2,6 +2,7 @@
 title: 'The Basic Knowledge of PyTorch Autograd'
 date: 23-12-15
 permalink: /posts/2023/12/blog-code-pytorch-autograd/
+star: superior
 tags:
   - 深度学习基本知识
 ---
