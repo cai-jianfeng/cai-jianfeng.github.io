@@ -47,7 +47,7 @@ Selected Blog Posts
 
 <ul>{% for post in site.posts %}
     {% if post.star == "superior" %}
-        {% include archive-single-cv.html %}
+         {% include archive-single-talk-cv.html %}
     {% endif %}
   {% endfor %}</ul>
 
