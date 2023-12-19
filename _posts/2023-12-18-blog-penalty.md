@@ -47,5 +47,9 @@ $$\Delta x = \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangl
 <p style="text-align:justify; text-justify:inter-ideograph;">回看步骤 $3$ 的对抗训练损失：$\mathcal{D}{\mathcal{L}(x+\Delta x,y;\theta)}$。
 由于 $\Delta x$ 很小，将其进行<b>泰勒一阶展开</b>可得：</p>
 
-$$\begin{align}\mathcal{D}{\mathcal{L}(x+\Delta x,y;\theta)} & = \mathcal{D}{\mathcal{L}(x,y;\theta)}+\triangledown_x\mathcal{L}(x,y;\theta)\Delta x \\
-& = \mathcal{D}{\mathcal{L}(x,y;\theta)}+\triangledown_x\mathcal{L}(x,y;\theta) \times \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||} \leftarrow \color{green}{\Delta x = \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||}}\end{align}$$
+$$\begin{align}\mathcal{L}(x+\Delta x,y;\theta) & = \mathcal{L}(x,y;\theta)+\triangledown_x\mathcal{L}(x,y;\theta)\Delta x \\
+& = \mathcal{L}(x,y;\theta)+\triangledown_x\mathcal{L}(x,y;\theta) \times \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||} \leftarrow \color{green}{\Delta x = \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||}}\end{align}$$
+
+$$\begin{align}\triangledown_\theta\mathcal{L}(x+\Delta x,y;\theta) & = \triangledown_\theta(\mathcal{L}(x,y;\theta)+\triangledown_x\mathcal{L}(x,y;\theta)\Delta x) \\
+& = \triangledown_\theta\mathcal{L}(x,y;\theta)+\triangledown_\theta\triangledown_x\mathcal{L}(x,y;\theta) \times \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||} \\
+& = \triangledown_\theta\mathcal{L}(x,y;\theta)+\triangledown_\theta(\triangledown_x\mathcal{L}(x,y;\theta) \times \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{\color{red}{||\triangledown_x \mathcal{L}(x,y;\theta)||}})\end{align}$$
