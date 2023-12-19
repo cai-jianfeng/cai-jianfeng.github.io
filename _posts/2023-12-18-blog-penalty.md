@@ -82,7 +82,7 @@ $$\begin{align}\theta_{t + \gamma} & = \theta_t + \gamma \times \theta_t' + \dfr
 & = (1  +\gamma D + \dfrac{1}{2}\gamma^2D^2 + ...)\theta_t = e^{\gamma D}\theta_t; D = \dfrac{d}{dt}\end{align}$$
 
 $$\begin{align}e^{\gamma D}\theta_t & = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \leftarrow \color{green}{\theta_{t + \gamma} = e^{\gamma D}\theta_t}; \color{green}{\theta_{t + \gamma} = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t)} \\
-(e^{\gamma D}-1)\theta_t & = - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t)
+(e^{\gamma D}-1)\theta_t & = - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
 D\theta_t = \theta_t' & = -\gamma \big(\dfrac{D}{e^{\gamma D}-1}\big) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
 & = -\big(1 - \dfrac{1}{2}\gamma D + ...) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
 & \approx -\big(1 - \dfrac{1}{2}\gamma D) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
