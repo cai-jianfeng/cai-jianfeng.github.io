@@ -41,5 +41,11 @@ $$\Delta x = \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangl
 
 1. <p style="text-align:justify; text-justify:inter-ideograph;">先使用数据集 $\mathcal{D}$ 训练一个初始模型 $\mathbf{M}_\theta: \underset{\theta}{min}{\mathcal{L}(x,y;\theta)}$;
 2. <p style="text-align:justify; text-justify:inter-ideograph;">然后对于数据集 $\mathcal{D}$ 中的每个样本 $\{x_i, y_i\}$，构造”对抗样本“  $\{x_i+\Delta x, y_i\} = \{x_i + \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||}, y_i\}$;
-3. <p style="text-align:justify; text-justify:inter-ideograph;">接着使用构造的”对抗样本“继续训练模型 $\mathbf{M}_\theta = \underset{\theta}{min}\mathbb{E}_{(x,y) \sim \mathcal{D}}\underset{\Delta x \in \Omega; ||\Delta x|| \leq \epsilon}{max}{\mathcal{L}(x+\Delta x,y;\theta)}$;
+3. <p style="text-align:justify; text-justify:inter-ideograph;">接着使用构造的”对抗样本“继续训练模型 $\mathbf{M}_\theta = \underset{\theta}{min}\mathbb{E}_{(x,y) \sim \mathcal{D}}{\mathcal{L}(x+\Delta x,y;\theta)}$;
 4. <p style="text-align:justify; text-justify:inter-ideograph;">循环 $2,3$ 步直至收敛。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">回看步骤 $3$ 的对抗训练损失：$\mathcal{D}}{\mathcal{L}(x+\Delta x,y;\theta)}$。
+由于 $\Delta x$ 很小，将其进行<b>泰勒一阶展开</b>可得：</p>
+
+$$\begin{align}\mathcal{D}}{\mathcal{L}(x+\Delta x,y;\theta)} & = \mathcal{D}}{\mathcal{L}(x,y;\theta)}+\triangledown_x\mathcal{L}(x,y;\theta)\Delta x \\
+& = \mathcal{D}}{\mathcal{L}(x,y;\theta)}+\triangledown_x\mathcal{L}(x,y;\theta) \times \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||} \leftarrow \color{green}{\Delta x = \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||}}\end{align}$$
