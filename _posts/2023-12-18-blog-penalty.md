@@ -89,7 +89,8 @@ $$e^{\gamma D}\theta_t = \theta_{t} - \gamma \times \triangledown_\theta\mathcal
 & = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t' \leftarrow \color{red}{\dfrac{d}{dt}{\triangledown_\theta\mathcal{L}(·,·;\theta_t)} = \dfrac{d}{d\theta}{\triangledown_\theta\mathcal{L}(·,·;\theta_t)} \times \dfrac{d}{dt}\theta_t}\\
 & = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\big[\color{green}{-\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t'}\big] \\
 & = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \leftarrow \color{red}{\dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t'} \times \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t'} \approx 0}\\
-& = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2 \end{align}$$
+& = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2 \end{align} \\
+- \tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t)} = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2 \leftarrow \color{green}{\dfrac{d\theta_t}{dt}) = - \tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t)}$$
 
 References
 ===
