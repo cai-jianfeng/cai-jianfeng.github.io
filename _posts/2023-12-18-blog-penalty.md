@@ -44,8 +44,8 @@ $$\Delta x = \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangl
 3. <p style="text-align:justify; text-justify:inter-ideograph;">接着使用构造的”对抗样本“继续训练模型 $\mathbf{M}_\theta = \underset{\theta}{min}\mathbb{E}_{(x,y) \sim \mathcal{D}}{\mathcal{L}(x+\Delta x,y;\theta)}$;
 4. <p style="text-align:justify; text-justify:inter-ideograph;">循环 $2,3$ 步直至收敛。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">回看步骤 $3$ 的对抗训练损失：$\mathcal{D}}{\mathcal{L}(x+\Delta x,y;\theta)}$。
+<p style="text-align:justify; text-justify:inter-ideograph;">回看步骤 $3$ 的对抗训练损失：$\mathcal{D}{\mathcal{L}(x+\Delta x,y;\theta)}$。
 由于 $\Delta x$ 很小，将其进行<b>泰勒一阶展开</b>可得：</p>
 
-$$\begin{align}\mathcal{D}}{\mathcal{L}(x+\Delta x,y;\theta)} & = \mathcal{D}}{\mathcal{L}(x,y;\theta)}+\triangledown_x\mathcal{L}(x,y;\theta)\Delta x \\
-& = \mathcal{D}}{\mathcal{L}(x,y;\theta)}+\triangledown_x\mathcal{L}(x,y;\theta) \times \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||} \leftarrow \color{green}{\Delta x = \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||}}\end{align}$$
+$$\begin{align}\mathcal{D}{\mathcal{L}(x+\Delta x,y;\theta)} & = \mathcal{D}{\mathcal{L}(x,y;\theta)}+\triangledown_x\mathcal{L}(x,y;\theta)\Delta x \\
+& = \mathcal{D}{\mathcal{L}(x,y;\theta)}+\triangledown_x\mathcal{L}(x,y;\theta) \times \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||} \leftarrow \color{green}{\Delta x = \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||}}\end{align}$$
