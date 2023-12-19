@@ -64,11 +64,11 @@ $$\begin{align}\triangledown_\theta\mathcal{L}(x+\Delta x,y;\theta) & = \triangl
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>参数梯度惩罚</b>：我们在训练模型参数时，一般通过梯度下降法进行学习，即 $\theta_{i+1} = \theta_i - \gamma\triangledown_\theta\mathcal{L}(·,·;\theta_i)$。
 如果 $\gamma$ 足够小，则 $\theta$ 的更新近似与在连续时间 $t$ 上，即 $\theta(t)$。在此基础上，将原始损失函数 $\mathcal{\mathcal{L}(·,·;\theta(t))}$ 对 $t$ 进行求导，并使用<b>一阶泰勒展开</b>可得：</p>
 
-$$\frac{d}{dt}{\mathcal{\mathcal{L}(·,·;\theta(t))}} = \triangledown_\theta\mathcal{L}(·,·;\theta(t)) \times \dfrac{d\theta}{dt}$$
+$$\frac{d}{dt}{\mathcal{\mathcal{L}(·,·;\theta(t))}} = \tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta(t)) \times \dfrac{d\theta_t}{dt}$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">我们希望损失函数 $\mathcal{L}$ 关于 $t$ 的下降最快，在 $\theta_t'=\dfrac{d\theta}{dt}$ 的模长固定的情况下，即取梯度负方向进行计算可以使得 $\frac{d}{dt}{\mathcal{\mathcal{L}(·,·;\theta(t))}}$ 最大，即：</p>
 
-$$\dfrac{d\theta}{dt} = - \triangledown_\theta\mathcal{L}(·,·;\theta(t)) \leftarrow \underset{\dfrac{d\theta}{dt}}{max}\frac{d}{dt}{\mathcal{\mathcal{L}(·,·;\theta(t))}}$$
+$$\dfrac{d\theta_t}{dt} = - \triangledown_\theta\mathcal{L}(·,·;\theta(t)) \leftarrow \underset{\theta_t'}{max}\frac{d}{dt}{\mathcal{\mathcal{L}(·,·;\theta(t))}}$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">因此，只需求解上述的常微分方程，即可求解得到最优值的 $\theta$。求解常微分方程最常用的方法即是常微分求解器，它们的主要思路都是通过将常微分方程转化为差分方程进行逐步迭代的方法来近似最优解。
 以最简单的欧拉求解器为例，其迭代公式为：</p>
@@ -76,7 +76,8 @@ $$\dfrac{d\theta}{dt} = - \triangledown_\theta\mathcal{L}(·,·;\theta(t)) \left
 $$\theta_{t + \gamma} = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t)$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">但是与原始常微分方程的最优解相比差分方程求解得到的最优解与其有一定的偏差，减轻这种偏差的最直接的方法是利用差分方程求解得到的最优解的前提下，
-反向加上偏差来将得到原始常微分方程的最优解。那么偏差是多少？将 $\theta_{t+\gamma}$ 进行泰勒展开：</p>
+反向加上偏差来得到原始常微分方程的最优解。由于常微分方程和差分方程都是利用梯度进行计算，因此只需求解梯度的偏差即可，
+即 $\tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta(t))$ 与 $\triangledown_\theta\mathcal{L}(·,·;\theta_t)$ 的偏差。那么偏差如何计算？将 $\theta_{t+\gamma}$ 进行泰勒展开：</p>
 
 $$\begin{align}\theta_{t + \gamma} & = \theta_t + \gamma \times \theta_t' + \dfrac{1}{2} \gamma^2 \times \theta_t'' + ... \\
 & = (1  +\gamma D + \dfrac{1}{2}\gamma^2D^2 + ...)\theta_t = e^{\gamma D}\theta_t; D = \dfrac{d}{dt}\end{align}$$
