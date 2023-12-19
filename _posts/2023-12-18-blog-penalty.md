@@ -40,6 +40,6 @@ $$\Delta x = \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangl
 <p style="text-align:justify; text-justify:inter-ideograph;">因此，对抗训练的最终算法如下：</p>
 
 1. <p style="text-align:justify; text-justify:inter-ideograph;">先使用数据集 $\mathcal{D}$ 训练一个初始模型 $\mathbf{M}_\theta: \underset{\theta}{min}{\mathcal{L}(x,y;\theta)}$;
-2. <p style="text-align:justify; text-justify:inter-ideograph;">然后对于数据集 $\mathcal{D}$ 中的每个样本 $\{x_i, y_i\}$，构造”对抗样本“  $\{x_i+\Delta x, y_i\} =  $\{x_i + \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||}, y_i\}$$;
+2. <p style="text-align:justify; text-justify:inter-ideograph;">然后对于数据集 $\mathcal{D}$ 中的每个样本 $\{x_i, y_i\}$，构造”对抗样本“  $\{x_i+\Delta x, y_i\} = \{x_i + \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||}, y_i\}$;
 3. <p style="text-align:justify; text-justify:inter-ideograph;">接着使用构造的”对抗样本“继续训练模型 $\mathbf{M}_\theta = \underset{\theta}{min}\mathbb{E}_{(x,y) \sim \mathcal{D}}\underset{\Delta x \in \Omega; ||\Delta x|| \leq \epsilon}{max}{\mathcal{L}(x+\Delta x,y;\theta)}$;
 4. <p style="text-align:justify; text-justify:inter-ideograph;">循环 $2,3$ 步直至收敛。</p>
