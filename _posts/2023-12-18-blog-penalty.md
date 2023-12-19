@@ -26,9 +26,15 @@ tags:
 而衡量模型的结果可以使用损失函数 $\mathcal{L}(x,y;\theta)$，其中 $y$ 表示数据标签，$\theta$ 表示模型参数。
 要想加入 $\Delta x$ 后模型结果最差，即使得损失函数值最高：$\underset{\Delta x \in \Omega}{max}{\mathcal{L}(x+\Delta x,y;\theta)}$。
 通过求解满足这 $2$ 个条件的 $\Delta x$，便可获得原始样本为 $x$ 的”对抗样本“ $x+\Delta x$。
-然后将其送入模型进行训练，使得模型对其的结果正确，即使得损失函数最小：$\underset{\theta}{min}{\mathcal{L}(x+\Delta x,y;\theta)}$。
-通过对每个样本都构造”对抗样本“进行学习，即可完成对抗训练。因此，最终对抗训练的表达式如下：</p>
+然后将其送入模型进行训练，使得模型对其标签 $y$ 预测尽可能正确，即使得损失函数最小：$\underset{\theta}{min}{\mathcal{L}(x+\Delta x,y;\theta)}$。
+最后通过对每个样本都构造”对抗样本“进行学习，即可完成对抗训练。因此，最终对抗训练的表达式如下：</p>
 
 $$\underset{\theta}{min}\mathbb{E}_{(x,y) \sim \mathcal{D}}\underset{\Delta x \in \Omega; ||\Delta x|| \leq \epsilon}{max}{\mathcal{L}(x+\Delta x,y;\theta)}$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中 $\mathcal{D}$ 表示训练数据集。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">其中 $\mathcal{D}$ 表示训练数据集。那么如何计算 $\Delta x$？其目的是增大损失函数 $\mathcal{L}(x,y;\theta)$，即梯度增加的方向，
+因此可以简单地取 $\Delta x = \triangledown_x \mathcal{L}(x,y;\theta)$。注意：这里的梯度是关于数据 $x$ 的梯度，而不是关于参数 $\theta$ 的梯度。
+同时为了限制 $\Delta x$ 的范围，需要对其归一化处理，最终可得：</p>
+
+$$\Delta x = \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||}$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
