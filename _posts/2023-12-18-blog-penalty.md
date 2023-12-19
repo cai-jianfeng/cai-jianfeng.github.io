@@ -90,7 +90,11 @@ $$e^{\gamma D}\theta_t = \theta_{t} - \gamma \times \triangledown_\theta\mathcal
 & = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\big[\color{green}{-\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t'}\big] \\
 & = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \leftarrow \color{red}{\dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t' \times \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t' \approx 0}\\
 & = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2 \end{align} \\
--\tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t) = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2 \leftarrow \color{green}{\dfrac{d\theta_t}{dt} = - \tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t)}$$
+-\tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t) = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2 \leftarrow \color{green}{\dfrac{d\theta_t}{dt} = - \tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t)} \\
+\tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t) = \triangledown_\theta\big(\mathcal{L}(·,·;\theta_t) + \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2\big)$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">可以看到，要想纠正因逐步迭代导致的最优解偏差，相当于往原始的损失函数添加模型参数的梯度作为”惩罚项“。这便是关于参数的梯度惩罚，其主要目的是为了纠正模型使用梯度下降法求解导致的偏差。
+在具体的 PyTorch 代码实现中，可以参考如下代码框架：</p>
 
 References
 ===
