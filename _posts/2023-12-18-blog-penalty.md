@@ -52,4 +52,6 @@ $$\begin{align}\mathcal{L}(x+\Delta x,y;\theta) & = \mathcal{L}(x,y;\theta)+\tri
 
 $$\begin{align}\triangledown_\theta\mathcal{L}(x+\Delta x,y;\theta) & = \triangledown_\theta(\mathcal{L}(x,y;\theta)+\triangledown_x\mathcal{L}(x,y;\theta)\Delta x) \\
 & = \triangledown_\theta\mathcal{L}(x,y;\theta)+\triangledown_\theta\triangledown_x\mathcal{L}(x,y;\theta) \times \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{||\triangledown_x \mathcal{L}(x,y;\theta)||} \\
-& = \triangledown_\theta\mathcal{L}(x,y;\theta)+\triangledown_\theta(\triangledown_x\mathcal{L}(x,y;\theta) \times \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{\color{red}{||\triangledown_x \mathcal{L}(x,y;\theta)||}})\end{align}$$
+& = \triangledown_\theta\mathcal{L}(x,y;\theta)+\triangledown_\theta(\color{red}{\triangledown_x\mathcal{L}(x,y;\theta)} \times \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{\color{red}{||\triangledown_x \mathcal{L}(x,y;\theta)||}}) \\
+& = \triangledown_\theta\mathcal{L}(x,y;\theta)+\triangledown_\theta(\epsilon||\triangledown_x\mathcal{L}(x,y;\theta)||) \\
+& = \triangledown_\theta(\mathcal{L}(x,y;\theta) + \epsilon||\triangledown_x\mathcal{L}(x,y;\theta)||)\end{align}$$
