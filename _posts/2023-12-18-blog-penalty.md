@@ -68,7 +68,7 @@ $$\frac{d}{dt}{\mathcal{\mathcal{L}(·,·;\theta(t))}} = \frac{d}{dt}(\triangled
 
 <p style="text-align:justify; text-justify:inter-ideograph;">我们希望损失函数 $\mathcal{L}$ 关于 $t$ 的下降最快，即取梯度负方向进行计算：</p>
 
-$$\dfrac{d\theta}{dt}) = - \triangledown_\theta\mathcal{L}(·,·;\theta(t))$$
+$$\dfrac{d\theta}{dt} = - \triangledown_\theta\mathcal{L}(·,·;\theta(t))$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">因此，只需求解上述的常微分方程，即可求解得到最优值的 $\theta$。求解常微分方程最常用的方法即是常微分求解器，它们的主要思路都是通过将常微分方程转化为差分方程进行逐步迭代的方法来近似最优解。
 以最简单的欧拉求解器为例，其迭代公式为：</p>
@@ -88,9 +88,9 @@ $$e^{\gamma D}\theta_t = \theta_{t} - \gamma \times \triangledown_\theta\mathcal
 & = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma D \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
 & = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t' \leftarrow \color{red}{\dfrac{d}{dt}{\triangledown_\theta\mathcal{L}(·,·;\theta_t)} = \dfrac{d}{d\theta}{\triangledown_\theta\mathcal{L}(·,·;\theta_t)} \times \dfrac{d}{dt}\theta_t}\\
 & = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\big[\color{green}{-\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t'}\big] \\
-& = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \leftarrow \color{red}{\dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t'} \times \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t'} \approx 0}\\
+& = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \leftarrow \color{red}{\dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t' \times \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t' \approx 0}\\
 & = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2 \end{align} \\
-- \tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t)} = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2 \leftarrow \color{green}{\dfrac{d\theta_t}{dt}) = - \tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t)}$$
+-\tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t) = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2 \leftarrow \color{green}{\dfrac{d\theta_t}{dt} = - \tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t)}$$
 
 References
 ===
