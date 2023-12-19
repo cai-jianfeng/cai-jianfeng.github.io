@@ -14,7 +14,7 @@ tags:
 本文介绍的梯度惩罚与其稍有不同，它是利用梯度作为正则化项来促进模型的学习以获得更好的性能(但是不能保证模型的简单性)。
 它主要包括 $2$ 中方式：<b>数据梯度惩罚</b>和<b>参数梯度惩罚</b>。下面将详细介绍：</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">数据梯度惩罚：在深度学习中，存在一种”对抗样本“，它仅仅是在原始样本的基础上添加一些我们难以察觉的随机噪声，便可使模型的结果错误。
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>数据梯度惩罚</b>：在深度学习中，存在一种”对抗样本“，它仅仅是在原始样本的基础上添加一些我们难以察觉的随机噪声，便可使模型的结果错误。
 典型例子如下：</p>
 
 ![adversarial example](/images/adversarial_example.png)
@@ -56,7 +56,48 @@ $$\begin{align}\triangledown_\theta\mathcal{L}(x+\Delta x,y;\theta) & = \triangl
 & = \triangledown_\theta\mathcal{L}(x,y;\theta)+\triangledown_\theta(\epsilon||\triangledown_x\mathcal{L}(x,y;\theta)||) \\
 & = \triangledown_\theta(\mathcal{L}(x,y;\theta) + \epsilon||\triangledown_x\mathcal{L}(x,y;\theta)||)\end{align}$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">也就是说，对抗训练相当于往原始的损失函数添加样本的梯度作为”惩罚项“。这便是关于样本的梯度惩罚，其主要目的是为了增强模型对于输入的鲁棒性。
+<p style="text-align:justify; text-justify:inter-ideograph;">也就是说，对抗训练相当于往原始的损失函数添加样本的梯度作为”惩罚项“。这便是关于数据的梯度惩罚，其主要目的是为了增强模型对于输入的鲁棒性。
 在具体的 PyTorch 代码实现中，可以参考如下代码框架：</p>
 
 ![data penalty gradient code](/images/data_gradient_penalty.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>参数梯度惩罚</b>：我们在训练模型参数时，一般通过梯度下降法进行学习，即 $\theta_{i+1} = \theta_i - \gamma\triangledown_\theta\mathcal{L}(·,·;\theta_i)$。
+如果 $\gamma$ 足够小，则 $\theta$ 的更新近似与在连续时间 $t$ 上，即 $\theta(t)$。在此基础上，将原始损失函数 $\mathcal{\mathcal{L}(·,·;\theta(t))}$ 对 $t$ 进行求导，并使用<b>一阶泰勒展开</b>可得：</p>
+
+$$\frac{d}{dt}{\mathcal{\mathcal{L}(·,·;\theta(t))}} = \frac{d}{dt}(\triangledown_\theta\mathcal{L}(·,·;\theta(t)) \times \dfrac{d\theta}{dt})$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">我们希望损失函数 $\mathcal{L}$ 关于 $t$ 的下降最快，即取梯度负方向进行计算：</p>
+
+$$\dfrac{d\theta}{dt}) = - \triangledown_\theta\mathcal{L}(·,·;\theta(t))$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">因此，只需求解上述的常微分方程，即可求解得到最优值的 $\theta$。求解常微分方程最常用的方法即是常微分求解器，它们的主要思路都是通过将常微分方程转化为差分方程进行逐步迭代的方法来近似最优解。
+以最简单的欧拉求解器为例，其迭代公式为：</p>
+
+$$\theta_{t + \gamma} = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t)$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">将 $\theta_{t+\gamma}$ 进行泰勒展开：</p>
+
+$$\begin{align}\theta_{t + \gamma} & = \theta_t + \gamma \times \theta_t' + \dfrac{1}{2} \gamma^2 \times \theta_t'' + ... \\
+& = (1  +\gamma D + \dfrac{1}{2}\gamma^2D^2 + ...)\theta_t = e^{\gamma D}\theta_t; D = \dfrac{d}{dt}$$
+
+$$e^{\gamma D}\theta_t = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \leftarrow \color{green}{\theta_{t + \gamma} = e^{\gamma D}\theta_t}; \color{green}{\theta_{t + \gamma} = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t)} \\
+(e^{\gamma D}-1)\theta_t = - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
+\begin{align}D\theta_t = \theta_t' & = -\gamma \big(\dfrac{D}{e^{\gamma D}-1}\big) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
+& = -\big(1 - \dfrac{1}{2}\gamma D + ...) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
+& \approx -\big(1 - \dfrac{1}{2}\gamma D) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
+& = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma D \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
+& = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t' \leftarrow \color{red}{\dfrac{d}{dt}{\triangledown_\theta\mathcal{L}(·,·;\theta_t)} = \dfrac{d}{d\theta}{\triangledown_\theta\mathcal{L}(·,·;\theta_t)} \times \dfrac{d}{dt}\theta_t}\\
+& = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\big[\color{green}{-\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t'}\big] \\
+& = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \leftarrow \color{red}{\dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t'} \times \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t'} \approx 0}\\
+& = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2 \end{align}$$
+
+References
+===
+
+1. [对抗训练浅谈：意义、方法和思考（附Keras实现）](https://kexue.fm/archives/7234)
+
+2. [我们真的需要把训练集的损失降低到零吗？](https://kexue.fm/archives/7643)
+
+3. [从动力学角度看优化算法（五）：为什么学习率不宜过小？](https://kexue.fm/archives/7787)
+
+4. [输入梯度惩罚与参数梯度惩罚的一个不等式](https://kexue.fm/archives/8796)
