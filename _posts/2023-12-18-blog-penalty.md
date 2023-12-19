@@ -78,7 +78,7 @@ $$\theta_{t + \gamma} = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{
 <p style="text-align:justify; text-justify:inter-ideograph;">将 $\theta_{t+\gamma}$ 进行泰勒展开：</p>
 
 $$\begin{align}\theta_{t + \gamma} & = \theta_t + \gamma \times \theta_t' + \dfrac{1}{2} \gamma^2 \times \theta_t'' + ... \\
-& = (1  +\gamma D + \dfrac{1}{2}\gamma^2D^2 + ...)\theta_t = e^{\gamma D}\theta_t; D = \dfrac{d}{dt}$$
+& = (1  +\gamma D + \dfrac{1}{2}\gamma^2D^2 + ...)\theta_t = e^{\gamma D}\theta_t; D = \dfrac{d}{dt}\end{align}$$
 
 $$e^{\gamma D}\theta_t = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \leftarrow \color{green}{\theta_{t + \gamma} = e^{\gamma D}\theta_t}; \color{green}{\theta_{t + \gamma} = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t)} \\
 (e^{\gamma D}-1)\theta_t = - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
