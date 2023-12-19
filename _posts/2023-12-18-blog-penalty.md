@@ -64,11 +64,11 @@ $$\begin{align}\triangledown_\theta\mathcal{L}(x+\Delta x,y;\theta) & = \triangl
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>参数梯度惩罚</b>：我们在训练模型参数时，一般通过梯度下降法进行学习，即 $\theta_{i+1} = \theta_i - \gamma\triangledown_\theta\mathcal{L}(·,·;\theta_i)$。
 如果 $\gamma$ 足够小，则 $\theta$ 的更新近似与在连续时间 $t$ 上，即 $\theta(t)$。在此基础上，将原始损失函数 $\mathcal{\mathcal{L}(·,·;\theta(t))}$ 对 $t$ 进行求导，并使用<b>一阶泰勒展开</b>可得：</p>
 
-$$\frac{d}{dt}{\mathcal{\mathcal{L}(·,·;\theta(t))}} = \frac{d}{dt}(\triangledown_\theta\mathcal{L}(·,·;\theta(t)) \times \dfrac{d\theta}{dt})$$
+$$\frac{d}{dt}{\mathcal{\mathcal{L}(·,·;\theta(t))}} = \triangledown_\theta\mathcal{L}(·,·;\theta(t)) \times \dfrac{d\theta}{dt}$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">我们希望损失函数 $\mathcal{L}$ 关于 $t$ 的下降最快，即取梯度负方向进行计算：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">我们希望损失函数 $\mathcal{L}$ 关于 $t$ 的下降最快，在 $\theta_t'=\dfrac{d\theta}{dt}$ 的模长固定的情况下，即取梯度负方向进行计算可以使得 $\frac{d}{dt}{\mathcal{\mathcal{L}(·,·;\theta(t))}}$ 最大，即：</p>
 
-$$\dfrac{d\theta}{dt} = - \triangledown_\theta\mathcal{L}(·,·;\theta(t))$$
+$$\dfrac{d\theta}{dt} = - \triangledown_\theta\mathcal{L}(·,·;\theta(t)) \leftarrow \underset{\dfrac{d\theta}{dt}}{max}\frac{d}{dt}{\mathcal{\mathcal{L}(·,·;\theta(t))}}$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">因此，只需求解上述的常微分方程，即可求解得到最优值的 $\theta$。求解常微分方程最常用的方法即是常微分求解器，它们的主要思路都是通过将常微分方程转化为差分方程进行逐步迭代的方法来近似最优解。
 以最简单的欧拉求解器为例，其迭代公式为：</p>
