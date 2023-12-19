@@ -75,7 +75,8 @@ $$\dfrac{d\theta}{dt} = - \triangledown_\theta\mathcal{L}(·,·;\theta(t)) \left
 
 $$\theta_{t + \gamma} = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t)$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">将 $\theta_{t+\gamma}$ 进行泰勒展开：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">但是与原始常微分方程的最优解相比差分方程求解得到的最优解与其有一定的偏差，减轻这种偏差的最直接的方法是利用差分方程求解得到的最优解的前提下，
+反向加上偏差来将得到原始常微分方程的最优解。那么偏差是多少？$\theta_{t+\gamma}$ 进行泰勒展开：</p>
 
 $$\begin{align}\theta_{t + \gamma} & = \theta_t + \gamma \times \theta_t' + \dfrac{1}{2} \gamma^2 \times \theta_t'' + ... \\
 & = (1  +\gamma D + \dfrac{1}{2}\gamma^2D^2 + ...)\theta_t = e^{\gamma D}\theta_t; D = \dfrac{d}{dt}\end{align}$$
