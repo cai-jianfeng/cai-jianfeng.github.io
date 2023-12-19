@@ -27,11 +27,28 @@ Automatic Mixed Precision
 
 <p style="text-align:justify; text-justify:inter-ideograph;">为了解决第二个问题，autocast 采用 $float16$ 和 $float23$ 数据精度混合的方式来表示不同的数据，并备份参数的 $float32$ 版本来进行参数更新。
 具体而言，首先备份一份参数的 $float32$ 版本，然后在模型的 forward 过程中，权重(weights)和数据(datas)都使用 $float16$ 表示，则模型计算的中间输出结果(activations)也使用 $float16$ 表示。
-而在模型的 backward 过程中，由于中间输出结果(activations)和权重(weights)都是使用 $float16$ 表示，则计算得到的各自的梯度(activation grad 和 weight grad)也是使用 float16$。
+而在模型的 backward 过程中，由于中间输出结果(activations)和权重(weights)都是使用 $float16$ 表示，则计算得到的各自的梯度(activation grad 和 weight grad)也是使用 $float16$。
 其中 activation grad 主要是为了参与位于其后面的模型参数梯度的计算，因此只需保持 $float16$ 即可；而 weight grad 需要进行模型参数的更新。
 为了防止舍入误差，需要将 weight grad 转化为 $float32$ 的数据表示以提高数据表示范围，接着与备份的参数的 $float32$ 版本进行参数更新。由于将数据表示都提高到了 $float32$，因此不会出现舍入误差问题。
 上述的具体数据表示如下图所示，可以看到将模型的大部分数据都使用 $float16$ 进行表示，节省了大量的内存空间。
 
 ![AMP principal](/images/AMP_principal.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+<p style="text-align:justify; text-justify:inter-ideograph;">仔细研究第一个问题，可以发现上溢和下溢几乎不会同时发生且绝大部分是发生下溢($float16$ 的上界为 $65504$，在模型训练时几乎不可能会有这么大的计算结果)，
+因为在模型训练的后期，参数的梯度普遍较小，再乘上 $<1$ 的学习率，很可能会导致下溢发生。如下图所示，在一个模型(Multibox SSD)的训练中，几乎有 $67\%$ 的数据都发生了 $float16$ 下溢，
+但是它们距离 $float16$ 的上界却仍有较大距离，且一个模型的训练时其数据的大小范围分布和 $float16$ 可表示的数据范围分布相近。
+因此，为了尽可能避免下溢发生且能使用 $float16$ 表示，可以将模型参数的梯度统一都乘上一个较大的数 $s$，将其移动到(一般是右移) $float16$ 可表示的数据范围。
+最后在计算完成梯度，并将其转化回 $float32$ 表示后，再除以 $s$ 将数据移动回来。此时由于已经转化为 $float32$，因此不会出现下溢问题。
+如下图所示，将原始梯度(<span style="color: green">绿色</span>)迁移到 $float16$ 的表示范围(<span style="color: blue">蓝色</span>)。
+在具体实现上，可以对模型输出的 loss 进行缩放，即 $loss \times s$，然后再进行 backward，则此时所有的梯度都会乘上数 $s$。</p>
+
+![loss scale](/images/AMP_loss_scale.png)
+
+References
+===
+
+1. [自动混合精度训练 (AMP) -- PyTorch](http://pointborn.com/article/2022/2/18/1820.html)
+
+2. [由浅入深的混合精度训练教程](https://zhuanlan.zhihu.com/p/531040845?utm_id=0)
+
+3. [PyTorch 源码解读之 torch.cuda.amp: 自动混合精度详解](https://zhuanlan.zhihu.com/p/348554267?utm_medium=social&utm_oi=919687111576289280)
