@@ -55,3 +55,8 @@ $$\begin{align}\triangledown_\theta\mathcal{L}(x+\Delta x,y;\theta) & = \triangl
 & = \triangledown_\theta\mathcal{L}(x,y;\theta)+\triangledown_\theta(\color{red}{\triangledown_x\mathcal{L}(x,y;\theta)} \times \epsilon \dfrac{\triangledown_x \mathcal{L}(x,y;\theta)}{\color{red}{||\triangledown_x \mathcal{L}(x,y;\theta)||}}) \\
 & = \triangledown_\theta\mathcal{L}(x,y;\theta)+\triangledown_\theta(\epsilon||\triangledown_x\mathcal{L}(x,y;\theta)||) \\
 & = \triangledown_\theta(\mathcal{L}(x,y;\theta) + \epsilon||\triangledown_x\mathcal{L}(x,y;\theta)||)\end{align}$$
+
+<p style="text-align:justify; text-justify:inter-ideograph;">也就是说，对抗训练相当于往原始的损失函数添加样本的梯度作为”惩罚项“。这便是关于样本的梯度惩罚，其主要目的是为了增强模型对于输入的鲁棒性。
+在具体的 PyTorch 代码实现中，可以参考如下代码框架：</p>
+
+![data penalty gradient code](/images/data_gradient_penalty.png)
