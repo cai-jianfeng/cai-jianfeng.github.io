@@ -97,6 +97,8 @@ D\theta_t = \theta_t' & = -\gamma \big(\dfrac{D}{e^{\gamma D}-1}\big) \times \tr
 <p style="text-align:justify; text-justify:inter-ideograph;">可以看到，要想纠正因逐步迭代导致的最优解偏差，相当于往原始的损失函数添加模型参数的梯度作为”惩罚项“。这便是关于参数的梯度惩罚，其主要目的是为了纠正模型使用梯度下降法求解导致的偏差。
 在具体的 PyTorch 代码实现中，可以参考如下代码框架：</p>
 
+![param gradient penalty code](/images/param_gradient_penalty.png)
+
 References
 ===
 
