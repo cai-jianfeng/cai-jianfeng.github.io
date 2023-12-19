@@ -68,16 +68,17 @@ $$\frac{d}{dt}{\mathcal{\mathcal{L}(·,·;\theta(t))}} = \tilde{\triangledown}_\
 
 <p style="text-align:justify; text-justify:inter-ideograph;">我们希望损失函数 $\mathcal{L}$ 关于 $t$ 的下降最快，在 $\theta_t'=\dfrac{d\theta}{dt}$ 的模长固定的情况下，即取梯度负方向进行计算可以使得 $\frac{d}{dt}{\mathcal{\mathcal{L}(·,·;\theta(t))}}$ 最大，即：</p>
 
-$$\dfrac{d\theta_t}{dt} = - \triangledown_\theta\mathcal{L}(·,·;\theta(t)) \leftarrow \underset{\theta_t'}{max}\frac{d}{dt}{\mathcal{\mathcal{L}(·,·;\theta(t))}}$$
+$$\dfrac{d\theta_t}{dt} = - \color{orange}{\tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta(t))} \leftarrow \underset{\theta_t'}{max}\frac{d}{dt}{\mathcal{\mathcal{L}(·,·;\theta(t))}}$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">因此，只需求解上述的常微分方程，即可求解得到最优值的 $\theta$。求解常微分方程最常用的方法即是常微分求解器，它们的主要思路都是通过将常微分方程转化为差分方程进行逐步迭代的方法来近似最优解。
 以最简单的欧拉求解器为例，其迭代公式为：</p>
 
-$$\theta_{t + \gamma} = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t)$$
+$$\theta_{t + \gamma} = \theta_{t} - \gamma \times \color{orange}{\triangledown_\theta\mathcal{L}(·,·;\theta_t)}$$
 
-<p style="text-align:justify; text-justify:inter-ideograph;">但是与原始常微分方程的最优解相比差分方程求解得到的最优解与其有一定的偏差，减轻这种偏差的最直接的方法是利用差分方程求解得到的最优解的前提下，
+<p style="text-align:justify; text-justify:inter-ideograph;">但是与原始常微分方程的最优解相比差分方程求解得到的最优解与其有一定的偏差，减轻这种偏差的最直接的方法是在利用差分方程求解得到的最优解的前提下，
 反向加上偏差来得到原始常微分方程的最优解。由于常微分方程和差分方程都是利用梯度进行计算，因此只需求解梯度的偏差即可，
-即 $\tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta(t))$ 与 $\triangledown_\theta\mathcal{L}(·,·;\theta_t)$ 的偏差。那么偏差如何计算？将 $\theta_{t+\gamma}$ 进行泰勒展开：</p>
+即 $\color{orange}{\tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta(t))}$ 与 $\color{orange}{\triangledown_\theta\mathcal{L}(·,·;\theta_t)}$ 的偏差。
+那么偏差如何计算？将 $\theta_{t+\gamma}$ 进行泰勒展开：</p>
 
 $$\begin{align}\theta_{t + \gamma} & = \theta_t + \gamma \times \theta_t' + \dfrac{1}{2} \gamma^2 \times \theta_t'' + ... \\
 & = (1  +\gamma D + \dfrac{1}{2}\gamma^2D^2 + ...)\theta_t = e^{\gamma D}\theta_t; D = \dfrac{d}{dt}\end{align}$$
