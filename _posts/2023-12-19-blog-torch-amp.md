@@ -30,7 +30,7 @@ Automatic Mixed Precision
 而在模型的 backward 过程中，由于中间输出结果(activations)和权重(weights)都是使用 $float16$ 表示，则计算得到的各自的梯度(activation grad 和 weight grad)也是使用 $float16$。
 其中 activation grad 主要是为了参与位于其后面的模型参数梯度的计算，因此只需保持 $float16$ 即可；而 weight grad 需要进行模型参数的更新。
 为了防止舍入误差，需要将 weight grad 转化为 $float32$ 的数据表示以提高数据表示范围，接着与备份的参数的 $float32$ 版本进行参数更新。由于将数据表示都提高到了 $float32$，因此不会出现舍入误差问题。
-上述的具体数据表示如下图所示，可以看到将模型的大部分数据都使用 $float16$ 进行表示，节省了大量的内存空间。
+上述的具体数据表示如下图所示，可以看到将模型的大部分数据都使用 $float16$ 进行表示，节省了大量的内存空间。</p>
 
 ![AMP principal](/images/AMP_principal.png)
 
