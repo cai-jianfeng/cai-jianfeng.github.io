@@ -81,19 +81,18 @@ $$\theta_{t + \gamma} = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{
 $$\begin{align}\theta_{t + \gamma} & = \theta_t + \gamma \times \theta_t' + \dfrac{1}{2} \gamma^2 \times \theta_t'' + ... \\
 & = (1  +\gamma D + \dfrac{1}{2}\gamma^2D^2 + ...)\theta_t = e^{\gamma D}\theta_t; D = \dfrac{d}{dt}\end{align}$$
 
-$$e^{\gamma D}\theta_t = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \leftarrow \color{green}{\theta_{t + \gamma} = e^{\gamma D}\theta_t}; \color{green}{\theta_{t + \gamma} = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t)} \\
-(e^{\gamma D}-1)\theta_t = - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t)$$
-
-$$\begin{align}D\theta_t = \theta_t' & = -\gamma \big(\dfrac{D}{e^{\gamma D}-1}\big) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
+$$\begin{align}e^{\gamma D}\theta_t & = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \leftarrow \color{green}{\theta_{t + \gamma} = e^{\gamma D}\theta_t}; \color{green}{\theta_{t + \gamma} = \theta_{t} - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t)} \\
+(e^{\gamma D}-1)\theta_t & = - \gamma \times \triangledown_\theta\mathcal{L}(·,·;\theta_t)
+D\theta_t = \theta_t' & = -\gamma \big(\dfrac{D}{e^{\gamma D}-1}\big) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
 & = -\big(1 - \dfrac{1}{2}\gamma D + ...) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
 & \approx -\big(1 - \dfrac{1}{2}\gamma D) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
 & = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma D \triangledown_\theta\mathcal{L}(·,·;\theta_t) \\
 & = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t' \leftarrow \color{red}{\dfrac{d}{dt}{\triangledown_\theta\mathcal{L}(·,·;\theta_t)} = \dfrac{d}{d\theta}{\triangledown_\theta\mathcal{L}(·,·;\theta_t)} \times \dfrac{d}{dt}\theta_t}\\
 & = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\big[\color{green}{-\triangledown_\theta\mathcal{L}(·,·;\theta_t) + \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t'}\big] \\
 & = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t) \times \triangledown_\theta\mathcal{L}(·,·;\theta_t) \leftarrow \color{red}{\dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t' \times \dfrac{1}{2}\gamma \triangledown_\theta\triangledown_\theta\mathcal{L}(·,·;\theta_t)\theta_t' \approx 0}\\
-& = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2 \end{align} \\
--\tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t) = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2 \leftarrow \color{green}{\dfrac{d\theta_t}{dt} = - \tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t)} \\
-\tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t) = \triangledown_\theta\big(\mathcal{L}(·,·;\theta_t) + \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2\big)$$
+& = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2 \\
+-\tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t) & = -\triangledown_\theta\mathcal{L}(·,·;\theta_t) - \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2 \leftarrow \color{green}{\dfrac{d\theta_t}{dt} = - \tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t)} \\
+\tilde{\triangledown}_\theta\mathcal{L}(·,·;\theta_t) & = \triangledown_\theta\big(\mathcal{L}(·,·;\theta_t) + \dfrac{1}{4}\gamma \triangledown_\theta||\triangledown_\theta\mathcal{L}(·,·;\theta_t)||^2\big) \end{align}$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">可以看到，要想纠正因逐步迭代导致的最优解偏差，相当于往原始的损失函数添加模型参数的梯度作为”惩罚项“。这便是关于参数的梯度惩罚，其主要目的是为了纠正模型使用梯度下降法求解导致的偏差。
 在具体的 PyTorch 代码实现中，可以参考如下代码框架：</p>
