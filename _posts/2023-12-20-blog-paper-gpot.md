@@ -6,7 +6,7 @@ tags:
   - 论文阅读
 ---
 
-<p style="text-align:justify; text-justify:inter-ideograph;"> 论文题目：<a href="https://arxiv.org/abs/2312.02149" target="_blank" title="I2VGen-XL">Generative Powers of Ten</a></p>
+<p style="text-align:justify; text-justify:inter-ideograph;"> 论文题目：<a href="https://arxiv.org/abs/2312.02149" target="_blank" title="GPOT">Generative Powers of Ten</a></p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">发表会议：截至2023年12月20日暂无，论文版本为 arxiv-v1</p>
 
