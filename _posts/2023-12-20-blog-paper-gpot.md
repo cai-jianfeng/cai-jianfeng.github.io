@@ -17,3 +17,8 @@ tags:
 ![GPOT multi-resolution blending](/images/paper_GPOT_multi-resolution_blending.png)
 
 ![GPOT multi-sampling](/images/paper_GPOT_multi-scale-joint-sampling.png)
+
+References
+===
+
+1. [Image Blending Using Laplacian Pyramids](https://becominghuman.ai/image-blending-using-laplacian-pyramids-2f8e9982077f)
