@@ -10,11 +10,20 @@ tags:
 ---
 
 <p style="text-align:justify; text-justify:inter-ideograph;">这篇博客主要讲解了使用 TorchScript 将 Python 模型代码转化为其他语言代码(如 C++)的原理和具体实现。
-(ps：到目前为止，我只了解了如何使用 TorchScript 将一个 PyTorch 模型转化为 TorchScript，并将其加载到 C++ 的代码中使用；
+(<del>ps：到目前为止，我只了解了如何使用 TorchScript 将一个 PyTorch 模型转化为 TorchScript，并将其加载到 C++ 的代码中使用；
 但是我并不了解 TorchScript 保存 PyTorch 模型的具体形式以及为什么 TorchScript 可以直接加载到 C++，
 而传统的<code style="color: #B58900">torch.save</code>保存的 PyTorch 模型无法直接加载到 C++ 中，
 其中应该和<b>序列化方法</b>有关联。我的计划是等我将其原理研究明白后再开始撰写这篇博客，但如果我迟迟无法理解，可能会先将 TorchScript 的具体使用先整理出来。
-敬请期待⏳！)</p>
+敬请期待⏳！</del>)</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">TorchScript 是一种 PyTorch 模型的中间表示，可以简单理解为一个 PyTorch 深度学习框架的子框架。
+它拥有自己的 Torch Script 模型类(即不同于一般 PyTorch 模型类 <code style="color: #B58900">nn.Module</code>)，
+并且可以使用 Torch Script 编译器对 Torch Script 模型进行理解、编译和序列化。最重要的一点是，Torch Script 模型可以在不同的语言上进行加载运行。
+(这里可以类比于 Java 的 JVM，同一份 Java 可以在不同的操作系统上运行(Windows、Linux 等)，只需要对不同的平台编写不同的 JVM 即可。
+而同一份 Torch Script 模型文件也可以在不同的语言上进行加载运行(Python、C++ 等)，
+只需要对不同的语言编写不同的 Torch Script 操作包即可(Python 是 PyTorch 的 <code style="color: #B58900">torch.jit</code>，C++ 是 <code style="color: #B58900">LibTorch</code>)。)</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">这里有一个问题</p>
 
 References
 ===
