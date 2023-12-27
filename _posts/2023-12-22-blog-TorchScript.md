@@ -36,16 +36,61 @@ PyTorch 提供了 $2$ 种方法可以将 PyTorch 模型转换为Torch Script。�
 通知 Torch Script 编译器它可以直接解析和编译 PyTorch 模型代码，但要受 Torch Script 语言规则的约束。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">具体而言，对于 <b>tracing</b> 机制，必须将模型的实例以及示例输入传递给 <code style="color: #B58900">Torch.jit.trace()</code>函数。
-它通过追踪示例输入在模型的<code style="color: #B58900">forward</code>方法中的流动情况，生成一个<code style="color: #B58900">torch.jit.ScriptModule</code>对象。示例代码如下:</p>
+它通过运行代码，追踪示例输入在模型的<code style="color: #B58900">forward</code>方法中的流动情况(即记录发生的操作)，
+并构建一个执行该操作的<code style="color: #B58900">torch.jit.ScriptModule</code>对象。示例代码如下：</p>
 
 ![Torch Script tracing](/images/torchscript_tracing.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">但是这种方法有个缺陷，由于它是通过追踪输入来构建模型架构，因此它无法正确转化含有控制流的模型结构。
-例如对于<code style="color: #B58900">if</code>控制流来说，tracing 机制只会追踪到当前示例输入满足的分支，而对于另一条分支则无法追踪。演示代码如下：</p>
+例如对于<code style="color: #B58900">if</code>控制流来说，tracing 机制只会追踪到当前示例输入满足的分支，而对于另一条分支则无法追踪。在这种情况下，像控制流这样的分支操作就被简化删除了。具体错误演示代码如下：</p>
 
 ![Torch Script Tracing Error](/images/torchscript_tracing_error.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">此时，就需要对模型进行直接解析，即 script 机制。具体而言，对于 script 机制</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">此时，就需要对模型进行直接解析，即 script 机制。具体而言，对于 script 机制，
+它可以直接用 Torch Script 编写模型并相应地注释模型。首先，它需要使用修饰器来对模型的具体代码进行注释(如<code style="color: #B58900">torch.jit.ignore</code>)来指导 Torch Script 编译器解析模型的方式，
+然后使用<code style="color: #B58900">torch.jit.script</code>将模型实例编译为<code style="color: #B58900">torch.jit.ScriptModule</code>对象。示例代码如下：</p>
+
+![Torch Script Script](/images/)
+
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>第二步：</b>通过上面 $2$ 种方式将 PyTorch 模型实例转化为 Torch Script 模型。接下来需要将 Torch Script 模型序列化保存到硬盘中。
+具体而言，一旦拥有了<code style="color: #B58900">ScriptModule</code>对象，就可以使用<code style="color: #B58900">save()</code>函数将其序列化为文件。
+之后，就可以用 C++ 从这个文件中加载模型并执行它，而不依赖于 Python。
+要执行此序列化，只需调用<code style="color: #B58900">ScriptModule</code>对象上的<code style="color: #B58900">save()</code>函数并传递一个文件名即可。示例代码如下：</p>
+
+![Torch Script Save](/images/torchscript_save.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>第三步：</b>将保存好的序列化模型加载到 C++ 代码中。
+要在 C++ 中加载序列化的 Torch Script 模型，应用程序必须依赖 PyTorch 的 C++ API，也称为 <b>LibTorch</b>。
+LibTorch 发行版包含了一组共享库、头文件和 CMake 构建配置文件(ps：虽然 CMake 不是依赖 LibTorch 的必要条件，但它是推荐的方法，并且在未来会得到很好的支持)。
+下面将使用 CMake 和 LibTorch 构建一个最小的 C++ 应用程序，简单地加载和执行序列化的 Torch Script 模型。
+首先，需要引入<code style="color: #B58900">torch/script.h</code>头文件，它包含了运行 Torch Script 模型所需的 LibTorch 库中的所有相关函数、类型、方法等。
+然后使用<code style="color: #B58900">torch::jit::load()</code>函数反序列化该模块，该函数接受序列化后的 Torch Script Module 的文件路径作为其唯一的命令行参数，
+并将该文件路径作为输入。返回结果是一个<code style="color: #B58900">torch::jit::script::Module</code>对象。实例代码如下：</p>
+
+![Torch Scrip C++ code](/images/torchscript_c++.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">接着，使用 LibTorch 和 CMake 工具编译程序。假设将上面的代码存储在一个名为 example-app.cpp 的文件中。一个最小的 CMakeLists.txt 文件可以像下面这样简单地构建：</p>
+
+![Torch Script CMake file](/images/torchscript_c++_cmake.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">同时需要下载 LibTorch 发行版文件包。在下载并解压了最新的 LibTorch 存档文件，会得到一个目录结构如下的文件夹：</p>
+
+![Torch Script LibTorch](/images/torchscript_libtorch.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">最后一步是编译代码。为此，假设给定示例文件目录如下：</p>
+
+<pre>
+example-app/
+  CMakeLists.txt
+  example-app.cpp
+</pre>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">则可以使用 CMake 编译工具对源代码进行编译。在编译完成后，
+将之前保存的 ResNet18 模型<code style="color: #B58900">traced_resnet_model.pt</code>的文件路径提供给生成的示例应用程序二进制文件，
+将会得到一个友好的 “ok” 输出(请注意，如果尝试使用<code style="color: #B58900">my_module_model.pt</code>运行这个例子，将得到一个错误，
+说输入是一个不兼容的形状。<code style="color: #B58900">my_module_model.pt</code>期望的是 1D 而不是 4D)。实例代码如下：</p>
+
+![Torch Script bash code](/images/torchscript_bashcode.png)
 
 References
 ===
