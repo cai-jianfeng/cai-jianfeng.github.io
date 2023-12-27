@@ -10,11 +10,11 @@ tags:
 ---
 
 <p style="text-align:justify; text-justify:inter-ideograph;">这篇博客主要讲解了使用 TorchScript 将 Python 模型代码转化为其他语言代码(如 C++)的原理和具体实现。
-(<del>ps：到目前为止，我只了解了如何使用 TorchScript 将一个 PyTorch 模型转化为 TorchScript，并将其加载到 C++ 的代码中使用；
+<del>(ps：到目前为止，我只了解了如何使用 TorchScript 将一个 PyTorch 模型转化为 TorchScript，并将其加载到 C++ 的代码中使用；
 但是我并不了解 TorchScript 保存 PyTorch 模型的具体形式以及为什么 TorchScript 可以直接加载到 C++，
 而传统的<code style="color: #B58900">torch.save</code>保存的 PyTorch 模型无法直接加载到 C++ 中，
 其中应该和<b>序列化方法</b>有关联。我的计划是等我将其原理研究明白后再开始撰写这篇博客，但如果我迟迟无法理解，可能会先将 TorchScript 的具体使用先整理出来。
-敬请期待⏳！</del>)</p>
+敬请期待⏳！)</del>(说来惭愧，最近没有兴趣看关于 TorchScript 的具体原理，只能先把它的基本用法写一下。希望有所收获🤦‍♂，可能未来通常一段时间都不会去继续了解 TorchScript 的具体原理)</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">TorchScript 是一种 PyTorch 模型的中间表示，可以简单理解为一个 PyTorch 深度学习框架的子框架。
 它拥有自己的 Torch Script 模型类(即不同于一般 PyTorch 模型类 <code style="color: #B58900">nn.Module</code>)，
