@@ -32,10 +32,20 @@ tags:
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>第一步：</b>需要将 PyTorch 模型转化为 Torch Script 模型。
 PyTorch 提供了 $2$ 种方法可以将 PyTorch 模型转换为Torch Script。第一种是 <b>tracing</b> 机制，在这种机制中，模型的结构是通过使用示例输入对其进行一次 forward，并记录这些输入在模型中的流动情况来构建的。
 这适用于控制流使用有限(即对<code style="color: #B58900">if/for/while</code>这种控制流代码的使用有限制)的模型。
-第二种方法是向 PyTorch 模型中添加显式的注释(可以使用修饰器<code style="color: #B58900">@torch.jit.script</code>等)，
+第二种方法是 <b>script</b> 机制，通过向 PyTorch 模型中添加显式的注释(可以使用修饰器<code style="color: #B58900">@torch.jit.script</code>等)，
 通知 Torch Script 编译器它可以直接解析和编译 PyTorch 模型代码，但要受 Torch Script 语言规则的约束。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">具体而言，</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">具体而言，对于 <b>tracing</b> 机制，必须将模型的实例以及示例输入传递给 <code style="color: #B58900">Torch.jit.trace()</code>函数。
+它通过追踪示例输入在模型的<code style="color: #B58900">forward</code>方法中的流动情况，生成一个<code style="color: #B58900">torch.jit.ScriptModule</code>对象。示例代码如下:</p>
+
+![Torch Script tracing](/images/torchscript_tracing.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">但是这种方法有个缺陷，由于它是通过追踪输入来构建模型架构，因此它无法正确转化含有控制流的模型结构。
+例如对于<code style="color: #B58900">if</code>控制流来说，tracing 机制只会追踪到当前示例输入满足的分支，而对于另一条分支则无法追踪。演示代码如下：</p>
+
+![Torch Script Tracing Error](/images/torchscript_tracing_error.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">此时，就需要对模型进行直接解析，即 script 机制。具体而言，对于 script 机制</p>
 
 References
 ===
