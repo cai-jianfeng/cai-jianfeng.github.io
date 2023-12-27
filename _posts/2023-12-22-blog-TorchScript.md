@@ -2,9 +2,7 @@
 title: 'The Basic Knowledge of TorchScript'
 date: 23-12-22
 permalink: /posts/2023/12/blog-torchscript/
-
-[//]: # (star: superior)
-
+star: superior
 tags:
   - 深度学习基本知识
 ---
