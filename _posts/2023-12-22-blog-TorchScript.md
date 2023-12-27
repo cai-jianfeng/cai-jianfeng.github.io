@@ -92,6 +92,13 @@ example-app/
 
 ![Torch Script bash code](/images/torchscript_bashcode.png)
 
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>第四步：</b>在 C++ 代码中执行加载的 Torch Script 模型。在 C++ 中成功加载了序列化的模型之后，
+LibTorch 提供了很多与 PyTorch 相似的函数和方法来帮助执行模型(例如C++ 中的<code style="color: #B58900">torch::ones</code>对应 Python 中的<code style="color: #B58900">torch.ones</code>)。
+示例代码如下：(ps：要将模型移动到 GPU 内存上，可以使用<code style="color: #B58900">model.To(at::kCUDA);</code>，
+并通过调用<code style="color: #B58900">tensor.to(at::kCUDA)</code>来确保模型的输入也存在于 CUDA 内存中，这将在 CUDA 内存中返回一个新的张量)</p>
+
+![Torch Script C++ Execute code](/images/torchscript_c++_model_execute.png)
+
 References
 ===
 
@@ -100,3 +107,5 @@ References
 2. [Introduction to TorchScript](https://pytorch.org/tutorials/beginner/Intro_to_TorchScript_tutorial.html)
 
 3. [TorchScript](https://pytorch.org/docs/stable/jit.html)
+
+4. [PYTORCH C++ API](https://pytorch.org/cppdocs/)
