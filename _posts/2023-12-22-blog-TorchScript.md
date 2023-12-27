@@ -12,18 +12,19 @@ tags:
 但是我并不了解 TorchScript 保存 PyTorch 模型的具体形式以及为什么 TorchScript 可以直接加载到 C++，
 而传统的<code style="color: #B58900">torch.save</code>保存的 PyTorch 模型无法直接加载到 C++ 中，
 其中应该和<b>序列化方法</b>有关联。我的计划是等我将其原理研究明白后再开始撰写这篇博客，但如果我迟迟无法理解，可能会先将 TorchScript 的具体使用先整理出来。
-敬请期待⏳！)</del>(说来惭愧，最近没有兴趣看关于 TorchScript 的具体原理，只能先把它的基本用法写一下。希望有所收获🤦‍♂，可能未来通常一段时间都不会去继续了解 TorchScript 的具体原理)</p>
+敬请期待⏳！)</del>(说来惭愧，最近没有兴趣看关于 TorchScript 的具体原理，只能先把它的基本用法写一下。希望有所收获🤦‍♂，
+可能未来很长一段时间都不会去继续了解 TorchScript 的具体原理)</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">TorchScript 是一种 PyTorch 模型的中间表示，可以简单理解为一个 PyTorch 深度学习框架的子框架。
 它拥有自己的 Torch Script 模型类(即不同于一般 PyTorch 模型类 <code style="color: #B58900">nn.Module</code>)，
 并且可以使用 Torch Script 编译器对 Torch Script 模型进行理解、编译和序列化。最重要的一点是，Torch Script 模型可以在不同的语言上进行加载运行。
-(这里可以类比于 Java 的 JVM，同一份 Java 可以在不同的操作系统上运行(Windows、Linux 等)，只需要对不同的平台编写不同的 JVM 即可。
+(这里可以类比于 Java 的 JVM，同一份 Java 代码可以在不同的操作系统上运行(Windows、Linux 等)，只需要对不同的平台编写不同的 JVM 即可。
 而同一份 Torch Script 模型文件也可以在不同的语言上进行加载运行(Python、C++ 等)，
 只需要对不同的语言编写不同的 Torch Script 操作包即可(Python 是 PyTorch 的 <code style="color: #B58900">torch.jit</code>，C++ 是 <code style="color: #B58900">LibTorch</code>)。)</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">这里有一个问题，即为什么需要 TorchScript 这种可以跨语言的模型格式存在？
 顾名思义，PyTorch 的主要接口是 Python 编程语言。虽然对于许多需要动态性和易于迭代的场景来说，Python 是一种合适的首选语言。
-但同样在许多情况下，Python 的这些属性是不利的。这些情况主要存在在生产环境中，其要求低延迟和严格部署要求。
+但同样在许多情况下，Python 的这些属性是不利的。这些情况主要存在在生产环境中，其具有低延迟和严格部署要求。
 对于生产场景，C++ 通常是首选语言，即使只是将其绑定到另一种语言，如 Java、Rust 或 Go。因此，在 Python 训练好模型后，要想部署到实际的应用场景中，通常需要使用 C++ 进行代码编写。
 下面将概述 PyTorch 提供的转化方法，该方法从现有的 Python 模型转换为可完全在 C++ 中加载和执行的序列化表示，而不依赖于 Python。</p>
 
@@ -44,7 +45,7 @@ PyTorch 提供了 $2$ 种方法可以将 PyTorch 模型转换为Torch Script。�
 
 ![Torch Script Tracing Error](/images/torchscript_tracing_error.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">此时，就需要对模型进行直接解析，即 script 机制。具体而言，对于 script 机制，
+<p style="text-align:justify; text-justify:inter-ideograph;">此时，就需要对模型进行直接解析，即 <b>script</b> 机制。具体而言，对于 script 机制，
 它可以直接用 Torch Script 编写模型并相应地注释模型。首先，它需要使用修饰器来对模型的具体代码进行注释(如<code style="color: #B58900">torch.jit.ignore</code>)来指导 Torch Script 编译器解析模型的方式，
 然后使用<code style="color: #B58900">torch.jit.script</code>将模型实例编译为<code style="color: #B58900">torch.jit.ScriptModule</code>对象。示例代码如下：</p>
 
@@ -53,11 +54,11 @@ PyTorch 提供了 $2$ 种方法可以将 PyTorch 模型转换为Torch Script。�
 <p style="text-align:justify; text-justify:inter-ideograph;">同时，这 $2$ 种方法也能嵌套使用。其中<code style="color: #B58900">torch.jit.script</code>可以内联<code style="color: #B58900">torch.jit.trace</code>模块的代码，
 而<code style="color: #B58900">torch.jit.trace</code>也可以内联<code style="color: #B58900">torch.jit.script</code>的代码。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">查看 Torch Script 模型(即<code style="color: #B58900">torch.jit.ScriptModule</code>)的方法：
+<p style="text-align:justify; text-justify:inter-ideograph;">(查看 Torch Script 模型(即<code style="color: #B58900">torch.jit.ScriptModule</code>)的方法：
 主要存在<code style="color: #B58900">.graph</code>和<code style="color: #B58900">.code</code>。
-前者输出一个非常低级的表示，其中包含的大多数信息对最终用户没有用处；后者输出类似 Python 语法解释的表示。</p>
+前者输出一个非常低级的表示，其中包含的大多数信息对最终用户没有用处；后者输出类似 Python 语法解释的表示。)</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;"><b>第二步：</b>通过上面 $2$ 种方式将 PyTorch 模型实例转化为 Torch Script 模型。接下来需要将 Torch Script 模型序列化保存到硬盘中。
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>第二步：</b>通过上面 $2$ 种方式可以将 PyTorch 模型实例转化为 Torch Script 模型。接下来需要将 Torch Script 模型序列化保存到硬盘中。
 具体而言，一旦拥有了<code style="color: #B58900">ScriptModule</code>对象，就可以使用<code style="color: #B58900">save()</code>函数将其序列化为文件。
 之后，就可以用 C++ 从这个文件中加载模型并执行它，而不依赖于 Python。
 要执行此序列化，只需调用<code style="color: #B58900">ScriptModule</code>对象上的<code style="color: #B58900">save()</code>函数并传递一个文件名即可。示例代码如下：</p>
@@ -70,7 +71,7 @@ LibTorch 发行版包含了一组共享库、头文件和 CMake 构建配置文�
 下面将使用 CMake 和 LibTorch 构建一个最小的 C++ 应用程序，简单地加载和执行序列化的 Torch Script 模型。
 首先，需要引入<code style="color: #B58900">torch/script.h</code>头文件，它包含了运行 Torch Script 模型所需的 LibTorch 库中的所有相关函数、类型、方法等。
 然后使用<code style="color: #B58900">torch::jit::load()</code>函数反序列化该模块，该函数接受序列化后的 Torch Script Module 的文件路径作为其唯一的命令行参数，
-并将该文件路径作为输入。返回结果是一个<code style="color: #B58900">torch::jit::script::Module</code>对象。实例代码如下：</p>
+并将该文件路径作为输入。返回结果是一个<code style="color: #B58900">torch::jit::script::Module</code>对象。示例代码如下：</p>
 
 ![Torch Scrip C++ code](/images/torchscript_c++.png)
 
@@ -78,7 +79,7 @@ LibTorch 发行版包含了一组共享库、头文件和 CMake 构建配置文�
 
 ![Torch Script CMake file](/images/torchscript_c++_cmake.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">同时需要下载 LibTorch 发行版文件包。在下载并解压了最新的 LibTorch 存档文件，会得到一个目录结构如下的文件夹：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">同时需要下载 LibTorch 发行版文件包。在下载并解压了最新的 LibTorch 存档文件后，会得到一个目录结构如下的文件夹：</p>
 
 ![Torch Script LibTorch](/images/torchscript_libtorch.png)
 
