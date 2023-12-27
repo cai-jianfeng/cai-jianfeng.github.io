@@ -50,7 +50,14 @@ PyTorch 提供了 $2$ 种方法可以将 PyTorch 模型转换为Torch Script。�
 它可以直接用 Torch Script 编写模型并相应地注释模型。首先，它需要使用修饰器来对模型的具体代码进行注释(如<code style="color: #B58900">torch.jit.ignore</code>)来指导 Torch Script 编译器解析模型的方式，
 然后使用<code style="color: #B58900">torch.jit.script</code>将模型实例编译为<code style="color: #B58900">torch.jit.ScriptModule</code>对象。示例代码如下：</p>
 
-![Torch Script Script](/images/)
+![Torch Script Script](/images/torchscript_script.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">同时，这 $2$ 种方法也能嵌套使用。其中<code style="color: #B58900">torch.jit.script</code>可以内联<code style="color: #B58900">torch.jit.trace</code>模块的代码，
+而<code style="color: #B58900">torch.jit.trace</code>也可以内联<code style="color: #B58900">torch.jit.script</code>的代码。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">查看 Torch Script 模型(即<code style="color: #B58900">torch.jit.ScriptModule</code>)的方法：
+主要存在<code style="color: #B58900">.graph</code>和<code style="color: #B58900">.code</code>。
+前者输出一个非常低级的表示，其中包含的大多数信息对最终用户没有用处；后者输出类似 Python 语法解释的表示。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>第二步：</b>通过上面 $2$ 种方式将 PyTorch 模型实例转化为 Torch Script 模型。接下来需要将 Torch Script 模型序列化保存到硬盘中。
 具体而言，一旦拥有了<code style="color: #B58900">ScriptModule</code>对象，就可以使用<code style="color: #B58900">save()</code>函数将其序列化为文件。
