@@ -23,7 +23,13 @@ tags:
 而同一份 Torch Script 模型文件也可以在不同的语言上进行加载运行(Python、C++ 等)，
 只需要对不同的语言编写不同的 Torch Script 操作包即可(Python 是 PyTorch 的 <code style="color: #B58900">torch.jit</code>，C++ 是 <code style="color: #B58900">LibTorch</code>)。)</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">这里有一个问题</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">这里有一个问题，即为什么需要 TorchScript 这种可以跨语言的模型格式存在？
+顾名思义，PyTorch 的主要接口是 Python 编程语言。虽然对于许多需要动态性和易于迭代的场景来说，Python 是一种合适的首选语言。
+但同样在许多情况下，Python 的这些属性是不利的。这些情况主要存在在生产环境中，其要求低延迟和严格部署要求。
+对于生产场景，C++ 通常是首选语言，即使只是将其绑定到另一种语言，如 Java、Rust 或 Go。因此，在 Python 训练好模型后，要想部署到实际的应用场景中，通常需要使用 C++ 进行代码编写。
+下面将概述 PyTorch 提供的转化方法，该方法从现有的 Python 模型转换为可完全在 C++ 中加载和执行的序列化表示，而不依赖于 Python。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
 
 References
 ===
