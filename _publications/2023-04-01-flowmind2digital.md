@@ -1,13 +1,13 @@
 ---
 title: "Flowmind2Digital"
 collection: publications
-state: under review
+state: reviewed
 permalink: /publication/2023-04-01-flowmind2digital
 excerpt: 'This paper proposes the Flowmind2digital method and hdFlowmind dataset to address the convertion of hand-drawn flowchart/mindmap.'
 date: 2023-04-01
 venue: 'Multidisciplinary Digital Publishing Institute Electronics'
-[//]: # (paperurl: 'http://cai-jianfeng.github.io/files/flowmind2digital.pdf')
-citation: 'Cai Jianfeng. (2023). &quot;Flowmind2Digital: The First Comprehensive Flowmind Recognition and Conversion Approach.&quot; <i>MDPI Electronics</i>.'
+paperurl: 'http://arxiv.org/abs/2401.03742'
+citation: 'Cai Jianfeng. (2024). &quot;Flowmind2Digital: The First Comprehensive Flowmind Recognition and Conversion Approach.&quot; <i>arXiv preprint arXiv: 2401.03742, 2024</i>.'
 ---
 <p style="text-align:justify; text-justify:inter-ideograph;">This paper proposes the Flowmind2digital method and hdFlowmind dataset to address the convertion of hand-drawn flowchart/mindmap. 
 Flowmind2digital is an comprehensive recognition and conversion method for flowminds, utilizing a neural network architecture and keypoint detection technology to enhance overall recognition accuracy. 
@@ -16,6 +16,19 @@ Our experiments showcase the effectiveness of our method, with an accuracy rate 
 Additionally, our dataset demonstrates effectiveness, with a 2.9% increase in accuracy after pre-training and fine-tuning on Handwritten-diagram-dataset. 
 We also highlight the importance of simple graphics for sketch recognition, which can improve accuracy by 9.3%. </p>
 
-[//]: # ([Download paper here]&#40;http://cai-jianfeng.github.io/files/flowmind2digital.pdf&#41;)
+[Download paper here](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4423352) or [here](http://arxiv.org/abs/2401.03742)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">Recommended citation: Cai Jianfeng. (2023). &quot;Flowmind2Digital: The First Comprehensive Flowmind Recognition and Conversion Approach.&quot; <i>MDPI Electronics</i>.</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">Recommended citation: Cai Jianfeng. (2024). &quot;Flowmind2Digital: The First Comprehensive Flowmind Recognition and Conversion Approach.&quot; <i>arXiv preprint arXiv: 2401.03742, 2024</i>.</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">BibTeX formatted citation: </p>
+
+<pre>
+@misc{liu2024flowmind2digital,
+      title={Flowmind2Digital: The First Comprehensive Flowmind Recognition and Conversion Approach}, 
+      author={Huanyu Liu and Jianfeng Cai and Tingjia Zhang and Hongsheng Li and Siyuan Wang and Guangming Zhu and Syed Afaq Ali Shah and Mohammed Bennamoun and Liang Zhang},
+      year={2024},
+      eprint={2401.03742},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+</pre>
