@@ -1,7 +1,7 @@
 ---
 title: 'l-DAE'
 data: 24-01-26
-permalink: '/post/2024/01/blog-rcg'
+permalink: '/post/2024/01/blog-l-dae'
 tags:
   - 论文阅读
 ---
