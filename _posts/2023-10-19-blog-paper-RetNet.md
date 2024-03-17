@@ -32,9 +32,9 @@ Method(Mathematical)
 由于 RetNet 的 parallel (对应 transformer) 和 recurrent (对应 RNN) 使用的是同一套参数，我们就需要数学推导来证明 RNN 可以通过一定的转化变成 transformer.
 具体而言，首先给定一个输入序列 $\{x_i\}_{i=1}^{|x|}$，其中 $|x|$ 表示序列的长度。然后经过 word embedding 层得到词嵌入向量：</p>
 
-<center> $X = [x_1, ..., x_{|x|} \in R^{|x| \times d}$ </center>
+<center> $X = [X_1, ..., X_{|x|}] \in R^{|x| \times d}$ </center>
 
-<ul><li><p style="text-align:justify; text-justify:inter-ideograph;"> 然后对 $X$ 的每个词 $X_n \in  R^{1 \times d}$ 乘上权重 $\omega_V \in R^{d \times d}$ 得到 $v_n \in R^{1 \times d}$：$v_n = X_n · \omega_V$。
+<ul><li><p style="text-align:justify; text-justify:inter-ideograph;"> 然后对 $X$ 的每个词 $X_n \in  R^{1 \times d}$ 乘上权重 $\omega_V \in R^{d \times d}$ 得到 $v_n \in R^{1 \times d}$：$V_n = X_n · \omega_V$。
 同时和 transformer 相似，通过 $W_Q \in R^{d \times d}$ 和 $W_K \in R^{d \times d}$ 计算 $Q$ 和 $K$：$Q = XW_Q,\ K = XW_K$ </p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"> 由于我们是要从 RNN 推算到 transformer，因此我们先要从 RNN 开始。
@@ -121,7 +121,7 @@ Method(apply)
 <li><p style="text-align:justify; text-justify:inter-ideograph;">Chunk-wise Recurrent：通过将 Parallel 模式和 Recurrent 模型相结合，
 可以得到训练速度和推理速度居中的模式。具体的结合方式为：本文将输入序列划分为块。在每个块内，按照 Parallel 模型进行计算。相比之下，跨块信息按照 Recurrent 模式传递：</p>
 
-<center> $Q_{[i]} = Q_{Bi:B(i+1}, K_{[i]} = K_{Bi:B(i+1}, V_{[i]} = V_{Bi:B(i+1}$ </center>
+<center> $Q_{[i]} = Q_{Bi:B(i+1)}, K_{[i]} = K_{Bi:B(i+1)}, V_{[i]} = V_{Bi:B(i+1)}$ </center>
 <center> $R_i = K_{[i]}^T(V_{[i]} \bigodot \zeta + \gamma^BR_{i-1}, \zeta_{ij} = \gamma^{B-i-1})$ </center>
 <center> $Retention(X_{[i]} = (Q_{[i]}K_{[i]}^T \bigodot D)V_{[i]} + (Q{[i]}R_{i-1}) \bigodot \xi, \xi_{ij} = \gamma^{i+1}$ </center>
 
@@ -134,6 +134,8 @@ $(Q{[i]}R_{i-1}) \bigodot \xi$ 表示 Cross-Chunk，即 Recurrent 模式。</p><
 而在推理过程中使用了 Recurrent 模式，很好地拟合了自回归解码。O(1)的复杂度降低了内存和推理延迟，同时达到了和 transformer 相同的结果。</p>
 
 ![Pseudocode](/images/paper_RetNet_pseudocode.png)
+
+![Chunk-wise Recurrent](/images/paper_RetNet_chunk.png)
 
 
 <p style="color: red;"> 后续补充：1. 对角性质的证明；2. 如何将 Parallent 模式的公式变换回 Recurrent 模式。 </p>
