@@ -63,21 +63,9 @@ CD Install macOS Big Sur 11.6.7(20G630) 镜像选择 macOS 10.14），点击下�
 
 ![new vm 7](/images/VM_MacOS_newvm_7.png)
 
-![new vm 8](/images/VM_MacOS_newvm_8.png)
-
-![new vm 9](/images/VM_MacOS_newvm_9.png)
-
 ![new vm 10](/images/VM_MacOS_newvm_10.png)
 
-![new vm 11](/images/VM_MacOS_newvm_11.png)
-
-![new vm 12](/images/VM_MacOS_newvm_12.png)
-
 ![new vm 13](/images/VM_MacOS_newvm_13.png)
-
-![new vm 14](/images/VM_MacOS_newvm_14.png)
-
-![new vm 15](/images/VM_MacOS_newvm_15.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">6. <b>配置虚拟机</b>：找到刚才创建的虚拟机并点击，然后点击右侧的“<b>编辑虚拟机设置</b>”：</p>
 
