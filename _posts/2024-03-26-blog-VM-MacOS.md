@@ -112,10 +112,35 @@ EI Capitan 10.11 Install 镜像可以参考 <a href="https://blog.csdn.net/qq_45
 
 ![OS configuration](/images/VM_MacOS_os_configurate.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+<p style="text-align:justify; text-justify:inter-ideograph;">设置语言：选择简体中文，点击右下角箭头（下一步）：</p>
+
+![OS configuration2](/images/VM_MacOS_os_configurate2.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">设置时间：点击“<b>实用工具</b>”，点击<b>终端</b>，查询安装的 Mac 系统发布时间，输入相应的时间
+(CD Install macOS Big Sur 11.6.7(20G630) 镜像 可以输入 <b>date 070512052023.03</b>)，点击回车设置，点击左上角终端，选择退出终端：</p>
+
+![OS configuration3](/images/VM_MacOS_os_configurate4.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">抹除磁盘：选择<b>磁盘工具</b>，选择第一个 Vmware Virtual SATA Hard Drive Media，选择<b>抹掉</b>，设置名称，
+选择格式为 <b>Mac OS扩展(日志式)</b>，点击抹掉，抹掉后点击<b>完成</b>，最后点击左上角红色<b>关闭</b>按钮：</p>
+
+![OS configuration6](/images/VM_MacOS_os_configurate6.png)
+
+![OS configuration6](/images/VM_MacOS_os_configurate3.png)
+
+![OS configuration7](/images/VM_MacOS_os_configurate7.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">安装 MacOS 系统：选择安装 macOS Big Sur，点击<b>两次继续</b>，点击<b>两次同意</b>，
+选择 MacOS 磁盘（如果之前没有抹掉磁盘，这里的磁盘空间就会不足），点击继续：</p>
+
+![OS configuration8](/images/VM_MacOS_os_configurate8.png)
+
+![OS configuration9](/images/VM_MacOS_os_configurate11.png)
+
+[//]: # (![OS configuration10]&#40;/images/VM_MacOS_os_configurate12.png&#41;)
 
 
 
-<p style="text-align:justify; text-justify:inter-ideograph;">注意：出现 VMware Workstation 与 Device/Credential Guard 不兼容。在禁用 Device/Credential Guard 的问题，可以参考 <a href="https://blog.csdn.net/qq_37567470/article/details/129397491" target="_blank">这篇博客</a> 进行设置（记得先保存手头工作，因为它需要重启电脑）</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">注意：出现 "VMware Workstation 与 Device/Credential Guard 不兼容。在禁用 Device/Credential Guard" 的问题，可以参考 <a href="https://blog.csdn.net/qq_37567470/article/details/129397491" target="_blank">这篇博客</a> 进行设置（记得先保存手头工作，因为它需要重启电脑）</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">注意：遇到鼠标键盘无法使用的问题，可以参考 <a href="https://blog.csdn.net/zhoupian/article/details/122659135" target="_blank">这篇博客</a> 进行设置（来自评论区的亲测有效，我没有遇到这种情况）</p>
