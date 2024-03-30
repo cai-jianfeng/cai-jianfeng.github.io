@@ -90,7 +90,7 @@ CD Install macOS Big Sur 11.6.7(20G630) 镜像选择 macOS 10.14），点击下�
 
 <p style="text-align:justify; text-justify:inter-ideograph;">7. 修改虚拟机目录下的配置文件：找到创建虚拟机时的文件目录，使用<b>记事本</b>打开 .vmx 文件
 （EI Capitan 10.11 Install 镜像是 OS X 10.11.vmx；CD Install macOS Big Sur 11.6.7(20G630) 镜像选择 macOS 10.14.vmx），
-在 smc.present = "TRUE" 下一行添加一行代码 smc.version = 0（注意，没有引号，不然到时候启动虚拟机会直接蓝屏重启）：</p>
+在 smc.present = "TRUE" 下一行添加一行代码 smc.version = 0（注意，<b>没有引号</b>，不然到时候启动虚拟机会直接蓝屏重启）：</p>
 
 ![configuration 6](/images/VM_MacOS_configurate_6.png)
 
