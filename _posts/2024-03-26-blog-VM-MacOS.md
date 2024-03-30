@@ -145,9 +145,23 @@ EI Capitan 10.11 Install 镜像可以参考 <a href="https://blog.csdn.net/qq_45
 
 ![OS incontent5](/images/VM_MacOS_incontent6.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">9. 关闭 Mac 虚拟机，点击“<b>编辑虚拟机设置</b>”，点击第一个 “CD/DVD（SATA）”将“<b>使用ISO镜像文件</b>”改为“<b>使用物理驱动器</b>”（因为系统已经安装在本地磁盘）：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">9. 关闭 Mac 虚拟机，点击“<b>编辑虚拟机设置</b>”，点击第一个 “CD/DVD（SATA）”将“<b>使用ISO镜像文件</b>”改为“<b>使用物理驱动器</b>”（
+因为系统已经安装在本地磁盘）：</p>
 
-![Mac final](/images/VM_MacOS_change.png)
+![Mac change](/images/VM_MacOS_change.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">10. 安装 VMware Tools 工具（该工具可以使 MacOS 虚拟机与 Windows 系统之间互传文件（直接复制粘贴或拖入拖出即可）），
+点击右上角 <b>VMware Tools</b>，点击<b>安装 VMware Tools</b>，点击<b>继续</b>：</p>
+
+![Mac VMware Tools](/images/VM_MacOS_VMware_tools.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">点击<b>安装</b>，输入<b>密码</b>，点击<b>安装软件</b>，安装完成后点击<b>重新启动</b>使软件生效：</p>
+
+![Mac VMware Tools2](/images/VM_MacOS_VMware_tools2.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">如果遇到<b>系统扩展已被阻止</b>，点击<b>打开安全性偏好设置</b>，点击左下角🔐，输入<b>密码</b>，点击<b>解锁</b>，解锁完成后关闭窗口：</p>
+
+![Mac VMware Tools3](/images/VM_MacOS_VMware_tools3.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">注意：出现 "VMware Workstation 与 Device/Credential Guard 不兼容。在禁用 Device/Credential Guard" 的问题，可以参考 <a href="https://blog.csdn.net/qq_37567470/article/details/129397491" target="_blank">这篇博客</a> 进行设置（记得先保存手头工作，因为它需要重启电脑）</p>
 
