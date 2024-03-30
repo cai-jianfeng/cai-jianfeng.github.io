@@ -137,9 +137,13 @@ EI Capitan 10.11 Install 镜像可以参考 <a href="https://blog.csdn.net/qq_45
 
 ![OS configuration9](/images/VM_MacOS_os_configurate11.png)
 
+<p style="text-align:justify; text-justify:inter-ideograph;">等待 macOS Big Sur 安装完成，</p>
+
 [//]: # (![OS configuration10]&#40;/images/VM_MacOS_os_configurate12.png&#41;)
 
+<p style="text-align:justify; text-justify:inter-ideograph;">9. 关闭 Mac 虚拟机，点击“<b>编辑虚拟机设置</b>”，点击第一个 “CD/DVD（SATA）”将“<b>使用ISO镜像文件</b>”改为“<b>使用物理驱动器</b>”（因为系统已经安装在本地磁盘）：</p>
 
+![Mac final](/images/VM_MacOS_change.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">注意：出现 "VMware Workstation 与 Device/Credential Guard 不兼容。在禁用 Device/Credential Guard" 的问题，可以参考 <a href="https://blog.csdn.net/qq_37567470/article/details/129397491" target="_blank">这篇博客</a> 进行设置（记得先保存手头工作，因为它需要重启电脑）</p>
 
