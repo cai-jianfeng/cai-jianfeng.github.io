@@ -125,9 +125,25 @@ EI Capitan 10.11 Install 镜像可以参考 <a href="https://blog.csdn.net/qq_45
 
 ![OS configuration9](/images/VM_MacOS_os_configurate11.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">等待 macOS Big Sur 安装完成，</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">macOS Big Sur 安装完成后，在<b>选择国家和地区</b>里划到最下面选择<b>中国大陆</b>，点击<b>四次继续</b>：</p>
 
-[//]: # (![OS configuration10]&#40;/images/VM_MacOS_os_configurate12.png&#41;)
+![OS incontent](/images/VM_MacOS_incontent.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在<b>迁移助理</b>里选择<b>以后</b>，在<b>Apples ID</b>里选择<b>稍后设置</b>，点击<b>跳过</b>，点击<b>两次同意</b>：</p>
+
+![OS incontent2](/images/VM_MacOS_incontent2.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在<b>迁移助理</b>里选择<b>以后</b>，在<b>Apples ID</b>里选择<b>稍后设置</b>，点击<b>跳过</b>，点击<b>两次同意</b>：</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">设置自己的<b>全名、账户名称</b>（一般账号名称和全名默认一致）和<b>密码</b>：</p>
+
+![OS incontent3](/images/VM_MacOS_incontent4.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">快捷设置点击继续；分析里取消勾选，点击继续；屏幕使用时间点击稍后设置；Siri 里取消勾选，点击继续；选取自己喜欢的外观，点击继续，最后等待设置完成：</p>
+
+![OS incontent4](/images/VM_MacOS_incontent5.png)
+
+![OS incontent5](/images/VM_MacOS_incontent6.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">9. 关闭 Mac 虚拟机，点击“<b>编辑虚拟机设置</b>”，点击第一个 “CD/DVD（SATA）”将“<b>使用ISO镜像文件</b>”改为“<b>使用物理驱动器</b>”（因为系统已经安装在本地磁盘）：</p>
 
