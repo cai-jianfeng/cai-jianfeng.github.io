@@ -36,7 +36,7 @@ Problem
 
 ![file replace](/images/VM_MacOS_file_replace.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;"><b>4. </b>下载并解压 MacOS 镜像：对于 EI Capitan 10.11 Install 镜像，需要注意镜像是分块压缩的，
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>4. 下载并解压 MacOS 镜像</b>：对于 EI Capitan 10.11 Install 镜像，需要注意镜像是分块压缩的，
 因此需要将三个镜像压缩文件(EI Capitan 10.11 Install part1/2/3.rar)全部下载，并放在同一个文件夹下，
 然后使用 7-Zip/Winrar 等压缩软件解压其中某一个，就可以获得完整的镜像文件；
 对于 CD Install macOS Big Sur 11.6.7(20G630) 镜像，直接下载 CD Install macOS Big Sur 11.6.7(20G630).iso 即可。</p>
