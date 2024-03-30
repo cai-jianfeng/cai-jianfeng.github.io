@@ -18,11 +18,11 @@ Problem
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>0. 下载</b> VMware Workstation Pro 软件、unlocker 工具、MacOS (EI Capitan 10.11 Install)镜像：</p>
 
-[链接](https://pan.baidu.com/s/1avwBcgRZvYZLyZ77lQE4SA?pwd=1234) 提取码: 1234
+[链接：https://pan.baidu.com/s/1avwBcgRZvYZLyZ77lQE4SA?pwd=1234](https://pan.baidu.com/s/1avwBcgRZvYZLyZ77lQE4SA?pwd=1234) 提取码: 1234
 
 <p style="text-align:justify; text-justify:inter-ideograph;">下载 MacOS (CD Install macOS Big Sur 11.6.7(20G630))镜像：(来自：<a href="https://blog.csdn.net/WELFSDAF/article/details/127154939" target="_blank">macOS多版本虚拟机镜像免费下载（及教程）</a>)。</p>
 
-[链接](https://yun.139.com/link/w/i/015CHwKJF7PUI) 提取码：RqOu 
+[链接：https://yun.139.com/link/w/i/015CHwKJF7PUI](https://yun.139.com/link/w/i/015CHwKJF7PUI) 提取码：RqOu 
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>1. 安装 VMware Workstation Pro</b>：解压 VMware-workstation-full-15.5.2.rar，
 点击 VMware-workstation-full-15.5.2-15785246.exe 进行安装（注意<b>记住安装路径</b>），
