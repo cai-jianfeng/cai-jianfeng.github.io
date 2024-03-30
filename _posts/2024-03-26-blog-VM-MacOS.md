@@ -16,7 +16,7 @@ Problem
 <p style="text-align:justify; text-justify:inter-ideograph;">这篇博客主要基于 <a href="https://blog.csdn.net/qq_45025572/article/details/108689543" target="_blank">window10安装Mac虚拟机详细教程</a>，
 并将其扩展到最新的 MacOS 镜像安装</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">0. 下载 VMware Workstation Pro 软件、unlocker 工具、MacOS (EI Capitan 10.11 Install)镜像：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>0. 下载</b> VMware Workstation Pro 软件、unlocker 工具、MacOS (EI Capitan 10.11 Install)镜像：</p>
 
 [链接](https://pan.baidu.com/s/1avwBcgRZvYZLyZ77lQE4SA?pwd=1234) 提取码: 1234
 
@@ -24,24 +24,24 @@ Problem
 
 [链接](https://yun.139.com/link/w/i/015CHwKJF7PUI) 提取码：RqOu 
 
-<p style="text-align:justify; text-justify:inter-ideograph;">1. 安装 VMware Workstation Pro：解压 VMware-workstation-full-15.5.2.rar，
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>1. 安装 VMware Workstation Pro</b>：解压 VMware-workstation-full-15.5.2.rar，
 点击 VMware-workstation-full-15.5.2-15785246.exe 进行安装（注意<b>记住安装路径</b>），
 然后解压 KeyGen-OnLyOnE.rar，运行 KeyGen.exe 获得许可验证码，在 VMware Workstation Pro 后，输入许可验证码；</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">2. 解压 unlocker-3.0.8.rar，右击 win-install.cmd，选择以<b>管理员身份</b>运行（在运行期间可能需要点击任意键退出）；</p>
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>2. </b>解压 unlocker-3.0.8.rar，右击 win-install.cmd，选择以<b>管理员身份</b>运行（在运行期间可能需要点击任意键退出）；</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">3. （这时候先不要运行 VMware Workstation Pro）
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>3. </b>（这时候先不要运行 VMware Workstation Pro）
 把 unlocker-3.0.8/iso 目录下的 darwin.iso 和 darwinPre15.iso 拷贝到 VMwarean Workstation Pro 的安装目录
 （正常是在 [你选择的安装路径]\VMware\VMware Workstation\ 下），选择替换这两个文件；</p>
 
 ![file replace](/images/VM_MacOS_file_replace.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">4. 下载并解压 MacOS 镜像：对于 EI Capitan 10.11 Install 镜像，需要注意镜像是分块压缩的，
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>4. </b>下载并解压 MacOS 镜像：对于 EI Capitan 10.11 Install 镜像，需要注意镜像是分块压缩的，
 因此需要将三个镜像压缩文件(EI Capitan 10.11 Install part1/2/3.rar)全部下载，并放在同一个文件夹下，
 然后使用 7-Zip/Winrar 等压缩软件解压其中某一个，就可以获得完整的镜像文件；
 对于 CD Install macOS Big Sur 11.6.7(20G630) 镜像，直接下载 CD Install macOS Big Sur 11.6.7(20G630).iso 即可。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">5. 新建虚拟机（下面没有明确说明的设置均为直接下一步）：首先打开 VMware Workstation Pro，在界面点击创建新的虚拟机或者使用快捷键 Ctrl+N 进行创建：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>5. 新建虚拟机</b>（下面没有明确说明的设置均为直接下一步）：首先打开 VMware Workstation Pro，在界面点击创建新的虚拟机或者使用快捷键 Ctrl+N 进行创建：</p>
 
 ![new vm](/images/VM_MacOS_newvm.png)
 
@@ -75,7 +75,7 @@ CD Install macOS Big Sur 11.6.7(20G630) 镜像选择 macOS 10.14），点击下�
 
 ![new vm 13](/images/VM_MacOS_newvm_13.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">6. <b>配置虚拟机</b>：找到刚才创建的虚拟机并点击，然后点击右侧的“<b>编辑虚拟机设置</b>”：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>6. 配置虚拟机</b>：找到刚才创建的虚拟机并点击，然后点击右侧的“<b>编辑虚拟机设置</b>”：</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">如果不小心关闭了虚拟机的界面，可以点击 <b>打开虚拟机 - 找到创建虚拟机时的文件目录 - 点击打开 .vmx 文件</b> 来重新打开虚拟机界面：</p>
 
@@ -96,13 +96,13 @@ CD Install macOS Big Sur 11.6.7(20G630) 镜像选择 macOS 10.14），点击下�
 
 ![configuration 5](/images/VM_MacOS_configurate_5.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">7. 修改虚拟机目录下的配置文件：找到创建虚拟机时的文件目录，使用<b>记事本</b>打开 .vmx 文件
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>7. 修改虚拟机目录下的配置文件</b>：找到创建虚拟机时的文件目录，使用<b>记事本</b>打开 .vmx 文件
 （EI Capitan 10.11 Install 镜像是 OS X 10.11.vmx；CD Install macOS Big Sur 11.6.7(20G630) 镜像选择 macOS 10.14.vmx），
 在 smc.present = "TRUE" 下一行添加一行代码 smc.version = 0（注意，<b>没有引号</b>，不然到时候启动虚拟机会直接蓝屏重启）：</p>
 
 ![configuration 6](/images/VM_MacOS_configurate_6.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">8. 配置 MacOS 系统（下面以 CD Install macOS Big Sur 11.6.7(20G630) 镜像为例，
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>8. 配置 MacOS 系统</b>（下面以 CD Install macOS Big Sur 11.6.7(20G630) 镜像为例，
 EI Capitan 10.11 Install 镜像可以参考 <a href="https://blog.csdn.net/qq_45025572/article/details/108689543" target="_blank">window10安装Mac虚拟机详细教程</a>）：
 关闭 VMware Workstation Pro，重新右击软件，选择用<b>管理员</b>身份打开 VMware Workstation Pro，打开虚拟机，点击“<b>开启此虚拟机</b>”：</p>
 
@@ -153,12 +153,12 @@ EI Capitan 10.11 Install 镜像可以参考 <a href="https://blog.csdn.net/qq_45
 
 ![OS incontent5](/images/VM_MacOS_incontent6.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">9. 关闭 Mac 虚拟机，点击“<b>编辑虚拟机设置</b>”，点击第一个 “CD/DVD（SATA）”将“<b>使用ISO镜像文件</b>”改为“<b>使用物理驱动器</b>”（
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>9. </b>关闭 Mac 虚拟机，点击“<b>编辑虚拟机设置</b>”，点击第一个 “CD/DVD（SATA）”将“<b>使用ISO镜像文件</b>”改为“<b>使用物理驱动器</b>”（
 因为系统已经安装在本地磁盘）：</p>
 
 ![Mac change](/images/VM_MacOS_change.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">10. 安装 VMware Tools 工具（该工具可以使 MacOS 虚拟机与 Windows 系统之间互传文件（直接复制粘贴或拖入拖出即可）），
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>10. 安装 VMware Tools 工具</b>（该工具可以使 MacOS 虚拟机与 Windows 系统之间互传文件（直接复制粘贴或拖入拖出即可）），
 点击右上角 <b>VMware Tools</b>，点击<b>安装 VMware Tools</b>，点击<b>继续</b>：</p>
 
 ![Mac VMware Tools](/images/VM_MacOS_VMware_tools.png)
@@ -171,6 +171,6 @@ EI Capitan 10.11 Install 镜像可以参考 <a href="https://blog.csdn.net/qq_45
 
 ![Mac VMware Tools3](/images/VM_MacOS_VMware_tools3.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">注意：出现 "VMware Workstation 与 Device/Credential Guard 不兼容。在禁用 Device/Credential Guard" 的问题，可以参考 <a href="https://blog.csdn.net/qq_37567470/article/details/129397491" target="_blank">这篇博客</a> 进行设置（记得先保存手头工作，因为它需要重启电脑）</p>
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>注意：</b>出现 "VMware Workstation 与 Device/Credential Guard 不兼容。在禁用 Device/Credential Guard" 的问题，可以参考 <a href="https://blog.csdn.net/qq_37567470/article/details/129397491" target="_blank">这篇博客</a> 进行设置（记得先保存手头工作，因为它需要重启电脑）</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">注意：遇到鼠标键盘无法使用的问题，可以参考 <a href="https://blog.csdn.net/zhoupian/article/details/122659135" target="_blank">这篇博客</a> 进行设置（来自评论区的亲测有效，我没有遇到这种情况）</p>
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>注意：</b>遇到鼠标键盘无法使用的问题，可以参考 <a href="https://blog.csdn.net/zhoupian/article/details/122659135" target="_blank">这篇博客</a> 进行设置（来自评论区的亲测有效，我没有遇到这种情况）</p>
