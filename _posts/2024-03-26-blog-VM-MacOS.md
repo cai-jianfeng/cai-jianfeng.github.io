@@ -102,13 +102,19 @@ CD Install macOS Big Sur 11.6.7(20G630) 镜像选择 macOS 10.14），点击下�
 
 <p style="text-align:justify; text-justify:inter-ideograph;">7. 修改虚拟机目录下的配置文件：找到创建虚拟机时的文件目录，使用<b>记事本</b>打开 .vmx 文件
 （EI Capitan 10.11 Install 镜像是 OS X 10.11.vmx；CD Install macOS Big Sur 11.6.7(20G630) 镜像选择 macOS 10.14.vmx），
-在 smc.present = "TRUE" 下一行添加一行代码 smc.version =0（注意，没有引号，不然到时候启动虚拟机会直接蓝屏重启）：</p>
+在 smc.present = "TRUE" 下一行添加一行代码 smc.version = 0（注意，没有引号，不然到时候启动虚拟机会直接蓝屏重启）：</p>
 
 ![configuration 6](/images/VM_MacOS_configurate_6.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">8. 配置 MacOS 系统：关闭 VMware Workstation Pro，重新用<b>管理员</b>身份打开 VMware Workstation Pro，打开虚拟机，点击“开启此虚拟机”：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">8. 配置 MacOS 系统（下面以 CD Install macOS Big Sur 11.6.7(20G630) 镜像为例，
+EI Capitan 10.11 Install 镜像可以参考 <a href="https://blog.csdn.net/qq_45025572/article/details/108689543" target="_blank">window10安装Mac虚拟机详细教程</a>）：
+关闭 VMware Workstation Pro，重新右击软件，选择用<b>管理员</b>身份打开 VMware Workstation Pro，打开虚拟机，点击“<b>开启此虚拟机</b>”：</p>
 
 ![OS configuration](/images/VM_MacOS_os_configurate.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
+
 
 <p style="text-align:justify; text-justify:inter-ideograph;">注意：出现 VMware Workstation 与 Device/Credential Guard 不兼容。在禁用 Device/Credential Guard 的问题，可以参考 <a href="https://blog.csdn.net/qq_37567470/article/details/129397491" target="_blank">这篇博客</a> 进行设置（记得先保存手头工作，因为它需要重启电脑）</p>
 
