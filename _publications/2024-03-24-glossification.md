@@ -6,7 +6,7 @@ permalink: /publication/2023-03-24-glossification
 excerpt: 'The Code Reproduction of the paper: Transcribing Natural Languages for the Deaf via Neural Editing Programs.'
 date: 2024-03-24
 [//]: # (venue: 'GitHub and Paperwithcode')
-citation: 'Don't need the reference format, just use it. Support Open Source !'
+[//]: # (citation: 'Don't need the reference format, just use it. Support Open Source !')
 ---
 <p style="text-align:justify; text-justify:inter-ideograph;">This is the code reproduction of the AAAI 2022 paper 
 <a href="https://ojs.aaai.org/index.php/AAAI/article/view/21457" target="_blank">Transcribing Natural Languages for the Deaf via Neural Editing Programs</a> 
