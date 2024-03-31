@@ -26,7 +26,7 @@ Problem
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>1. 安装 VMware Workstation Pro</b>：解压 VMware-workstation-full-15.5.2.rar，
 点击 VMware-workstation-full-15.5.2-15785246.exe 进行安装（注意<b>记住安装路径</b>），
-然后解压 KeyGen-OnLyOnE.rar，运行 KeyGen.exe 获得许可验证码，在 VMware Workstation Pro 后，输入许可验证码；</p>
+然后解压 KeyGen-OnLyOnE.rar，运行 KeyGen.exe 获得许可验证码，在 VMware Workstation Pro 安装完成后，输入许可验证码；</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>2. </b>解压 unlocker-3.0.8.rar，右击 win-install.cmd，选择以<b>管理员身份</b>运行（在运行期间可能需要点击任意键退出）；</p>
 
@@ -75,7 +75,7 @@ CD Install macOS Big Sur 11.6.7(20G630) 镜像选择 macOS 10.14），点击下�
 
 ![new vm 13](/images/VM_MacOS_newvm_13.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;"><b>6. 配置虚拟机</b>：找到刚才创建的虚拟机并点击，然后点击右侧的“<b>编辑虚拟机设置</b>”：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;"><b>6. 配置虚拟机</b>：找到刚才创建的虚拟机，然后点击右侧的“<b>编辑虚拟机设置</b>”：</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">如果不小心关闭了虚拟机的界面，可以点击 <b>打开虚拟机 - 找到创建虚拟机时的文件目录 - 点击打开 .vmx 文件</b> 来重新打开虚拟机界面：</p>
 
@@ -147,7 +147,8 @@ EI Capitan 10.11 Install 镜像可以参考 <a href="https://blog.csdn.net/qq_45
 
 ![OS incontent3](/images/VM_MacOS_incontent4.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">快捷设置点击继续；分析里取消勾选，点击继续；屏幕使用时间点击稍后设置；Siri 里取消勾选，点击继续；选取自己喜欢的外观，点击继续，最后等待设置完成：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">快捷设置点击继续；分析里取消勾选，点击继续；屏幕使用时间点击稍后设置；Siri 里取消勾选，点击继续；选取自己喜欢的外观，点击继续，最后等待设置完成。
+在设置完成后会自动进入 MacOS 系统：</p>
 
 ![OS incontent4](/images/VM_MacOS_incontent5.png)
 
