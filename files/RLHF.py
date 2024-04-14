@@ -1,7 +1,5 @@
 ''' 第一步：预训练 LLM 模型 '''
 # 构建初始化的 LLM 模型
-from altair import value
-
 
 LLM_model = LLM(config_args)
 # 收集语料库 corpus
@@ -14,7 +12,10 @@ for (prompt, target) in dataloader:
   target shape; [batch_size, output_length, 1]
   response shape: [batch_size, output_length, vocab_dim]
   """
-  response = LLM_model(prompt)
+  # 这里的 LLM 模型输出 2 部分：
+  #   第一部分：和普通的 LLM 一样，即 next token 的概率
+  #   第二部分：输出预测的 value，是为了第三步的 PPO 算法服务
+  response, _ = LLM_model(prompt)
   loss = CEloss(response, target)  # cross-entropy loss
   optimizer.zero_grad()
   loss.back()
