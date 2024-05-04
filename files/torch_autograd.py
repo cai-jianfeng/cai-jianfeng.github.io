@@ -1,3 +1,6 @@
+'''
+简易的指数函数的 Function 类实现
+'''
 from torch.autograd.function import Function
 class Exp(Function):
     @staticmethod
@@ -13,6 +16,9 @@ class Exp(Function):
 # 使用 Function 函数时，应调用 .apply() 函数代替 .forward() 函数，无法直接调用 .forward() 函数
 output = Exp.apply(input)
 
+'''
+简易的原始 torch.autograd 在模型前向和后向过程时的操作
+'''
 from torch.autograd import Function
 class AccumulateGrad(Function):
     @staticmethod
