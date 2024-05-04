@@ -1,6 +1,7 @@
 ---
 title: 'The Basic Knowledge of PyTorch Autograd'
 date: 23-12-15
+update: 24-05-04
 permalink: /posts/2023/12/blog-code-pytorch-autograd/
 star: superior
 tags:
@@ -18,12 +19,12 @@ Torch Autograd
 
 <p style="text-align:justify; text-justify:inter-ideograph;">那么 PyTorch 是如何计算每个参数的梯度的，即 PyTorch 的自动求导机制(<code style="color: #B58900">torch.autograd</code>)？
 通俗而言，<code style="color: #B58900">torch.autograd</code>在模型 forward 的同时构造了一个 computational graph: DAG (由 Function 组成)；
-其中的叶子节点表示输入数据和模型参数，而非叶子节点表示模型对这些输入数据和参数进行的初等函数运算(加法，乘法等，elementary operations)。
+其中的叶子节点表示需要计算梯度的输入数据和模型参数 (即<code style="color: #B58900">.required_grad=Ture</code>)，而非叶子节点表示模型对这些输入数据和参数进行的初等函数运算(加法，乘法等，elementary operations)。
 然后在 backward 的时候触发每个节点的 gradient 计算，并将计算完成的 gradient 存储在各自对应的<code style="color: #B58900">.grad</code>属性内。
 最后 optim 的 step 执行时将每个参数的值使用对应<code style="color: #B58900">.grad</code>属性内的 gradient 进行更新计算：<code style="color: #B58900">p = p - lr * p.grad</code>。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">如何构建计算图？首先，torch 构造的计算图是一个有向无环图(DAG)。
-其中，叶子节点为输入的 tensor，包括输入的数据和参与计算的模型参数，根节点为输出的 tensor，而中间节点是模型执行的每个初等函数运算(简称为执行操作)。
+其中，叶子节点为输入的 tensor，包括需要计算梯度的输入的数据和参与计算的模型参数，根节点为输出的 tensor，而中间节点是模型执行的每个初等函数运算(简称为执行操作)。
 假设<code style="color: #B58900">a</code>和<code style="color: #B58900">b</code>是<code style="color: #B58900">torch.Tensor</code>变量，
 且<code style="color: #B58900">M = lambda x, y: 3*x**3 - y**2</code>，则在<code style="color: #B58900">out=M(a,b)</code>时，<code style="color: #B58900">torch.autograd</code>构造了如下的 DAG，
 其中每一个节点表示一个初等函数：</p>
@@ -38,13 +39,13 @@ Torch Autograd
 ![exp Function](/images/torch_autograd_Function.png)
 
 <p style="text-align:justify; text-justify:inter-ideograph;">而且每个执行操作<code style="color: #B58900">Function</code>实例都保存在其输出 tensor 的<code style="color: #B58900">.grad_fn</code>属性上。
-因此，PyTorch 中的模型训练范式为 forward 时，输入数据和模型参数，对于每一个执行操作，构建一个对应的<code style="color: #B58900">Function</code>实例，
+因此，PyTorch 中的模型训练范式为: 在 forward 时，输入数据和模型参数，对于每一个执行操作，构建一个对应的<code style="color: #B58900">Function</code>实例，
 并调用<code style="color: #B58900">.apply()</code>输出结果作为下一个执行操作的输入数据，并将<code style="color: #B58900">Function</code>实例保存在输出结果的<code style="color: #B58900">.grad_fn</code>属性上。
 而在 backward 时，首先使用<code style="color: #B58900">l.grad_fn</code>确定输出节点的<code style="color: #B58900">Function</code>实例，
 然后调用其<code style="color: #B58900">.backward()</code>计算对于输入数据的 gradient，并将 gradient 结果传递给下一个节点，
 即前一个节点的输入数据所对应的<code style="color: #B58900">Function</code>实例。重复上述操作，直到达到 DAG 的叶子节点，表明 gradient 已计算到输入数据/模型参数。
 此时，将最终计算得到的 gradient 保存到其<code style="color: #B58900">.grad</code>属性中。
-可以看到，默认情况下，PyTorch 不保存中间计算结果的 gradient (即中间结果的<code style="color: #B58900">.grad</code>属性中为<code style="color: #B58900">None</code>)。</p>
+可以看到，默认情况下，PyTorch 不保存中间计算结果的 gradient (即中间结果的<code style="color: #B58900">.grad</code>属性为<code style="color: #B58900">None</code>)。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">此外，PyTorch 的求导是通过计算雅可比矩阵(Jacobian matrix) $J$ 和向量 $\vec{v}$ 的乘积来实现链式法则的反向传播(back propagate)，即：</p>
 
@@ -65,7 +66,7 @@ $$J=\left(\begin{array}{ccc}\frac{\partial \mathbf{y}}{\partial x_1} & \cdots & 
 \end{array}\right)$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">因此<code style="color: #B58900">.backward()</code>理论上只能对数求导，不能对向量求导，
-即 $l.backward()$ 中 $l$ 理论上只能是一个数。为了实现向量 $Q$ 的求导，需要添加与 $Q$ 形状相同的初始梯度<code style="color: #B58900">Q.backward(gradient = init_gradient)</code>。</p>
+即 $l.backward()$ 中 $l$ 理论上只能是一个数 (即标量)。为了实现向量 $Q$ 的求导，需要添加与 $Q$ 形状相同的初始梯度<code style="color: #B58900">Q.backward(gradient = init_gradient)</code>。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">同时，PyTorch 的计算图是在每次 forward 时构建的，在 backward 后销毁(只是弃用)；然后在下一次 forward 时再次构建。
 这样可以保证每次 forward 时的计算图都是最新的，使得可以针对模型进行任意的改动(比如训练前半段更新全部参数，训练后半段更新指定参数)。</p>
