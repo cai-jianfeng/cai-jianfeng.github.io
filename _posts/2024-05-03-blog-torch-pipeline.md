@@ -9,7 +9,7 @@ tags:
 ---
 
 <p style="text-align:justify; text-justify:inter-ideograph;">这篇博客主要讲解 PyTorch 训练模型的整个流程的具体细节，
-包括如何在前向过程中构建计算图；后向传播过程中如何计算并保存梯度；优化器如何根据梯度更新模型参数。(建议先阅读我之前关于 torch.autograd 的博客<a href="https://cai-jianfeng.github.io/posts/2023/12/blog-code-pytorch-autograd/" target="_blank">The Basic Knowledge of PyTorch Autograd</a>)</p>
+包括如何在前向过程中构建计算图；后向传播过程中如何计算并保存梯度；优化器如何根据梯度更新模型参数。(建议先阅读我之前关于 torch.autograd 的博客 <a href="https://cai-jianfeng.github.io/posts/2023/12/blog-code-pytorch-autograd/" target="_blank">The Basic Knowledge of PyTorch Autograd</a> )</p>
 
 # Torch 训练的整体流程
 
@@ -33,7 +33,7 @@ tags:
 
 <p style="text-align:justify; text-justify:inter-ideograph;">叙述过程：Tensor.mul $\rightarrow$ torch._C._TensorBase.__mul__ $\rightarrow$ mul_Tensor $\rightarrow$ collect_next_edges $\rightarrow$ gradient_edge $\rightarrow$ set_next_edges $\rightarrow$ set_history $\rightarrow$ set_gradient_edge</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">不知道你们有没有这样的疑惑：在我们的代码中，只是简单的编写了两个<code style="color: #B58900">tensor</code>的矩阵相乘：<code style="color: #B58900">tensor = tensor1 @ tensor2</code>；而 PyTorch 便自动为我们构建了一个计算图（可以看到<code style="color: #B58900">tensor</code>的<code style="color: #B58900">.grad_fn</code>属性为<code style="color: #B58900">MulBackward0</code>；如果<code style="color: #B58900">tensor1 / tensor2</code>的<code style="color: #B58900">.required_grad</code>属性为<code style="color: #B58900">True</code>）。这是如何实现的？实际上，PyTorch 在<code style="color: #B58900">Tensor</code>类中实现了对每个初等函数的<b>重载</b>。例如对于<code style="color: #B58900">mul</code>操作，<code style="color: #B58900">Tensor</code>类内的重载实现为：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">不知道你们有没有这样的疑惑：在我们的代码中，只是简单的编写了两个<code style="color: #B58900">tensor</code>的矩阵相乘：<code style="color: #B58900">tensor = tensor1 @ tensor2</code>；而 PyTorch 便自动为我们构建了一个计算图（可以看到<code style="color: #B58900">tensor</code>的<code style="color: #B58900">.grad_fn</code>属性为<code style="color: #B58900">MulBackward0</code>；如果<code style="color: #B58900">tensor1 / tensor2</code>的<code style="color: #B58900">.required_grad</code>属性为<code style="color: #B58900">True</code>）。这是如何实现的？虽然我们在前面的博客 <a href="https://cai-jianfeng.github.io/posts/2023/12/blog-code-pytorch-autograd/" target="_blank">The Basic Knowledge of PyTorch Autograd</a> 中讲了关于 PyTorch 自动求导的过程，知道了每个节点是在初等函数执行时立即创建的，但并没有涉及到具体的代码对应过程（即在<code style="color: #B58900">tensor = tensor1 @ tensor2</code>背后究竟是哪些代码实现了计算图的创建）。实际上，PyTorch 在<code style="color: #B58900">Tensor</code>类中实现了对每个初等函数的<b>重载</b>，使得每个初等函数操作并不只是简单的实现初等函数而已。例如对于<code style="color: #B58900">mul</code>操作，<code style="color: #B58900">Tensor</code>类内的重载实现为：</p>
 
 ![tensor mul operation](/images/tensor_mul.png)
 
@@ -41,11 +41,47 @@ tags:
 
 ![tensor mul operation in C++](/images/tensor_mul_c++.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">其中，<code style="color: #B58900">self, other</code>分别是<code style="color: #B58900">mul</code>操作的第一个<code style="color: #B58900">tensor</code>和第二个<code style="color: #B58900">tensor</code>。首先，<code style="color: #B58900">compute_requires_grad()</code>函数判断<code style="color: #B58900">self/other</code>的<code style="color: #B58900">.required_grad</code>属性是否为<code style="color: #B58900">True</code>，只要有一个为<code style="color: #B58900">True</code>，则<code style="color: #B58900">_any_requires_grad</code>为<code style="color: #B58900">True</code>，表示<code style="color: #B58900">mul</code>操作生成的输出的<code style="color: #B58900">required_grad</code>也为<code style="color: #B58900">True</code>。其次，创建一个<code style="color: #B58900">grad_fn</code>：<code style="color: #B58900">MulBackward0</code>作为下一个节点，</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">这个代码有点吓人，让我们一步步来。其中，<code style="color: #B58900">self, other</code>分别是<code style="color: #B58900">mul</code>操作的第一个<code style="color: #B58900">tensor</code>和第二个<code style="color: #B58900">tensor</code>。首先，第 $4$ 行代码的<code style="color: #B58900">compute_requires_grad()</code>函数判断<code style="color: #B58900">self/other</code>的<code style="color: #B58900">.required_grad</code>属性是否为<code style="color: #B58900">True</code>，只要有一个为<code style="color: #B58900">True</code>，则<code style="color: #B58900">_any_requires_grad</code>为<code style="color: #B58900">True</code>，表示此时的<code style="color: #B58900">mul</code>操作需要生成节点，同时其生成的输出的<code style="color: #B58900">required_grad</code>也为<code style="color: #B58900">True</code>。在得到<code style="color: #B58900">_any_requires_grad</code>为<code style="color: #B58900">True</code>后（第 $6$ 行代码），代码会创建一个<code style="color: #B58900">grad_fn</code>：<code style="color: #B58900">MulBackward0</code>作为该<code style="color: #B58900">mul</code>操作在计算图上的节点（第 $8$ 行代码）；而<code style="color: #B58900">set_next_edges()</code>则是设置当前的<code style="color: #B58900">MulBackward0</code>节点与之前操作生成的节点的连接。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">
+<p style="text-align:justify; text-justify:inter-ideograph;">接下来，让我们继续深入每个部分。首先，<code style="color: #B58900">self/other</code>是一个<code style="color: #B58900">Tensor</code>，当设置其<code style="color: #B58900">.required_grad</code>的属性为 True 时，会执行下面的<code style="color: #B58900">set_requires_grad</code>()函数：
 
-1. optimizer 中的 self.param_groups 和 self.states 的 keys 都是与 model.parameters() 共享内存空间，即它们都指向同一个内存区域
+![set requires grad](/images/required_grad_set.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其会为<code style="color: #B58900">self/other</code>创建一个新的属性<code style="color: #B58900">autograd_meta_</code>(<code style="color: #B58900">AutogradMeta</code>类)，该属性用于存储<code style="color: #B58900">self/other</code>的梯度(<code style="color: #B58900">grad_</code>)和节点(<code style="color: #B58900">grad_fn_</code>)等)。对应于 Python 代码里的<code style="color: #B58900">.grad</code>和<code style="color: #B58900">.grad_fn</code>属性。(当然其还有梯度累加器(<code style="color: #B58900">grad_accumulator_</code>用于累加多个父节点传递的梯度)</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其次，计算图的每个节点的类型均为<code style="color: #B58900">Node</code>结构体（对应于 Python 代码中的<code style="color: #B58900">Function</code>类）。下图是<code style="color: #B58900">Node</code>结构体的具体内容：</p>
+
+![Node structure](/images/Node_class_c++.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，<code style="color: #B58900">operator()</code>和<code style="color: #B58900">apply()</code>分别是节点的前向和反向计算函数（对应于 Python 代码中的<code style="color: #B58900">forward()</code>和<code style="color: #B58900">backward()</code>函数），不同的节点可以重写它们以实现不同的计算过程。而<code style="color: #B58900">next_edges_</code>则是存储节点所连接的前向节点（对应于 Python 代码中的<code style="color: #B58900">.next_functions</code>）。因此，<code style="color: #B58900">next_edges_</code>中的每条边都是<code style="color: #B58900">Edge</code>结构体，结构体中存储执行前向节点的指针。下图是<code style="color: #B58900">Edge</code>结构体的具体内容：</p>
+
+![edge structure](/images/edge_class_c++.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">所以，<code style="color: #B58900">mul_Tensor()</code>函数中的<code style="color: #B58900">MulBackward0</code>操作即是<code style="color: #B58900">Node</code>结构体的子结构体，其主要重写了<code style="color: #B58900">apply()</code>方法用于计算<code style="color: #B58900">mul</code>操作的反向过程（其没有重写<code style="color: #B58900">operator()</code>方法，因为<code style="color: #B58900">mul</code>操作的前向过程在<code style="color: #B58900">mul_Tensor()</code>函数中实现），如下图所示：</p>
+
+![mulbackward structure](/images/multibackward0_c++.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">了解了各个变量的基本结构后，我们回到<code style="color: #B58900">mul_Tensor()</code>函数中。可以猜到，<code style="color: #B58900">set_next_edges()</code>应该是要将之前操作生成的节点赋值到当前的<code style="color: #B58900">MulBackward0</code>节点的<code style="color: #B58900">next_edges_</code>中。首先需要获取之前操作生成的节点，通过<code style="color: #B58900">collect_next_edges()</code>函数实现。如下图所示：</p>
+
+![collect next edges](/images/collect_next_edges_function_c++.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">这个代码更吓人，还是让我们一步步来！首先，<code style="color: #B58900">collect_next_edges()</code>函数是通过输入<code style="color: #B58900">mul</code>操作的输入数据，即<code style="color: #B58900">self, other</code>；然后创建<code style="color: #B58900">MakeNextFunctionList</code>结构体的实例<code style="color: #B58900">make</code>，并调用其<code style="color: #B58900">apply()</code>方法（即<code style="color: #B58900">MakeNextFunctionList</code>的<code style="color: #B58900">operator()</code>方法）实现的获取之前操作生成的节点。而<code style="color: #B58900">MakeNextFunctionList</code>的<code style="color: #B58900">operator()</code>方法同样输入<code style="color: #B58900">mul</code>操作的输入数据，然后构建<code style="color: #B58900">next_edges</code>数组，接着通过调用<code style="color: #B58900">gradient_edge()</code>方法获取每个输入数据里保存的之前操作生成的节点（使用<code style="color: #B58900">Edge</code>结构体包装），并将其存储在<code style="color: #B58900">next_edges</code>数组中，最后将<code style="color: #B58900">next_edges</code>数组返回给<code style="color: #B58900">collect_next_edges()</code>函数。而<code style="color: #B58900">gradient_edge()</code>方法输入<code style="color: #B58900">mul</code>操作的输入数据，判断其是否保存的之前操作生成的节点<code style="color: #B58900">gradient = self.grad_fn()</code>：若有，则说明该输入数据属于中间数据，则将其包装成<code style="color: #B58900">Edge</code>结构体后返回；若没有，则说明该输入数据属于最原始的输入数据，则将其保存的节点设置为<code style="color: #B58900">AccumulateBackward</code>节点（通过调用<code style="color: #B58900">grad_accumulator()</code>函数获得），并其包装成<code style="color: #B58900">Edge</code>结构体后返回。从<code style="color: #B58900">gradient_edge()</code>方法返回到code style="color: #B58900">MakeNextFunctionList</code>的<code style="color: #B58900">operator()</code>方法，再返回到<code style="color: #B58900">collect_next_edges()</code>函数，即可得到当前的<code style="color: #B58900">MulBackward0</code>节点的之前操作生成的节点。然后通过<code style="color: #B58900">set_next_edges()</code>将其赋值到<code style="color: #B58900">next_edges_</code>中。如下图所示：</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">完成了在<code style="color: #B58900">set_next_edges()</code>后，接下来便需要计算前向过程（对应于 Python 代码中的<code style="color: #B58900">Function</code>类的<code style="color: #B58900">forward()</code>方法），获得计算结果<code style="color: #B58900">result</code>（<code style="color: #B58900">mul_Tensor()</code>函数中的第 $15 \sim 20$ 行）。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">最后，需要将生成的<code style="color: #B58900">MulBackward0</code>节点保存到输出<code style="color: #B58900">result</code>中（对应 Python 代码的<code style="color: #B58900">outputs.grad_fn = now_fn</code>），其通过<code style="color: #B58900">set_history()</code>函数实现。如下图所示：</p>
+
+![set_history_c++](/images/set_history_c++.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">首先，<code style="color: #B58900">set_history()</code>函数是通过输入前向过程的输出<code style="color: #B58900">result</code>和生成的<code style="color: #B58900">MulBackward0</code>节点，然后调用<code style="color: #B58900">set_gradient_edge()</code>方法实现将成的<code style="color: #B58900">MulBackward0</code>节点保存在输出<code style="color: #B58900">result</code>的<code style="color: #B58900">AutogradMeta</code>属性的<code style="color: #B58900">grad_fn_</code>中。而<code style="color: #B58900">set_gradient_edge()</code>方法则是通过输入同样的前向过程的输出<code style="color: #B58900">result</code>和生成的<code style="color: #B58900">MulBackward0</code>节点，取出<code style="color: #B58900">result</code>的<code style="color: #B58900">AutogradMeta</code>属性<code style="color: #B58900">meta</code>，将<code style="color: #B58900">MulBackward0</code>赋值在其<code style="color: #B58900">grad_fn_</code>属性中。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">至此，我们终于“稍微”搞懂了 PyTorch 自动化构建计算图的过程。原来在我们写了一个简单的<code style="color: #B58900">tensor = tensor1 @ tensor2</code>代码背后，PyTorch 执行了如此多的额外代码操作来实现计算图的构建。</p>
+
+# 后向传播过程计算并保存梯度
+
+# 优化器根据梯度更新模型参数
+
+<!-- 1. optimizer 中的 self.param_groups 和 self.states 的 keys 都是与 model.parameters() 共享内存空间，即它们都指向同一个内存区域
 
 2. dict 的 keys(), values() 和 items() 的返回值与 dict 共享内存空间，对其值进行“原地”操作会同步修改 dict 内的值
 
@@ -173,7 +209,7 @@ param.grad_fn._raw_saved_self.register_hooks(pack_hook, unpack_hook)
 <p style="text-align:justify; text-justify:inter-ideograph;">use the context-manager <code style="color: #B58900">saved_tensors_hooks</code> to register a pair of hooks which will be applied to all saved tensors that are created in that context.
 The hooks defined with this context manager are thread-local, using those hooks disables all the optimization in place to reduce Tensor object creation.</p>
 
-![torch pack](/images/torch_autograd_pack_DDP.png)
+![torch pack](/images/torch_autograd_pack_DDP.png) -->
 
 
 # Reference

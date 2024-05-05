@@ -1,3 +1,43 @@
+import math
+class Exp:
+    def differentiate(pre_gradient, input):
+        # exp function differentiation: x^e
+        gradient = pre_gradient * input ** math.e
+        return gradient
+
+
+FUNCTION_CLASS = {"**": PowBackward0, "+": AddBackward0, "*": MulBackward0, ...}
+
+def forward(inputs, operations):
+    # 此函数只实现顺序执行的操作，即 operations 中的操作按其在 operations 中的位置顺序执行，
+    # 且每一个操作的输出作为下一个操作的输入
+    pre_fn = None
+    for operation in operations:
+        now_fn = FUNCTION_CLASS[operation]()
+        outputs = now_fn.apply(inputs)
+        now_fn.next_functions = pre_fn
+        outputs.grad_fn = now_fn
+        pre_fn = now_fn
+        inputs = outputs
+    return inputs
+
+def backward(self, gradient):
+    # self 表示模型的输出数据
+    # 在 torch 中，启动自动求导使用 output.backward()
+    node = self.grad_fn
+    # 当到达叶子节点后 node 为 None 即退出
+    while(node):
+        # 计算当前节点的梯度
+        gradient = node.backward(gradient)
+        # save_tensors 是 node 对应的输入数据
+        node.save_tensors.grad = gradient
+        # 获得下一个节点
+        node = node.next_functions
+
+# inputs 是初始输入，operations 是执行的操作序列
+output = forward(inputs, operations)
+backward(output, gradient=1.0)
+
 '''
 简易的指数函数的 Function 类实现
 '''
@@ -59,3 +99,18 @@ def computation_graph_build(inputs, operations):
     # 最后一个输出即为根节点 loss
     loss = out_datas
     return loss
+
+def backward(loss, gradient=None):
+    # 如果初始梯度为 None，则默认为 gradient = 1
+    if gradient is None:
+        gradient = 1.0
+    # 得到计算图的起始节点进行反向梯度计算
+    grad_fn = loss.grad_fn
+    # 当到达叶子节点后，grad_fn 为 None 即退出
+    while(grad_fn):
+        # 计算当前节点的梯度
+        gradient = grad_fn.backward(gradient)
+        # save_tensors 是 node 对应的输入数据
+        grad_fn.save_tensors.grad = gradient
+        # 获得下一个节点
+        grad_fn = grad_fn.next_functions
