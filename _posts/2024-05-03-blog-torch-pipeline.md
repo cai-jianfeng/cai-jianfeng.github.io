@@ -1,8 +1,8 @@
 ---
 title: 'The Basic Knowledge of Torch Train Pipeline'
-date: 24-04-12
-update: 24-04-14
-permalink: /posts/2024/04/blog-torch-pipeline/
+date: 24-05-05
+update: 24-05-05
+permalink: /posts/2024/05/blog-torch-pipeline/
 star: superior
 tags:
   - 深度学习基本知识
@@ -23,7 +23,9 @@ tags:
 
 <p style="text-align:justify; text-justify:inter-ideograph;">可以看到，计算图的方向与前向计算过程刚好相反。这里，我们将简单描述 Torch 训练的整体流程：在执行乘法过程中，Torch 为 $x$ 构建一个<code style="color: #B58900">AccumulateGrad</code>节点，并将 $x$ 存储在<code style="color: #B58900">AccumulateGrad</code>节点的<code style="color: #B58900">variable</code>属性中；接着根据<code style="color: #B58900">[0]</code>和<code style="color: #B58900">[1]</code>的索引选择操作分别为 $x_1$ 和 $x_2$ 构建一个<code style="color: #B58900">SelectBackwrad0</code>节点，并将其存储在 $x_1$ 和 $x_2$ 的<code style="color: #B58900">grad_fn</code>属性中；然后根据<code style="color: #B58900">*</code>的乘法操作为 $v$ 构建一个<code style="color: #B58900">MulBackwrad0</code>节点，并将其存储在 $v$ 的<code style="color: #B58900">grad_fn</code>属性中。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">而在后向传播计算梯度的过程中，使用<code style="color: #B58900">v.backward()</code>函数时，Torch 首先会获取到存储在 $v$ 的<code style="color: #B58900">grad_fn</code>属性中<code style="color: #B58900">MulBackwrad0</code>节点，然后将初始梯度<code style="color: #B58900">gradient</code>作为输入传递给其<code style="color: #B58900">.backward()</code>函数计算该节点的输入的梯度，即 $x_1$ 和 $x_2$ 的梯度，接着将 $x_1$ 和 $x_2$ 的梯度作为输入传递给其<code style="color: #B58900">grad_fn</code>属性中的<code style="color: #B58900">SelectBackwrad0</code>节点的<code style="color: #B58900">.backward()</code>函数计算该节点的输入 $x$ 的梯度，最后将 $x$ 的梯度作为输入传递给<code style="color: #B58900">AccumulateGrad</code>节点的<code style="color: #B58900">.backward()</code>函数实现将梯度累加到 $x$ 的<code style="color: #B58900">.grad</code>属性中。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">而在后向传播计算梯度的过程中，执行<code style="color: #B58900">v.backward()</code>函数时，Torch 首先会获取到存储在 $v$ 的<code style="color: #B58900">grad_fn</code>属性中<code style="color: #B58900">MulBackwrad0</code>节点，然后将初始梯度<code style="color: #B58900">gradient</code>作为输入传递给其<code style="color: #B58900">.backward()</code>函数计算该节点的输入的梯度，即 $x_1$ 和 $x_2$ 的梯度；接着将 $x_1$ 和 $x_2$ 的梯度作为输入传递给其<code style="color: #B58900">grad_fn</code>属性中的<code style="color: #B58900">SelectBackwrad0</code>节点的<code style="color: #B58900">.backward()</code>函数计算该节点的输入 $x$ 的梯度；最后将 $x$ 的梯度作为输入传递给<code style="color: #B58900">AccumulateGrad</code>节点的<code style="color: #B58900">.backward()</code>函数实现将梯度累加到 $x$ 的<code style="color: #B58900">.grad</code>属性中。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在 SGD 优化器更新 $x_1$ 和 $x_2$ 的过程中，SGD 的<code style="color: #B58900">step()</code>函数遍历初始化时的<code style="color: #B58900">params</code>参数，判断其<code style="color: #B58900">required_grad</code>属性是否为<code style="color: #B58900">True</code>，若为<code style="color: #B58900">True</code>，则取出其<code style="color: #B58900">data</code>属性和<code style="color: #B58900">grad</code>属性，将<code style="color: #B58900">data</code>减去<code style="color: #B58900">grad</code>，得到更新后的参数<code style="color: #B58900">params</code>。</p>
 
 # 前向过程构建计算图
 
