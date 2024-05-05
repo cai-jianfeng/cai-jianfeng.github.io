@@ -13,11 +13,11 @@ tags:
 
 # Torch 训练的整体流程
 
-<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+<p style="text-align:justify; text-justify:inter-ideograph;">我们以最简单的乘法为例：两个标量 $x_1$ 和 $x_2$ 相乘得到 $v$；然后使用<code style="color: #B58900">v.backward()</code>函数反向计算 $x_1$ 和 $x_2$ 的梯度；最后使用</p>
 
 # 前向过程构建计算图
 
-<p style="text-align:justify; text-justify:inter-ideograph;">不知道你们有没有这样的疑惑：在我们的代码中，只是简单的编写了两个<code style="color: #B58900">tensor</code>的矩阵相乘：<code style="color: #B58900">tensor = tensor1 @ tensor2</code>；而 PyTorch 便自动为我们构建了一个计算图（可以看到<code style="color: #B58900">tensor</code>的<code style="color: #B58900">.grad_fn</code>属性为<code style="color: #B58900"><MulBackward0></code>；如果<code style="color: #B58900">tensor1 / tensor2</code>的<code style="color: #B58900">.required_grad</code>属性为<code style="color: #B58900">True</code>）。这是如何实现的？实际上，PyTorch 在<code style="color: #B58900">Tensor</code>类中实现了对每个初等函数的<b>重载</b>。例如对于<code style="color: #B58900">mul</code>操作，<code style="color: #B58900">Tensor</code>类内的重载实现为：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">不知道你们有没有这样的疑惑：在我们的代码中，只是简单的编写了两个<code style="color: #B58900">tensor</code>的矩阵相乘：<code style="color: #B58900">tensor = tensor1 @ tensor2</code>；而 PyTorch 便自动为我们构建了一个计算图（可以看到<code style="color: #B58900">tensor</code>的<code style="color: #B58900">.grad_fn</code>属性为<code style="color: #B58900">MulBackward0</code>；如果<code style="color: #B58900">tensor1 / tensor2</code>的<code style="color: #B58900">.required_grad</code>属性为<code style="color: #B58900">True</code>）。这是如何实现的？实际上，PyTorch 在<code style="color: #B58900">Tensor</code>类中实现了对每个初等函数的<b>重载</b>。例如对于<code style="color: #B58900">mul</code>操作，<code style="color: #B58900">Tensor</code>类内的重载实现为：</p>
 
 ![tensor mul operation](/images/tensor_mul.png)
 
