@@ -13,7 +13,9 @@ tags:
 
 # 前向过程构建计算图
 
-<p style="text-align:justify; text-justify:inter-ideograph;">不知道你们有没有这样的疑惑：在我们的代码中，只是简单的编写了两个<code style="color: #B58900">tensor</code>相加：<code style="color: #B58900">tensor = tensor1 + tensor2</code>；而 PyTorch 便自动为我们构建了一个计算图（如果<code style="color: #B58900">tensor1 / tensor2</code>）的<code style="color: #B58900">.required_grad</code>属性为<code style="color: #B58900">True</code>。这是如何实现的？</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">不知道你们有没有这样的疑惑：在我们的代码中，只是简单的编写了两个<code style="color: #B58900">tensor</code>相加：<code style="color: #B58900">tensor = tensor1 + tensor2</code>；而 PyTorch 便自动为我们构建了一个计算图（如果<code style="color: #B58900">tensor1 / tensor2</code>的<code style="color: #B58900">.required_grad</code>属性为<code style="color: #B58900">True</code>）。这是如何实现的？实际上，PyTorch 在<code style="color: #B58900">Tensor</code>类中实现了对每个初等函数的<b>重载</b>。例如对于<code style="color: #B58900">mul</code>操作，<code style="color: #B58900">Tensor</code>类内的重载实现为：</p>
+
+![tensor add operation](/images/tensor_mul.png)
 
 1. optimizer 中的 self.param_groups 和 self.states 的 keys 都是与 model.parameters() 共享内存空间，即它们都指向同一个内存区域
 
