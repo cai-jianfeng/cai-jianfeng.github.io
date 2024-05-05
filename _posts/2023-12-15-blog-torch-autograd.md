@@ -1,7 +1,7 @@
 ---
 title: 'The Basic Knowledge of PyTorch Autograd'
 date: 23-12-15
-update: 24-05-04
+update: 24-05-05
 permalink: /posts/2023/12/blog-code-pytorch-autograd/
 star: superior
 tags:
@@ -17,7 +17,7 @@ tags:
 
 <p style="text-align:justify; text-justify:inter-ideograph;">那么 PyTorch 是如何计算每个参数的梯度的，即 PyTorch 的自动求导机制(<code style="color: #B58900">torch.autograd</code>)？首先让我们回顾一下如何手推一个具体表达式关于其每个输入的偏导数（即梯度）的：假设输入为 $x$ 和 $y$，将 $x^2$ 和 $y$ 的和乘以 $2$ 得到结果 $z$：$z = 2 * (x^2 + y)$；则可以通过先对 $(x^2 + y)$ 求关于 $z$ 的导数得到 $\frac{\partial z}{\partial (x^2 + y)} = 2$；然后再求 $x^2 / y$ 关于 $(x^2 + y)$ 的导数得到 $\frac{\partial (x^2 + y)}{\partial x^2} = 1; \frac{\partial (x^2 + y)}{\partial y} = 1$；接着，再求 $x$ 关于 $x^2$ 的导数得到 $\frac{\partial x^2}{\partial x} = 2x$；最后，将各个部分进行相乘即可得到 $x / y$ 关于 $z$ 的导数：</p>
 
-$$\frac{\partial z}{\partial x} = \frac{\partial z}{\partial (x^2 + y)} * \frac{\partial (x^2 + y)}{\partial x} * \frac{\partial x^2}{\partial x} = 2 * 1 * 2x = 4x; \frac{\partial z}{\partial y} = \frac{\partial z}{\partial (x + y)} * \frac{\partial (x + y)}{\partial y} = 2 * 1 = 2$$
+$$\frac{\partial z}{\partial x} = \frac{\partial z}{\partial (x^2 + y)} * \frac{\partial (x^2 + y)}{\partial x} * \frac{\partial x^2}{\partial x} = 2 * 1 * 2x = 4x; \\ \frac{\partial z}{\partial y} = \frac{\partial z}{\partial (x + y)} * \frac{\partial (x + y)}{\partial y} = 2 * 1 = 2$$
 
 <p style="text-align:justify; text-justify:inter-ideograph;">这就是我们熟知的链式法则求导，但是如何将其自动化呢？通过观察我们可以看到：第一，在链式法则每次求导的过程中（$\frac{\partial z}{\partial (x + y)}\ \text{or}\ \frac{\partial (x + y)}{\partial x}$），都是使用初等函数的求导法则；也就是说，不论给定的表达式有多复杂，我们都可以将其分解为多个初等函数的“顺序”执行。这样，我们就可以将所有的初等函数都实现为各自的初等函数类，其中每个初等函数类都提前实现各自的导数计算过程。</p>
 
