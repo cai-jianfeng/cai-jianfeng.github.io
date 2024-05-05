@@ -1,3 +1,20 @@
+---
+title: 'The Basic Knowledge of Torch Train Pipeline'
+date: 24-04-12
+update: 24-04-14
+permalink: /posts/2024/04/blog-torch-pipeline/
+star: superior
+tags:
+  - 深度学习基本知识
+---
+
+<p style="text-align:justify; text-justify:inter-ideograph;">这篇博客主要讲解 PyTorch 训练模型的整个流程的具体细节，
+包括如何在前向过程中构建计算图；后向传播过程中如何计算并保存梯度；优化器如何根据梯度更新模型参数。</p>
+
+# 前向过程构建计算图
+
+<p style="text-align:justify; text-justify:inter-ideograph;">不知道你们有没有这样的疑惑：在我们的代码中，只是简单的编写了两个<code style="color: #B58900">tensor</code>相加：<code style="color: #B58900">tensor = tensor1 + tensor2</code>；而 PyTorch 便自动为我们构建了一个计算图（如果<code style="color: #B58900">tensor1 / tensor2</code>）的<code style="color: #B58900">.required_grad</code>属性为<code style="color: #B58900">True</code>。这是如何实现的？</p>
+
 1. optimizer 中的 self.param_groups 和 self.states 的 keys 都是与 model.parameters() 共享内存空间，即它们都指向同一个内存区域
 
 2. dict 的 keys(), values() 和 items() 的返回值与 dict 共享内存空间，对其值进行“原地”操作会同步修改 dict 内的值
@@ -133,4 +150,6 @@ The hooks defined with this context manager are thread-local, using those hooks 
 
 1. [Understanding PyTorch with an example: a step-by-step tutorial](https://towardsdatascience.com/understanding-pytorch-with-an-example-a-step-by-step-tutorial-81fc5f8c4e8e)
 
-2. [PyTorch 的 SGD 源码](https://github.com/pytorch/pytorch/blob/cd9b27231b51633e76e28b6a34002ab83b0660fc/torch/optim/sgd.py#L63)
+2. [The SGD source code of PyTorch](https://github.com/pytorch/pytorch/blob/cd9b27231b51633e76e28b6a34002ab83b0660fc/torch/optim/sgd.py#L63)
+
+3. [A lightweight package to create visualizations of PyTorch execution graphs and traces](https://github.com/szagoruyko/pytorchviz)
