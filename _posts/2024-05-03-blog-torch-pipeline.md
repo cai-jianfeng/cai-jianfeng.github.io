@@ -13,7 +13,13 @@ tags:
 
 # Torch 训练的整体流程
 
-<p style="text-align:justify; text-justify:inter-ideograph;">我们以最简单的乘法为例：两个标量 $x_1$ 和 $x_2$ 相乘得到 $v$；然后使用<code style="color: #B58900">v.backward()</code>函数反向计算 $x_1$ 和 $x_2$ 的梯度；最后使用</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">我们以最简单的乘法为例：两个标量 $x_1$ 和 $x_2$ 相乘得到 $v$；然后使用<code style="color: #B58900">v.backward()</code>函数反向计算 $x_1$ 和 $x_2$ 的梯度；最后使用 SGD 优化器更新 $x_1$ 和 $x_2$。代码如下：</p>
+
+![simple torch mul pipeline](/images/simple_torch_pipeline.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">接着我们使用<code style="color: #B58900">torchviz</code>的<code style="color: #B58900">make_dot</code>函数获取 PyTorch 构建的计算图：</p>
+
+![simple torch DAG](/images/simple_torch_DAG.png)
 
 # 前向过程构建计算图
 
