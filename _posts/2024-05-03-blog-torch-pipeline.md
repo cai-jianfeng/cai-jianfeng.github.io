@@ -11,13 +11,23 @@ tags:
 <p style="text-align:justify; text-justify:inter-ideograph;">这篇博客主要讲解 PyTorch 训练模型的整个流程的具体细节，
 包括如何在前向过程中构建计算图；后向传播过程中如何计算并保存梯度；优化器如何根据梯度更新模型参数。</p>
 
+# Torch 训练的整体流程
+
+<p style="text-align:justify; text-justify:inter-ideograph;"></p>
+
 # 前向过程构建计算图
 
-<p style="text-align:justify; text-justify:inter-ideograph;">不知道你们有没有这样的疑惑：在我们的代码中，只是简单的编写了两个<code style="color: #B58900">tensor</code>的矩阵相乘：<code style="color: #B58900">tensor = tensor1 @ tensor2</code>；而 PyTorch 便自动为我们构建了一个计算图（可以看到<code style="color: #B58900">tensor<code>的<code style="color: #B58900">.grad_fn</code>属性为<code style="color: #B58900"><MulBackward0></code>；如果<code style="color: #B58900">tensor1 / tensor2</code>的<code style="color: #B58900">.required_grad</code>属性为<code style="color: #B58900">True</code>）。这是如何实现的？实际上，PyTorch 在<code style="color: #B58900">Tensor</code>类中实现了对每个初等函数的<b>重载</b>。例如对于<code style="color: #B58900">mul</code>操作，<code style="color: #B58900">Tensor</code>类内的重载实现为：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">不知道你们有没有这样的疑惑：在我们的代码中，只是简单的编写了两个<code style="color: #B58900">tensor</code>的矩阵相乘：<code style="color: #B58900">tensor = tensor1 @ tensor2</code>；而 PyTorch 便自动为我们构建了一个计算图（可以看到<code style="color: #B58900">tensor</code>的<code style="color: #B58900">.grad_fn</code>属性为<code style="color: #B58900"><MulBackward0></code>；如果<code style="color: #B58900">tensor1 / tensor2</code>的<code style="color: #B58900">.required_grad</code>属性为<code style="color: #B58900">True</code>）。这是如何实现的？实际上，PyTorch 在<code style="color: #B58900">Tensor</code>类中实现了对每个初等函数的<b>重载</b>。例如对于<code style="color: #B58900">mul</code>操作，<code style="color: #B58900">Tensor</code>类内的重载实现为：</p>
 
-![tensor add operation](/images/tensor_mul.png)
+![tensor mul operation](/images/tensor_mul.png)
 
+<p style="text-align:justify; text-justify:inter-ideograph;">可以看到，其内部实现是使用 C++ 语言来编写的，继续追溯到 C++ 源代码中，可以看到<code style="color: #B58900">mul</code>操作的具体实现为：</p>
 
+![tensor mul operation in C++](/images/tensor_mul_c++.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">其中，<code style="color: #B58900">self, other</code>分别是<code style="color: #B58900">mul</code>操作的第一个<code style="color: #B58900">tensor</code>和第二个<code style="color: #B58900">tensor</code>。首先，<code style="color: #B58900">compute_requires_grad()</code>函数判断<code style="color: #B58900">self/other</code>的<code style="color: #B58900">.required_grad</code>属性是否为<code style="color: #B58900">True</code>，只要有一个为<code style="color: #B58900">True</code>，则<code style="color: #B58900">_any_requires_grad</code>为<code style="color: #B58900">True</code>，表示<code style="color: #B58900">mul</code>操作生成的输出的<code style="color: #B58900">required_grad</code>也为<code style="color: #B58900">True</code>。其次，创建一个<code style="color: #B58900">grad_fn</code>：<code style="color: #B58900">MulBackward0</code>作为下一个节点，</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">
 
 1. optimizer 中的 self.param_groups 和 self.states 的 keys 都是与 model.parameters() 共享内存空间，即它们都指向同一个内存区域
 
