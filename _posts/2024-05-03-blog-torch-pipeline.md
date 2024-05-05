@@ -13,9 +13,11 @@ tags:
 
 # 前向过程构建计算图
 
-<p style="text-align:justify; text-justify:inter-ideograph;">不知道你们有没有这样的疑惑：在我们的代码中，只是简单的编写了两个<code style="color: #B58900">tensor</code>相加：<code style="color: #B58900">tensor = tensor1 + tensor2</code>；而 PyTorch 便自动为我们构建了一个计算图（如果<code style="color: #B58900">tensor1 / tensor2</code>的<code style="color: #B58900">.required_grad</code>属性为<code style="color: #B58900">True</code>）。这是如何实现的？实际上，PyTorch 在<code style="color: #B58900">Tensor</code>类中实现了对每个初等函数的<b>重载</b>。例如对于<code style="color: #B58900">mul</code>操作，<code style="color: #B58900">Tensor</code>类内的重载实现为：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">不知道你们有没有这样的疑惑：在我们的代码中，只是简单的编写了两个<code style="color: #B58900">tensor</code>的矩阵相乘：<code style="color: #B58900">tensor = tensor1 @ tensor2</code>；而 PyTorch 便自动为我们构建了一个计算图（可以看到<code style="color: #B58900">tensor<code>的<code style="color: #B58900">.grad_fn</code>属性为<code style="color: #B58900"><MulBackward0></code>；如果<code style="color: #B58900">tensor1 / tensor2</code>的<code style="color: #B58900">.required_grad</code>属性为<code style="color: #B58900">True</code>）。这是如何实现的？实际上，PyTorch 在<code style="color: #B58900">Tensor</code>类中实现了对每个初等函数的<b>重载</b>。例如对于<code style="color: #B58900">mul</code>操作，<code style="color: #B58900">Tensor</code>类内的重载实现为：</p>
 
 ![tensor add operation](/images/tensor_mul.png)
+
+
 
 1. optimizer 中的 self.param_groups 和 self.states 的 keys 都是与 model.parameters() 共享内存空间，即它们都指向同一个内存区域
 
@@ -155,3 +157,13 @@ The hooks defined with this context manager are thread-local, using those hooks 
 2. [The SGD source code of PyTorch](https://github.com/pytorch/pytorch/blob/cd9b27231b51633e76e28b6a34002ab83b0660fc/torch/optim/sgd.py#L63)
 
 3. [A lightweight package to create visualizations of PyTorch execution graphs and traces](https://github.com/szagoruyko/pytorchviz)
+
+4. [How Computational Graphs are Constructed in PyTorch](https://pytorch.org/blog/computational-graphs-constructed-in-pytorch/)
+
+5. [PyTorch internals](http://blog.ezyang.com/2019/05/pytorch-internals/)
+
+6. [Ultimate guide to PyTorch Optimizers](https://analyticsindiamag.com/ultimate-guide-to-pytorch-optimizers/)
+
+7. [torch.optim](https://pytorch.org/docs/stable/optim.html)
+
+8. [What is a PyTorch optimizer?](https://www.educative.io/answers/what-is-a-pytorch-optimizer)
