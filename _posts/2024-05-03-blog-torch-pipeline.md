@@ -85,15 +85,46 @@ tags:
 
 # 优化器根据梯度更新模型参数
 
-<p style="text-align:justify; text-justify:inter-ideograph;">敬请期待！</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">不同于前向过程和后向过程，其代码需要深入到底层的 C++ 源代码进行理解，优化器利用计算得到的梯度更新模型参数的过程主要在 Python 源代码中实现。现在让我们以最简单的 SGD 优化器为例：首先我们需要初始化一个 SGD 优化器实例，它至少需要输入两个参数（模型参数<code style="color: #B58900">params</code>(即 $x_1$ 和 $x_2$)和初始学习率<code style="color: #B58900">lr</code>），如下图所示：</p>
+
+![SGD optimizer](/images/SGD_optimizer_construction_py.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">在经过前向过程(<code style="color: #B58900">v = x1 * x2</code>)和后向过程(<code style="color: #B58900">v.backward()</code>)后，此时 $x_1$ 和 $x_2$ 的<code style="color: #B58900">grad</code>属性内已经存储了计算得到的梯度。因此，我们能想到的最直接的做法就是遍历<code style="color: #B58900">params</code>的每一个参数，判断每个参数的<code style="color: #B58900">required_grad</code>属性是否为<code style="color: #B58900">True</code>；若是，则取出其对应的<code style="color: #B58900">grad</code>属性内存储的梯度，并将该参数与其梯度(乘以学习率)进行相减即可实现参数更新。因此 SGD 类的简单实现应该如下图所示：</p>
+
+![SDG class](/images/SGD_class_py.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">但是这里有个问题，前面我们说过，PyTorch 重载了<code style="color: #B58900">Tensor</code>类的所有初等函数操作；因此，当我们执行<code style="color: #B58900">param -= grad * self.lr</code>操作时，我们实际上会在原有计算图的基础上再构建一个<code style="color: #B58900">SubBackward0</code>节点分支，如下图所示：</p>
+
+![simple SGD problem](/images/simple_SGD_problem.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">因此，为了不让 PyTorch 继续构建计算图，我们需要设置<code style="color: #B58900">with torch.no_grad()</code>来“告诉” PyTorch 下面的操作不需要构建计算图，此时<code style="color: #B58900">Tensor</code>类的所有初等函数操作就不会构建计算图。因此，改进的SGD 类代码如下图所示：</p>
+
+![advance SGD class](/images/SGD_class_advance_py.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">而在 SGD 的源代码中，PyTorch 使用另一种方式来避免计算图的构建，通过使用<code style="color: #B58900">torch._dynamo.graph_break()</code>实现计算图的脱离来确保初等函数操作就不会继续构建计算图。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">了解了如何简单实现 SGD 后，接下来让我们进入 SGD 的源代码来验证我们的实现是否正确。首先是 SGD 如何保存输入进来的<code style="color: #B58900">params</code>参数，下图为 SGD 的<code style="color: #B58900">__init__()</code>函数部分代码：</p>
+
+![SGD source code init](/images/SGD_source_code_init.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">可以看到，SGD 是通过调用其父类<code style="color: #B58900">Optimizer</code>的<code style="color: #B58900">__init__()</code>函数将输入进来的参数保存在<code style="color: #B58900">self.param_groups</code>列表内。接下来就是 SGD 的<code style="color: #B58900">step()</code>函数，下图为 SGD 的<code style="color: #B58900">step()</code>函数部分代码：</p>
+
+![SGD source code step](/images/SGD_source_code_step.png)
+
+<p style="text-align:justify; text-justify:inter-ideograph;">首先，<code style="color: #B58900">step()</code>函数对每个<code style="color: #B58900">self.param_groups</code>列表内的每个参数组<code style="color: #B58900">group</code>，调用<code style="color: #B58900">self._init_group()</code>判断其每个参数<code style="color: #B58900">p</code>的<code style="color: #B58900">grad</code>属性是否为<code style="color: #B58900">None</code>：如果不是，则表示需要更新该参数，则将其存储在<code style="color: #B58900">params_with_grad</code>列表中，同时使用<code style="color: #B58900">d_p_list</code>列表存储其对应的梯度<code style="color: #B58900">p.grad</code>。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">接着，对于那些需要更新的参数<code style="color: #B58900">params_with_grad</code>，调用<code style="color: #B58900">sgd()</code>函数进行参数更新。在<code style="color: #B58900">sgd()</code>函数中，进行一系列的检查后，调用<code style="color: #B58900">_single_tensor_sgd()</code>函数进行参数更新。
+而<code style="color: #B58900">_single_tensor_sgd()</code>函数则是遍历<code style="color: #B58900">params_with_grad</code>列表中的所有参数，对于每个参数<code style="color: #B58900">param</code>列表，取出其在<code style="color: #B58900">d_p_list</code>列表中的对应的梯度<code style="color: #B58900">d_p</code>，并使用<b>原地更新</b>的方式进行参数更新：<code style="color: #B58900">param.add_(d_p, alpha=-lr)</code>。由于是原地更新，且传入优化器的参照即为模型参数，因此对应的模型中的参数也会同步进行更新。</p>
+
+<p style="text-align:justify; text-justify:inter-ideograph;">至此，我们终于完成了 PyTorch 训练模型的整个流程的具体细节（深入到底层代码），包括如何在前向过程中构建计算图；<text style="color:gray">后向传播过程中如何计算并保存梯度；</text>优化器如何根据梯度更新模型参数。</p>
 
 <!-- 1. optimizer 中的 self.param_groups 和 self.states 的 keys 都是与 model.parameters() 共享内存空间，即它们都指向同一个内存区域
 
-2. dict 的 keys(), values() 和 items() 的返回值与 dict 共享内存空间，对其值进行“原地”操作会同步修改 dict 内的值
+1. dict 的 keys(), values() 和 items() 的返回值与 dict 共享内存空间，对其值进行“原地”操作会同步修改 dict 内的值
 
-3. torch.autograd 不保存中间变量 (即对于 z = (x + y) ** 2，torch 不使用一个额外的变量保持 x + y 的值)
+2. torch.autograd 不保存中间变量 (即对于 z = (x + y) ** 2，torch 不使用一个额外的变量保持 x + y 的值)
 
-4. torch.autograd.funtions.Function 的重要属性：
+3. torch.autograd.funtions.Function 的重要属性：
 
 -------------------------------------
 _save_self / _save_other 一般是为了后向过程时计算梯度而保持的必要输入
