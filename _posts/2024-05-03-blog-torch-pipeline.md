@@ -116,7 +116,7 @@ tags:
 <p style="text-align:justify; text-justify:inter-ideograph;">接着，对于那些需要更新的参数<code style="color: #B58900">params_with_grad</code>，调用<code style="color: #B58900">sgd()</code>函数进行参数更新。在<code style="color: #B58900">sgd()</code>函数中，进行一系列的检查后，调用<code style="color: #B58900">_single_tensor_sgd()</code>函数进行参数更新。
 而<code style="color: #B58900">_single_tensor_sgd()</code>函数则是遍历<code style="color: #B58900">params_with_grad</code>列表中的所有参数，对于每个参数<code style="color: #B58900">param</code>列表，取出其在<code style="color: #B58900">d_p_list</code>列表中的对应的梯度<code style="color: #B58900">d_p</code>，并使用<b>原地更新</b>的方式进行参数更新：<code style="color: #B58900">param.add_(d_p, alpha=-lr)</code>。由于是原地更新，且传入优化器的参照即为模型参数，因此对应的模型中的参数也会同步进行更新。</p>
 
-<p style="text-align:justify; text-justify:inter-ideograph;">至此，我们终于完成了 PyTorch 训练模型的整个流程的具体细节（深入到底层代码），包括如何在前向过程中构建计算图；<text style="color:gray">后向传播过程中如何计算并保存梯度；</text>优化器如何根据梯度更新模型参数。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">至此，我们终于完成了 PyTorch 训练模型的整个流程的具体细节（深入到底层代码），包括如何在前向过程中构建计算图；<text style="background-color:gray; color:white">后向传播过程中如何计算并保存梯度；</text>优化器如何根据梯度更新模型参数。</p>
 
 <!-- 1. optimizer 中的 self.param_groups 和 self.states 的 keys 都是与 model.parameters() 共享内存空间，即它们都指向同一个内存区域
 
