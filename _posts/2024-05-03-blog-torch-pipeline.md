@@ -1,7 +1,7 @@
 ---
 title: 'The Basic Knowledge of Torch Train Pipeline'
 date: 24-05-05
-update: 24-05-05
+update: 24-05-14
 permalink: /posts/2024/05/blog-torch-pipeline/
 star: superior
 tags:
