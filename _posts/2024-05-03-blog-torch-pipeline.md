@@ -21,7 +21,7 @@ tags:
 
 ![simple torch DAG](/images/simple_torch_DAG.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">可以看到，计算图的方向与前向计算过程刚好相反。这里，我们将简单描述 Torch 训练的整体流程：在执行乘法过程中，Torc分别为 $x_1$ 和 $x_2$ 构建一个<code style="color: #B58900">AccumulateGrad</code>节点，并将 $x_1$ / $x_2$ 存储在对应的<code style="color: #B58900">AccumulateGrad</code>节点的<code style="color: #B58900">variable</code>属性中；然后根据<code style="color: #B58900">*</code>的乘法操作为 $v$ 构建一个<code style="color: #B58900">MulBackwrad0</code>节点，并将其存储在 $v$ 的<code style="color: #B58900">grad_fn</code>属性中。</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">可以看到，计算图的方向与前向计算过程刚好相反。这里，我们将简单描述 Torch 训练的整体流程：在执行乘法过程中，Torch 分别为 $x_1$ 和 $x_2$ 构建一个<code style="color: #B58900">AccumulateGrad</code>节点，并将 $x_1$ / $x_2$ 存储在对应的<code style="color: #B58900">AccumulateGrad</code>节点的<code style="color: #B58900">variable</code>属性中；然后根据<code style="color: #B58900">*</code>的乘法操作为 $v$ 构建一个<code style="color: #B58900">MulBackwrad0</code>节点，并将其存储在 $v$ 的<code style="color: #B58900">grad_fn</code>属性中。</p>
 
 <p style="text-align:justify; text-justify:inter-ideograph;">而在后向传播计算梯度的过程中，执行<code style="color: #B58900">v.backward()</code>函数时，Torch 首先会获取到存储在 $v$ 的<code style="color: #B58900">grad_fn</code>属性中<code style="color: #B58900">MulBackwrad0</code>节点，然后将初始梯度<code style="color: #B58900">gradient</code>作为输入传递给其<code style="color: #B58900">.backward()</code>函数计算该节点的输入的梯度，即 $x_1$ 和 $x_2$ 的梯度；接着将 $x_1$ 和 $x_2$ 的梯度作为输入传递给各自对应的<code style="color: #B58900">AccumulateGrad</code>节点的<code style="color: #B58900">.backward()</code>函数实现将梯度累加到 $x_1$ 和 $x_2$ 的<code style="color: #B58900">.grad</code>属性中。</p>
 

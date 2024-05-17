@@ -1,6 +1,7 @@
 ---
 title: 'The Basic Knowledge of PyTorch Distributed'
 date: 23-12-13
+update: 24-05-17
 permalink: /posts/2023/12/blog-code-pytorch-distributed/
 star: superior
 tags:
@@ -241,10 +242,12 @@ References
 
 9. [Distributed Data Parallel](https://pytorch.org/docs/master/notes/ddp.html)
 
-10. [Torch Distributed Elastic](https://pytorch.org/docs/stable/distributed.elastic.html)
+10. [Writing Distributed Applications with PyTorch](https://pytorch.org/tutorials/intermediate/dist_tuto.html)
 
-11. [Torch Distributed Elastic Quickstart](https://pytorch.org/docs/stable/elastic/quickstart.html)
+11. [Torch Distributed Elastic](https://pytorch.org/docs/stable/distributed.elastic.html)
 
-12. [Saving and Loading Models](https://pytorch.org/tutorials/beginner/saving_loading_models.html)
+12. [Torch Distributed Elastic Quickstart](https://pytorch.org/docs/stable/elastic/quickstart.html)
 
-13. [All_Reduce 原理](https://tech.preferred.jp/en/blog/technologies-behind-distributed-deep-learning-allreduce/)
+13. [Saving and Loading Models](https://pytorch.org/tutorials/beginner/saving_loading_models.html)
+
+14. [All_Reduce 原理](https://tech.preferred.jp/en/blog/technologies-behind-distributed-deep-learning-allreduce/)
