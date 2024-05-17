@@ -15,7 +15,7 @@ LLM Train Overview
 
 <p style="text-align:justify; text-justify:inter-ideograph;">Large Language Model 的训练需要众多 GPU 或其他 AI accumulator 的联合训练(即 GPU 集群)。
 通过将不同维度分布到 GPUs 上，可以实现不同的并行训练方式。
-具体而言，主要包括 <b>Data Parallelism</b>、<b>Pipeline Parallelism</b>、<b>Tensor Parallelism</b> 和 <b>Expert Parallelism</b>。</p>
+具体而言，主要包括 <b>Data Parallelism</b>、<b>Pipeline Parallelism</b>、<b>Tensor / Model Parallelism</b> 和 <b>Expert Parallelism</b>。</p>
 
 ![types of parallelism](/images/train_parallelism.png)
 
@@ -34,9 +34,9 @@ LLM Train Overview
 <p style="text-align:justify; text-justify:inter-ideograph;">由上述单 GPU 训练过程可以看到，该训练范式存在多个可以进行划分的维度：</p>
 
 1. <p style="text-align:justify; text-justify:inter-ideograph;">将 $B$ 进行划分($B = [B_1,...,B_M]$)，然后将不同的输入数据 $X_m \in \mathbb{R}^{B_m \times N}$ 和 $label_m \in \mathbb{R}^{B_m \times 1}, m = [1,...,M]$ 分布到不同的 GPU 进行计算，即可得到 Data Parallelism；</p>
-2. <p style="text-align:justify; text-justify:inter-ideograph;">将 $N$ 进行划分($N = [N_1,...,N_H]$)，然后将不同的输入数据 $X_h \in \mathbb{R}^{B \times N_h}$ 和 $label_h \in \mathbb{R}^{B \times 1}, h = [1,...,H]$ 分布到不同的 GPU 进行计算；即可得到 Sequence Parallelism；</p>
-3. <p style="text-align:justify; text-justify:inter-ideograph;">将 $L$ 进行划分($L = [L_1,...,L_I]$)，然后将不同的模型模块 $\mathbf{M}_i \in \mathbb{R}^{L_i \times D}, i=[1,...,I]$ 分布到不同的 GPU 进行计算，即可得到 Parallelism Parallelism；</p>
-4. <p style="text-align:justify; text-justify:inter-ideograph;">将 $D$ 进行划分($D = [D_1,...,D_J]$)，然后将不同的模型参数 $\mathbf{M}_j \in \mathbb{R}^{L \times D_j}, j=[1,...,J]$ 分布到不同的 GPU 进行计算，即可得到 Tensor Parallelism。</p>
+2. <p style="text-align:justify; text-justify:inter-ideograph;">将 $N$ 进行划分($N = [N_1,...,N_H]$)，然后将不同的输入数据 $X_h \in \mathbb{R}^{B \times N_h}$ 和 $label_h \in \mathbb{R}^{B \times 1}, h = [1,...,H]$ 分布到不同的 GPU 进行计算；即可得到 Sequence Parallelism (实际上等价于 Tensor / Model Parallelism)；</p>
+3. <p style="text-align:justify; text-justify:inter-ideograph;">将 $L$ 进行划分($L = [L_1,...,L_I]$)，然后将不同的模型模块 $\mathbf{M}_i \in \mathbb{R}^{L_i \times D}, i=[1,...,I]$ 分布到不同的 GPU 进行计算，即可得到 Pipeline Parallelism；</p>
+4. <p style="text-align:justify; text-justify:inter-ideograph;">将 $D$ 进行划分($D = [D_1,...,D_J]$)，然后将不同的模型参数 $\mathbf{M}_j \in \mathbb{R}^{L \times D_j}, j=[1,...,J]$ 分布到不同的 GPU 进行计算，即可得到 Tensor / Model Parallelism。</p>
 
 
 Data Parallelism (DP) $\rightarrow$ Distributed Data Parallelism (DDP)
@@ -197,20 +197,20 @@ DataParallel Code Implementation
 
 ![torch DDP save model](/images/torch_DDP_savemodel.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">将 DDP 与 MP (Model Parallel) 结合起来，即可实现更加大型的模型训练。
-如下所示，假设 MP 的 GPU 数为 $2$，则<code style="color: #B58900">world_size</code>$=$所有 node 的 GPU 数 $/2$，
-然后使用<code style="color: #B58900">rank</code>来标记当前的 GPU 组数，即第 $rank$ 个进程的 MP 使用的 GPU 为 $[rank, rank+1$。
-需要注意的是，由于模型使用的是 MP，即 multi-device，因此<code style="color: #B58900">DDP</code>中的<code style="color: #B58900">device_ids</code>参数不能设置，只能使用默认值<code style="color: #B58900">None</code>；
+<p style="text-align:justify; text-justify:inter-ideograph;">将 DDP 与 PP (Pipeline Parallel) 结合起来，即可实现更加大型的模型训练。
+如下所示，假设 PP 的 GPU 数为 $2$，则<code style="color: #B58900">world_size</code>$=$所有 node 的 GPU 数 $/2$，
+然后使用<code style="color: #B58900">rank</code>来标记当前的 GPU 组数，即第 $rank$ 个进程的 PP 使用的 GPU 为 $[rank, rank+1$。
+需要注意的是，由于模型使用的是 PP，即 multi-device，因此<code style="color: #B58900">DDP</code>中的<code style="color: #B58900">device_ids</code>参数不能设置，只能使用默认值<code style="color: #B58900">None</code>；
 且模型的输入数据必须显式将其设置到指定的 device 上：<code style="color: #B58900">x=x.to(self.dev0)</code>。</p>
 
-![torch DDP + MP](/images/torch_DDP_MP.png)
+![torch DDP + PP](/images/torch_DDP_PP.png)
 
 Conclusion
 ===
 
-<p style="text-align:justify; text-justify:inter-ideograph;">因此，一个 DDP + MP 的 PyTorch 实现框架如下：</p>
+<p style="text-align:justify; text-justify:inter-ideograph;">因此，一个 DDP + PP 的 PyTorch 实现框架如下：</p>
 
-![torch DDP + MP architecture](/images/torch_DDP_MP_architecture.png)
+![torch DDP + PP architecture](/images/torch_DDP_PP_architecture.png)
 
 Appendix
 ===
