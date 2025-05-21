@@ -1,5 +1,5 @@
 ---
-title: "Flowmind2Digital"
+title: "Flowmind2Digital: The First Comprehensive Flowmind Recognition and Conversion Approach"
 collection: publications
 state: reviewed
 permalink: /publication/2023-04-01-flowmind2digital
