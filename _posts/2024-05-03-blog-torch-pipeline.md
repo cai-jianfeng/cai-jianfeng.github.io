@@ -9,7 +9,7 @@ tags:
 ---
 
 <p style="text-align:justify; text-justify:inter-ideograph;">这篇博客主要讲解 PyTorch 训练模型的整个流程的具体细节，
-包括如何在前向过程中构建计算图；后向传播过程中如何计算并保存梯度；优化器如何根据梯度更新模型参数。(建议先阅读我之前关于 torch.autograd 的博客 <a href="https://cai-jianfeng.github.io/posts/2023/12/blog-code-pytorch-autograd/" target="_blank">The Basic Knowledge of PyTorch Autograd</a> )</p>
+包括如何在前向过程中构建计算图；后向传播过程中如何计算并保存梯度；优化器如何根据梯度更新模型参数。(建议先阅读我之前关于 torch.autograd 的博客 <a href="https://cai-jianfeng.github.io/posts/2023/12/blog-code-pytorch-autograd/" target="_blank">The Basic Knowledge of PyTorch Autograd</a>)</p>
 
 # Torch 训练的整体流程
 
