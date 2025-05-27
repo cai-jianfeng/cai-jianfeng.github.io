@@ -1,5 +1,5 @@
 ---
-title: "Flowmind2Digital"
+title: "Flowmind2Digital: The First Comprehensive Flowmind Recognition and Conversion Approach"
 collection: publications
 state: reviewed
 permalink: /publication/2023-04-01-flowmind2digital
@@ -7,7 +7,7 @@ excerpt: 'This paper proposes the Flowmind2digital method and hdFlowmind dataset
 date: 2023-04-01
 venue: 'Multidisciplinary Digital Publishing Institute Electronics'
 paperurl: 'http://arxiv.org/abs/2401.03742'
-citation: 'Cai Jianfeng. (2024). &quot;Flowmind2Digital: The First Comprehensive Flowmind Recognition and Conversion Approach.&quot; <i>arXiv preprint arXiv: 2401.03742, 2024</i>.'
+citation: 'Liu Huanyu<sup>*</sup>, Cai Jianfeng<sup>*</sup>. (2024). &quot;Flowmind2Digital: The First Comprehensive Flowmind Recognition and Conversion Approach.&quot; <i>arXiv preprint arXiv: 2401.03742, 2024</i>.'
 ---
 <p style="text-align:justify; text-justify:inter-ideograph;">This paper proposes the Flowmind2digital method and hdFlowmind dataset to address the convertion of hand-drawn flowchart/mindmap. 
 Flowmind2digital is an comprehensive recognition and conversion method for flowminds, utilizing a neural network architecture and keypoint detection technology to enhance overall recognition accuracy. 
