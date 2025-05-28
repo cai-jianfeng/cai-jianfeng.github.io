@@ -17,7 +17,11 @@ RLHF 的算法流程
 
 <p style="text-align:justify; text-justify:inter-ideograph;">下面，我们以 PPO 为例来了解每个框架的整体架构和每个部分的具体模块 (其他的 RL 算法如 GRPO，REINFORCE++ 等基本上都是在 PPO 的基础上减少某些模块)。首先，如下图所示 (这里直接盗用 <a href="https://arxiv.org/abs/2405.11143" target="_blank">OpenRLHF</a> 的图片🥳)，我们先逻辑化整理一下 PPO 的算法流程：</p>
 
-![ppo pipeline](/images/PPO_gen_and_learn.png)
+<!-- ![ppo pipeline](/images/PPO_gen_and_learn.png) -->
+<figure>
+  <img src="/images/PPO_gen_and_learn.png" alt="ppo pipeline" style="width:100%">
+  <figcaption>图 1：PPO 的生成与训练阶段</figcaption>
+</figure>
 
 <p style="text-align:justify; text-justify:inter-ideograph;"><b>A. PPO 的生成阶段：</b>即通过给定的输入，生成一系列 PPO 所训练的必要的元素，在经典 RL 中也被称作环境交互。</p>
 
@@ -40,6 +44,8 @@ RLHF 的算法流程
 DeepSpeedChat
 ===
 
-可以看到，上述的流程涉及到 actor model $\pi_{RL}$ 的 rollout，actor model $\pi_{RL}$ 和 $\pi_{SFT}$ 的 infer，reward model $R$ 和 critic model $V$ 的 infer，以及 actor model $\pi_{RL}$ 和 critic model $V$ 的 train。<b>最直接的实现方式是，按照上述流程的逻辑编写 PPO 训练的架构，通过简单扩展单模型训练框架得到多模型训练框架。</b>DeepSpeedChat 就是按照这种思路扩展 DeepSpeed 框架来实现 PPO 的训练的。
+可以看到，上述的流程涉及到 actor model $\pi_{RL}$ 的 rollout，actor model $\pi_{RL}$ 和 $\pi_{SFT}$ 的 infer，reward model $R$ 和 critic model $V$ 的 infer，以及 actor model $\pi_{RL}$ 和 critic model $V$ 的 train。<b>最直接的实现方式是，按照上述流程的逻辑编写 PPO 训练的架构，通过简单扩展单模型训练框架得到多模型训练框架。</b>如下图所示，DeepSpeedChat 就是按照这种思路扩展 DeepSpeed 框架来实现 PPO 的训练的。(下面讲解的 DeepSpeedChat 的版本为 bd47e5bc38d292f44bf183e7bda992cde36a769b)
+
+1. 初始化
 
 敬请期待🤪 (争取端午节放假结束之前完成)
