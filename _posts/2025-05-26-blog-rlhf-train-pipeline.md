@@ -16,7 +16,7 @@ tags:
 
 ![ppo pipeline](/images/PPO_gen_and_learn.png)
 
-A. PPO 的生成阶段：即通过给定的输入，生成一系列 PPO 所训练的必要的元素，在经典 RL 中也被称作环境交互。
+<p style="text-align:justify; text-justify:inter-ideograph;">A. PPO 的生成阶段：即通过给定的输入，生成一系列 PPO 所训练的必要的元素，在经典 RL 中也被称作环境交互。</p>
 
 1. <p style="text-align:justify; text-justify:inter-ideograph;">给定 SFT 后得到的 model，将其复制为 reference model $\pi_{SFT}$ 和需要进一步训练的 actor model $\pi_{RL}$；给定 Reward Modeling 后得到的 model，将其复制为 reward model $R$ 和 critic model $V$。</p>
 
