@@ -20,7 +20,7 @@ tags:
 
 1. <p style="text-align:justify; text-justify:inter-ideograph;">给定 SFT 后得到的 model，将其复制为 reference model $\pi_{SFT}$ 和需要进一步训练的 actor model $\pi_{RL}$；给定 Reward Modeling 后得到的 model，将其复制为 reward model $R$ 和 critic model $V$.</p>
 
-2. <p style="text-align:justify; text-justify:inter-ideograph;">给定 prompt $x$，将其输入给 actor model $\pi_{RL}$ 生成 response $y$，得到 sequence $x + y$. (<span style="color: green;">$\pi_{RL}$ rollout</span>)</p>
+2. <p style="text-align:justify; text-justify:inter-ideograph;">给定 prompt $x$，将其输入给 actor model $\pi_{RL}$ 生成对应的 response $y$，得到完整的 sequence $x + y$. (<span style="color: green;">$\pi_{RL}$ rollout</span>)</p>
 
 3. <p style="text-align:justify; text-justify:inter-ideograph;">给定 sequence $x + y$，将其输入给 actor model $\pi_{RL}$ 和 reference model $\pi_{SFT}$ 分别生成 action logits $p_{RL}$ 和 sft logits $p_{SFT}$，并进一步计算 KL divergence $KL$. (<span style="color: green;">$\pi_{RL}$ 和 $\pi_{SFT}$ infer</span>)</p>
 
