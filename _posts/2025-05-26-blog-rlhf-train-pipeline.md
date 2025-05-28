@@ -63,6 +63,8 @@ DeepSpeedChat
   <figcaption>图 2：DeepSpeedChat 的 PPO 训练框架 (其中<span style="color: red;">红色箭头</span>表示代码执行的顺序；<span style="color: black;">黑色箭头</span>表示模块的扩展描述)</figcaption>
 </figure>
 
-1. 初始化
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">接下来，我们讲解 DeepSpeedChat 的每个模块的逻辑和代码细节：</p>
+
+首先是<a href="https://github.com/deepspeedai/DeepSpeedExamples/blob/bd47e5bc38d292f44bf183e7bda992cde36a769b/applications/DeepSpeed-Chat/training/step3_rlhf_finetuning/main.py#L449-L457" target="_blank">初始化分布式环境</a>，<a href="https://github.com/deepspeedai/DeepSpeedExamples/blob/bd47e5bc38d292f44bf183e7bda992cde36a769b/applications/DeepSpeed-Chat/training/step3_rlhf_finetuning/main.py#L471-L475" target="_blank">加载 tokenizer</a>，<a href="https://github.com/deepspeedai/DeepSpeedExamples/blob/bd47e5bc38d292f44bf183e7bda992cde36a769b/applications/DeepSpeed-Chat/training/step3_rlhf_finetuning/main.py#L477-L478" target="_blank">加载数据集</a>。
 
 敬请期待🤪 (争取端午节放假结束之前完成)
