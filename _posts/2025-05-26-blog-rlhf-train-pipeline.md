@@ -14,6 +14,8 @@ tags:
 
 <p style="text-align:justify; text-justify:inter-ideograph;">下面，我们以 PPO 为例来了解每个架构的整体架构和每个部分的具体模块（其他的 RL 算法如 GRPO，REINFORCE++ 等基本上都是在 PPO 的基础上减少某些模块）。首先，如下图所示，我们先逻辑化整理一下 PPO 的算法流程：</p>
 
+![ppo pipeline](/images/PPO_gen_and_learn.png)
+
 A. PPO 的生成阶段：即通过给定的输入，生成一系列 PPO 所训练的必要的元素，在经典 RL 中也被称作环境交互。
 
 1. 给定 SFT 后得到的 model，将其复制为 reference model $\pi_{SFT}$ 和需要进一步训练的 actor model $\pi_{RL}$；给定 Reward Modeling 后得到的 model，将其复制为 reward model $R$ 和 critic model $V$。
