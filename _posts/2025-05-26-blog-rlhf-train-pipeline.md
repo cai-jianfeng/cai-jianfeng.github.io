@@ -60,7 +60,7 @@ DeepSpeedChat
 
 <figure id="fig-deepspeedchat-pipeline">
   <img src="/images/deepspeedchat.svg" alt="deepspeedchat pipeline" style="width:100%">
-  <figcaption>图 2：DeepSpeedChat 的 PPO 训练框架</figcaption>
+  <figcaption>图 2：DeepSpeedChat 的 PPO 训练框架 (其中<span style="color: red;">红色箭头</span>表示代码执行的顺序；<span style="color: black;">黑色箭头</span>表示模块的扩展描述)</figcaption>
 </figure>
 
 1. 初始化
