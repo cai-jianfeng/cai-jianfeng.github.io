@@ -191,13 +191,13 @@ DataParallel Code Implementation
 
 ![torch DDP + PP](/images/torch_DDP_PP.png)
 
-Torchrun
+<!-- Torchrun
 ==========
 --master_addr, --master_port is not useful for --rdzv-backend=c10d, which is dynamic
 --rdzv-endpoint=addr:port
 (I guess) the dynamic backend's master selection method is according to host name (sorted by alphabet, and choose the first)
 
-the rdzv-endpoint is used to init process group before training, the master is used to determinate the communication node during training
+the rdzv-endpoint is used to init process group before training, the master is used to determinate the communication node during training -->
 
 Conclusion
 ==========
@@ -209,11 +209,9 @@ Conclusion
 Appendix
 ========
 
-1. <p style="text-align:justify; text-justify:inter-ideograph;">Data Parallelism 运用在序列数据上的差异，即在使用 DP 或 data_parallel() 的模型中使用 <b>打包序列 $\rightarrow$ 循环网络 $\rightarrow$ 解包序列</b> 的模式有一个不同之处：
+<p style="text-align:justify; text-justify:inter-ideograph;">1. Data Parallelism 运用在序列数据上的差异，即在使用 DP 或 data_parallel() 的模型中使用 <b>打包序列 $\rightarrow$ 循环网络 $\rightarrow$ 解包序列</b> 的模式有一个不同之处：</p>
 
-每个设备上的forward()的输入将只是整个输入的一部分。因为解包操作`<code style="color: #B58900">`torch.nn.utils.rnn.pad_packed_sequence()`</code>`默认情况下只填充到它看到的最长输入，
-即当前设备上最长的输入(而且有可能每个设备上的最长输出的长度不一致)，所以当输出结果聚集在一起时将发生长度不匹配，无法 concat。
-为此，可以利用`<code style="color: #B58900">`pad_packed_sequence()`</code>`的`<code style="color: #B58900">`total_length`</code>`参数来确保 forward() 调用返回相同长度的序列，如下所示：`</p>`
+<p style="text-align:justify; text-justify:inter-ideograph;">每个设备上的forward()的输入将只是整个输入的一部分。因为解包操作<code style="color: #B58900">torch.nn.utils.rnn.pad_packed_sequence()</code>默认情况下只填充到它看到的最长输入，即当前设备上最长的输入(而且有可能每个设备上的最长输出的长度不一致)，所以当输出结果聚集在一起时将发生长度不匹配，无法 concat。为此，可以利用<code style="color: #B58900">pad_packed_sequence()</code>的<code style="color: #B58900">total_length</code>参数来确保 forward() 调用返回相同长度的序列，如下所示：</p>
 
 ![torch_DP_RNN](/images/torch_DP_RNN_error.png)
 
