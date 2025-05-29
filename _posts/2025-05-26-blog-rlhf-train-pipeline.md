@@ -79,14 +79,19 @@ tags:
   <figcaption>图 3：DeepSpeedChat 的各个 model 分布 (其中<span style="color: green;">绿色</span>表示每个 GPU 的内存；<span style="color: blue;">蓝色</span>表示每个 model。其中，actor model 和 critic model 由于需要 train 一般使用 Zero $3$，而 ref model 和 reward model 由于只需要 infer 一般使用 Zero $0$。)</figcaption>
 </figure>
 
-我们将 DeepSpeedChat 这种将所有 model 都分配到相同的 GPU 资源上的结构称为 <b>collocate all models</b>。而在理想的情况下，各个 model 在 GPU 资源上的结构应该如图 <a href="#fig-collocate-pipeline">4</a> 所示。首先，将 actor model 复制为 $2$ 份，一份用于 train，使用 TrainEngine (如 DeepSpeed, FSDP, Megatron) 进行优化，称为 $\pi_{train}$；而另一份用于 rollout，使用 InferEngine (如 vllm, sglang) 进行优化，称为 $\pi_{rollout}$，并在每次 PPO 训练阶段完成后，下一次 PPO 生成阶段开始前，将 更新后的 $\pi_{train}$ 的参数同步给 $\pi_{rollout}$。这样做的目的是可以更好地利用目前开源的各个 train/infer engine，提升各个阶段的效率。
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">我们将 DeepSpeedChat 这种将所有 model 都分配到相同的 GPU 资源上的结构称为 <b>collocate all models</b>。而在理想的情况下，各个 model 在 GPU 资源上的结构应该如图 <a href="#fig-collocate-pipeline">4</a> 所示。首先，将 actor model 复制为 $2$ 份，一份用于 train，使用 TrainEngine (如 DeepSpeed, FSDP, Megatron) 进行优化，称为 $\pi_{train}$；而另一份用于 rollout，使用 InferEngine (如 vllm, sglang) 进行优化，称为 $\pi_{rollout}$，并在每次 PPO 训练阶段完成后，下一次 PPO 生成阶段开始前，将 更新后的 $\pi_{train}$ 的参数同步给 $\pi_{rollout}$。这样做的目的是可以更好地利用目前开源的各个 train/infer engine，提升各个阶段的效率。</p>
 
 <figure id="fig-scattered-pipeline">
   <img src="/images/scattered_pipeline.png" alt="scattered pipeline" style="width:100%">
   <figcaption>图 4：理想情况下 RLHF 的各个 model 分布 (其中<span style="color: green;">绿色</span>表示每个 GPU 的内存；<span style="color: blue;">蓝色</span>表示每个 model。)</figcaption>
 </figure>
 
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">在将每个 model 都分配到不同的 GPU 资源之后，RLHF 的整个流程就可以引入 model 并行推理，形成如图 <a href="#fig-RLHF-parallel-pipeline">5</a> 所示的逻辑流程。</p>
 
+<figure id="fig-RLHF-parallel-pipeline">
+  <img src="/images/RLHF-parallel-pipeline.svg" alt="RLHF parallel pipeline" style="width:100%">
+  <figcaption>图 5：理想情况下 RLHF 的逻辑流程 (其中<span style="color: red;">红色箭头</span>表示逻辑流；<span style="color: black;">黑色箭头</span>表示数据流。同一层内的模块表示其可以并行)</figcaption>
+</figure>
 
 <h1 id="OpenRLHF pipeline">OpenRLHF</h1>
 
