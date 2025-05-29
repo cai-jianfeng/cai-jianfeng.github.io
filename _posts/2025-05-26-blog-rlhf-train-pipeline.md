@@ -104,6 +104,9 @@ tags:
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">那么如何异步地启动/调用不同 model 的分布式进程组呢？目前 OpenRLHF 和 verl 都采用了 <a href="https://github.com/ray-project/ray" target="_blank"> ray </a>来实现这一目的。ray 有些类似于计算集群管理和调度的软件，通过 <code style="color: #B58900">ray start</code> 或者 <code style="color: #B58900">ray.init()</code> 来启动 ray，并指定集群所拥有的 CPU 数，GPU 数等计算资源。接着使用装饰符 <code style="color: #B58900">@ray.remote()</code> 将某个函数/类装饰为一个 Task/Actor (可以初略地理解为任务)，则在后续调用该任务时，ray 会自动将其异步地调度到目前可用的计算资源上，从而减轻我们编写异步代码的难度。</p>
 
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">由于 OpenRLHF 和 verl 都是基于 ray 来构建，同时构建逻辑遵循图 <a href="#fig-RLHF-parallel-pipeline">5</a>，因此其代码结构有些相似。但是不同的是 OpenRLHF 的分布式进程组的后端使用的是 DeepSpeed 和 vllm；而 OpenRLHF 的分布式进程组的后端使用的是 DeepSpeed/FSDP 和 vllm/sglang。
+同时，OpenRLHF 使用 <code style="color: #B58900">PPORayActorGroup</code> 封装每个 model 的分布式进程组；接着通过统一的 <code style="color: #B58900">async_run_method_batch()</code> 来调用每个 model 的统一接口 <code style="color: #B58900">execute_batch(method_name, ...)</code>，根据提供的 <code style="color: #B58900">method_name</code> 的不同来调用不同 model 的具体方法。而 verl 则是使用 <code style="color: #B58900">WorkerDict</code> 封装所有 model 的分布式进程组，并使用 <code style="color: #B58900">_bind_workers_method_to_parent()</code> 将所有 model 的特有方法 (含有 <code style="color: #B58900">MAGIC_ATTR</code> 属性的方法)绑定到 <code style="color: #B58900">WorkerDict</code> 自身上，从而通过直接调用自身的方法来调用不同 model 的具体方法。</p>
+
 <h1 id="OpenRLHF pipeline">OpenRLHF</h1>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">接下来，我们讲解 OpenRLHF 的每个模块的逻辑和代码细节：(下面讲解的 OpenRLHF 的版本为 494850f50342ed38d5ae76ef45a3207f3523b582)</p>
@@ -115,4 +118,6 @@ tags:
   <figcaption>图 7: OpenRLHF 的 PPO 训练框架</figcaption>
 </figure>
 
+
+<!-- 78532923368aeb058f62201489546d013df47710 -->
 敬请期待🤪 (争取端午节放假结束之前完成)
