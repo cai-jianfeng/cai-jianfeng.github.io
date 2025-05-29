@@ -76,7 +76,7 @@ DeepSpeedChat
 
 <figure id="fig-collocate-pipeline">
   <img src="/images/collocate_all_model.png" alt="collocate pipeline" style="width:100%">
-  <figcaption>图 2：DeepSpeedChat 的各个 model 分布 (其中<span style="color: green;">绿色</span>表示每个 GPU 的内存；<span style="color: blue;">蓝色</span>表示每个 model。其中，actor model 和 critic model 由于需要 train 一般使用 Zero 3，而 ref model 和 reward model 由于只需要 infer 一般使用 Zero 0。)</figcaption>
+  <figcaption>图 2：DeepSpeedChat 的各个 model 分布 (其中<span style="color: green;">绿色</span>表示每个 GPU 的内存；<span style="color: blue;">蓝色</span>表示每个 model。其中，actor model 和 critic model 由于需要 train 一般使用 Zero $3$，而 ref model 和 reward model 由于只需要 infer 一般使用 Zero $0$。)</figcaption>
 </figure>
 
 敬请期待🤪 (争取端午节放假结束之前完成)
