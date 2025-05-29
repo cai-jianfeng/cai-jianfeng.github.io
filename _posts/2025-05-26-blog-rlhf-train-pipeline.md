@@ -93,14 +93,16 @@ tags:
   <figcaption>图 5：理想情况下 RLHF 的逻辑流程 (其中<span style="color: red;">红色箭头</span>表示逻辑流；<span style="color: black;">黑色箭头</span>表示数据流。<span style="color: yellow;">黄色模块</span>表示计算模块；<span style="color: blue;">蓝色模块</span>表示由计算模块生成的数据模块，同一层内的计算模块表示其可以并行)</figcaption>
 </figure>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">与 DeepSpeedChat 一开始就使用 deepspeed 命令启动分布式，并在每个子进程中运行 main.py 不同。关于图 <a href="#fig-RLHF-parallel-pipeline">5</a> 所示的逻辑流程的代码编写，由于其需要模块并行，即每个分布式子进程执行的模块不同 (例如 actor model 的分布式子进程在生成 action logits 时，ref model 的分布式子进程在生成 sft logits)。因此最直观，也是最具扩展性的方式是使用一个主进程来编写 PPO 的整体计算逻辑 (这个主进程也被称为 single controller)，在遇到分布式初始化/计算时，则异步启动/调用各个 model 的分布式进程，然后继续主进程的下一步计算逻辑，并在之后需要原先分布式进程结果的时候获取它。因此，整体的代码训练框架如图 <a href="#fig-RLHF-parallel-pipeline">6</a> 所示 (由于篇幅限制，这里只展示一小部分代码逻辑)。
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">与 DeepSpeedChat 一开始就使用 deepspeed 命令启动分布式，并在每个子进程中运行 main.py 不同。关于图 <a href="#fig-RLHF-parallel-pipeline">5</a> 所示的逻辑流程的代码编写，由于其需要模块并行，即每个 model 的分布式进程组执行的模块不同 (例如 actor model 的分布式进程组在生成 action logits 时，ref model 的分布式进程组在同时生成 sft logits)。因此最直观，也是最具扩展性的方式是使用一个<b>主进程</b>来编写 PPO 的整体计算逻辑 (这个主进程也被称为 single controller)，在遇到分布式初始化/计算时，则异步启动/调用各个 model 的分布式进程组，然后继续主进程的下一步计算逻辑，并在之后需要原先分布式进程组结果的时候获取它。因此，整体的代码训练框架如图 <a href="#fig-RLHF-parallel-pipeline">6</a> 所示 (由于篇幅限制，这里只展示一小部分代码逻辑)。
 
 <figure id="fig-RLHF-parallel-code-pipeline">
   <img src="/images/RLHF-parallel-code-pipeline.svg" alt="RLHF parallel code pipeline" style="width:100%">
-  <figcaption>图 6：理想情况下 RLHF 的训练框架 (其中<span style="color: black;">黑色箭头</span>表示初始化/调用不同 model 的分布式进程。<span style="color: green;">绿色模块</span>表示 model 的分布式进程组；<span style="color: yellow;">黄色模块</span>表示 model 的分布式进程组的每个进程)</figcaption>
+  <figcaption>图 6：理想情况下 RLHF 的训练框架 (其中<span style="color: black;">黑色箭头</span>表示初始化/调用不同 model 的分布式进程组。<span style="color: green;">绿色模块</span>表示 model 的分布式进程组；<span style="color: yellow;">黄色模块</span>表示 model 的分布式进程组的每个进程)</figcaption>
 </figure>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: gray;">题外话：原本的 OpenRLHF 的代码不是 single controller 的模式，而是将 PPO 的计算逻辑分散到各个 model 的分布式进程中，导致其很难扩展。不过好在现在已经重构为 single controller 的模式了。</span></p>
+
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">那么如何异步地启动/调用不同 model 的分布式进程组呢？目前 OpenRLHF 和 verl 都采用了 <a href="https://github.com/ray-project/ray" target="_blank"> ray </a>来实现这一目的。ray 有些类似于计算集群管理和调度的软件，通过 <code style="color: #B58900">ray start</code> 或者 <code style="color: #B58900">ray.init()</code> 来启动 ray，并指定集群所拥有的 CPU 数，GPU 数等计算资源。接着使用装饰符 <code style="color: #B58900">@ray.remote()</code> 将某个函数/类装饰为一个 Task/Actor (可以初略地理解为任务)，则在后续调用该任务时，ray 会自动将其异步地调度到目前可用的计算资源上，从而减轻我们编写异步代码的难度。</p>
 
 <h1 id="OpenRLHF pipeline">OpenRLHF</h1>
 
