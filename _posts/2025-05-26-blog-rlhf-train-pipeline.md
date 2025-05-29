@@ -95,7 +95,7 @@ tags:
 
 <h1 id="OpenRLHF pipeline">OpenRLHF</h1>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">接下来，我们讲解 DeepSpeedChat 的每个模块的逻辑和代码细节：(下面讲解的 OpenRLHF 的版本为 494850f50342ed38d5ae76ef45a3207f3523b582)</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">接下来，我们讲解 OpenRLHF 的每个模块的逻辑和代码细节：(下面讲解的 OpenRLHF 的版本为 494850f50342ed38d5ae76ef45a3207f3523b582)</p>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">如图 <a href="#fig-OpenRLHF-pipeline">6</a> 所示 (这里直接盗用 <a href="https://arxiv.org/abs/2405.11143" target="_blank">OpenRLHF</a> 的图片🥳)</p>
 
