@@ -97,7 +97,7 @@ tags:
 
 <figure id="fig-RLHF-parallel-code-pipeline">
   <img src="/images/RLHF-parallel-code-pipeline.svg" alt="RLHF parallel code pipeline" style="width:100%">
-  <figcaption>图 5：理想情况下 RLHF 的训练框架 (其中<span style="color: black;">黑色箭头</span>表示初始化/调用不同 model 的分布式进程。<span style="color: green;">绿色模块</span>表示 model 的分布式进程组；<span style="color: yellow;">黄色模块</span>表示 model 的分布式进程组的每个进程)</figcaption>
+  <figcaption>图 6：理想情况下 RLHF 的训练框架 (其中<span style="color: black;">黑色箭头</span>表示初始化/调用不同 model 的分布式进程。<span style="color: green;">绿色模块</span>表示 model 的分布式进程组；<span style="color: yellow;">黄色模块</span>表示 model 的分布式进程组的每个进程)</figcaption>
 </figure>
 
 <h1 id="OpenRLHF pipeline">OpenRLHF</h1>
