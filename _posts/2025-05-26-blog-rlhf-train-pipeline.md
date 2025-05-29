@@ -18,7 +18,7 @@ tags:
 
 <!-- ![ppo pipeline](/images/PPO_gen_and_learn.png) -->
 <figure id="fig-ppo-pipeline">
-  <img src="/images/PPO_gen_and_learn.png" alt="ppo pipeline" style="width:100%">
+  <img src="/images/PPO_gen_and_learn.svg" alt="ppo pipeline" style="width:100%">
   <figcaption>图 1：PPO 的生成与训练阶段</figcaption>
 </figure>
 
