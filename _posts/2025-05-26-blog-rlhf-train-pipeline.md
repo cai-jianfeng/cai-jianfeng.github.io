@@ -59,7 +59,7 @@ tags:
 
 <figure id="fig-deepspeedchat-pipeline">
   <img src="/images/deepspeedchat.svg" alt="deepspeedchat pipeline" style="width:100%">
-  <figcaption>图 2：DeepSpeedChat 的 PPO 训练框架 (其中<span style="color: red;">红色箭头</span>表示代码执行的顺序；<span style="color: black;">黑色箭头</span>表示模块的扩展描述)</figcaption>
+  <figcaption>图 2：DeepSpeedChat 的 PPO 训练框架 (其中<span style="color: red;">红色箭头</span>表示代码执行的顺序；<span style="color: black;">黑色箭头</span>表示模块的扩展描述；<span style="color: green;">绿色模块</span>表示 main.py 内的代码模块；<span style="color: yellow;">黄色模块</span>表示其他文件内的代码模块)</figcaption>
 </figure>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">接下来，我们讲解 DeepSpeedChat 的每个模块的逻辑和代码细节：</p>
@@ -76,17 +76,17 @@ tags:
 
 <figure id="fig-collocate-pipeline">
   <img src="/images/collocate_all_model.png" alt="collocate pipeline" style="width:100%">
-  <figcaption>图 3：DeepSpeedChat 的各个 model 分布 (其中<span style="color: green;">绿色</span>表示每个 GPU 的内存；<span style="color: blue;">蓝色</span>表示每个 model。其中，actor model 和 critic model 由于需要 train 一般使用 Zero $3$，而 ref model 和 reward model 由于只需要 infer 一般使用 Zero $0$。)</figcaption>
+  <figcaption>图 3：DeepSpeedChat 的各个 model 分布 (其中<span style="color: green;">绿色</span>表示每个 GPU 的内存；<span style="color: blue;">蓝色</span>表示每个 model。其中，actor model 和 critic model 由于需要 train 一般使用 Zero $3$，而 ref model 和 reward model 由于只需要 infer 一般使用 Zero $0$)</figcaption>
 </figure>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">我们将 DeepSpeedChat 这种将所有 model 都分配到相同的 GPU 资源上的结构称为 <b>collocate all models</b>。而在理想的情况下，各个 model 在 GPU 资源上的结构应该如图 <a href="#fig-collocate-pipeline">4</a> 所示。首先，将 actor model 复制为 $2$ 份，一份用于 train，使用 TrainEngine (如 DeepSpeed, FSDP, Megatron) 进行优化，称为 $\pi_{train}$；而另一份用于 rollout，使用 InferEngine (如 vllm, sglang) 进行优化，称为 $\pi_{rollout}$，并在每次 PPO 训练阶段完成后，下一次 PPO 生成阶段开始前，将 更新后的 $\pi_{train}$ 的参数同步给 $\pi_{rollout}$。这样做的目的是可以更好地利用目前开源的各个 train/infer engine，提升各个阶段的效率。</p>
 
 <figure id="fig-scattered-pipeline">
   <img src="/images/scattered_pipeline.png" alt="scattered pipeline" style="width:100%">
-  <figcaption>图 4：理想情况下 RLHF 的各个 model 分布 (其中<span style="color: green;">绿色</span>表示每个 GPU 的内存；<span style="color: blue;">蓝色</span>表示每个 model。)</figcaption>
+  <figcaption>图 4：理想情况下 RLHF 的各个 model 分布 (其中<span style="color: green;">绿色</span>表示每个 GPU 的内存；<span style="color: blue;">蓝色</span>表示每个 model)</figcaption>
 </figure>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">在将每个 model 都分配到不同的 GPU 资源之后，RLHF 的整个流程就可以引入 model 并行推理，形成如图 <a href="#fig-RLHF-parallel-pipeline">5</a> 所示的逻辑流程。可以看到，大多数的</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">在将每个 model 都分配到不同的 GPU 资源之后，RLHF 的整个流程就可以引入 model 并行推理，形成如图 <a href="#fig-RLHF-parallel-pipeline">5</a> 所示的逻辑流程。可以看到，大多数的计算模块都可以并行进行，与图 <a href="#fig-ppo-pipeline">1</a> 相比，其可以节省大量的时间开销。下面要讲的 OpenRLHF 和 verl 都是使用这种并行的逻辑流程来编写代码的。</p>
 
 <figure id="fig-RLHF-parallel-pipeline">
   <img src="/images/RLHF-parallel-pipeline.svg" alt="RLHF parallel pipeline" style="width:100%">
@@ -95,11 +95,13 @@ tags:
 
 <h1 id="OpenRLHF pipeline">OpenRLHF</h1>
 
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">接下来，我们讲解 DeepSpeedChat 的每个模块的逻辑和代码细节：(下面讲解的 OpenRLHF 的版本为 494850f50342ed38d5ae76ef45a3207f3523b582)</p>
+
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">如图 <a href="#fig-OpenRLHF-pipeline">6</a> 所示 (这里直接盗用 <a href="https://arxiv.org/abs/2405.11143" target="_blank">OpenRLHF</a> 的图片🥳)</p>
 
 <figure id="fig-OpenRLHF-pipeline">
   <img src="/images/OpenRLHF-pipeline.png" alt="OpenRLHF pipeline" style="width:100%">
-  <figcaption>图 6：DeepSpeedChat 的 PPO 训练框架</figcaption>
+  <figcaption>图 OpenRLHF 的 PPO 训练框架</figcaption>
 </figure>
 
 敬请期待🤪 (争取端午节放假结束之前完成)
