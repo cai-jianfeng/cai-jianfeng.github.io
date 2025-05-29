@@ -79,7 +79,7 @@ tags:
   <figcaption>图 3：DeepSpeedChat 的各个 model 分布 (其中<span style="color: green;">绿色</span>表示每个 GPU 的内存；<span style="color: blue;">蓝色</span>表示每个 model。其中，actor model 和 critic model 由于需要 train 一般使用 Zero $3$，而 ref model 和 reward model 由于只需要 infer 一般使用 Zero $0$)</figcaption>
 </figure>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">我们将 DeepSpeedChat 这种将所有 model 都分配到相同的 GPU 资源上的结构称为 <b>collocate all models</b>。而在理想的情况下，各个 model 在 GPU 资源上的结构应该如图 <a href="#fig-collocate-pipeline">4</a> 所示。首先，将 actor model 复制为 $2$ 份，一份用于 train，使用 TrainEngine (如 DeepSpeed, FSDP, Megatron) 进行优化，称为 $\pi_{train}$；而另一份用于 rollout，使用 InferEngine (如 vllm, sglang) 进行优化，称为 $\pi_{rollout}$，并在每次 PPO 训练阶段完成后，下一次 PPO 生成阶段开始前，将 更新后的 $\pi_{train}$ 的参数同步给 $\pi_{rollout}$。这样做的目的是可以更好地利用目前开源的各个 train/infer engine，提升各个阶段的效率。</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">我们将 DeepSpeedChat 这种将所有 model 都分配到相同的 GPU 资源上的结构称为 <b>collocate all models</b>。而在理想的情况下，各个 model 在 GPU 资源上的结构应该如图 <a href="#fig-collocate-pipeline">4</a> 所示。首先，将 actor model 复制为 $2$ 份，一份用于 train，使用 TrainEngine (如 DeepSpeed, FSDP, Megatron) 进行优化，称为 $\pi_{train}$；而另一份用于 rollout，使用 InferEngine (如 vllm, sglang) 进行优化，称为 $\pi_{rollout}$，并在每次 PPO 训练阶段完成后，下一次 PPO 生成阶段开始前，将更新后的 $\pi_{train}$ 的参数同步给 $\pi_{rollout}$。这样做的目的是可以更好地利用目前开源的各个 train/infer engine，提升各个阶段的效率。其次，将每个 model 分配到不同的 GPU 资源上，使其独占给定的 GPU 资源，这样，图 <a href="#fig-ppo-pipeline">1</a> 中那些没有数据依赖关系的计算模块就可以并行，从而节省整体的时间开销。</p>
 
 <figure id="fig-scattered-pipeline">
   <img src="/images/scattered_pipeline.png" alt="scattered pipeline" style="width:100%">
@@ -93,15 +93,22 @@ tags:
   <figcaption>图 5：理想情况下 RLHF 的逻辑流程 (其中<span style="color: red;">红色箭头</span>表示逻辑流；<span style="color: black;">黑色箭头</span>表示数据流。<span style="color: yellow;">黄色模块</span>表示计算模块；<span style="color: blue;">蓝色模块</span>表示由计算模块生成的数据模块，同一层内的计算模块表示其可以并行)</figcaption>
 </figure>
 
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">与 DeepSpeedChat 一开始就使用 deepspeed 命令启动分布式，并在每个子进程中运行 main.py 不同。关于图 <a href="#fig-RLHF-parallel-pipeline">5</a> 所示的逻辑流程的代码编写，由于其需要模块并行，即每个分布式子进程执行的模块不同 (例如 actor model 的分布式子进程在生成 action logits 时，ref model 的分布式子进程在生成 sft logits)。因此最直观，也是最具扩展性的方式是使用一个主进程来编写 PPO 的整体计算逻辑 (这个主进程也被称为 single controller)，在遇到分布式初始化/计算时，则异步启动/调用各个 model 的分布式进程，然后继续下一步计算逻辑，并在需要分布式进程结果的时候获取它。因此，整体的代码训练框架如图 <a href="#fig-RLHF-parallel-pipeline">6</a> 所示。
+
+<figure id="fig-RLHF-parallel-code-pipeline">
+  <img src="/images/RLHF-parallel-code-pipeline.svg" alt="RLHF parallel code pipeline" style="width:100%">
+  <figcaption>图 5：理想情况下 RLHF 的训练框架 (其中<span style="color: black;">黑色箭头</span>表示初始化/调用不同 model 的分布式进程。<span style="color: green;">绿色模块</span>表示 model 的分布式进程组；<span style="color: yellow;">黄色模块</span>表示 model 的分布式进程组的每个进程)</figcaption>
+</figure>
+
 <h1 id="OpenRLHF pipeline">OpenRLHF</h1>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">接下来，我们讲解 OpenRLHF 的每个模块的逻辑和代码细节：(下面讲解的 OpenRLHF 的版本为 494850f50342ed38d5ae76ef45a3207f3523b582)</p>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">如图 <a href="#fig-OpenRLHF-pipeline">6</a> 所示 (这里直接盗用 <a href="https://arxiv.org/abs/2405.11143" target="_blank">OpenRLHF</a> 的图片🥳)</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">如图 <a href="#fig-OpenRLHF-pipeline">7</a> 所示 (这里直接盗用 <a href="https://arxiv.org/abs/2405.11143" target="_blank">OpenRLHF</a> 的图片🥳)</p>
 
 <figure id="fig-OpenRLHF-pipeline">
   <img src="/images/OpenRLHF-pipeline.png" alt="OpenRLHF pipeline" style="width:100%">
-  <figcaption>图 OpenRLHF 的 PPO 训练框架</figcaption>
+  <figcaption>图 7: OpenRLHF 的 PPO 训练框架</figcaption>
 </figure>
 
 敬请期待🤪 (争取端午节放假结束之前完成)
