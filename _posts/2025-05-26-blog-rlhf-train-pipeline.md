@@ -19,7 +19,7 @@ tags:
 <!-- ![ppo pipeline](/images/PPO_gen_and_learn.png) -->
 <figure id="fig-ppo-pipeline">
   <img src="/images/PPO_gen_and_learn.svg" alt="ppo pipeline" style="width:100%">
-  <figcaption>图 1：PPO 的生成与训练阶段</figcaption>
+  <figcaption>图 1：PPO 的生成与训练阶段 (其中<span style="color: red;">红色箭头</span>表示逻辑流；<span style="color: yellow;">黄色模块</span>表示计算模块，计算模块需按照红色箭头顺序执行)</figcaption>
 </figure>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><b>A. PPO 的生成阶段：</b>即通过给定的输入，生成一系列 PPO 所训练的必要的元素，在经典 RL 中也被称作环境交互。</p>
