@@ -90,7 +90,7 @@ tags:
 
 <figure id="fig-RLHF-parallel-pipeline">
   <img src="/images/RLHF-parallel-pipeline.svg" alt="RLHF parallel pipeline" style="width:100%">
-  <figcaption>图 5：理想情况下 RLHF 的逻辑流程 (其中<span style="color: red;">红色箭头</span>表示逻辑流；<span style="color: black;">黑色箭头</span>表示数据流。同一层内的模块表示其可以并行)</figcaption>
+  <figcaption>图 5：理想情况下 RLHF 的逻辑流程 (其中<span style="color: red;">红色箭头</span>表示逻辑流；<span style="color: black;">黑色箭头</span>表示数据流。<span style="color: yellow;">黄色模块</span>表示计算模块；<span style="color: blue;">蓝色模块</span>表示由计算模块生成的数据模块，同一层内的计算模块表示其可以并行)</figcaption>
 </figure>
 
 <h1 id="OpenRLHF pipeline">OpenRLHF</h1>
