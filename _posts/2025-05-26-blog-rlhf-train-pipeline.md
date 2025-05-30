@@ -127,7 +127,10 @@ tags:
 
 <h1 id="verl pipeline">verl</h1>
 
-<!-- 78532923368aeb058f62201489546d013df47710 -->
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">最后，我们讲解 verl 的每个模块的逻辑和代码细节：(下面讲解的 verl 的版本为 78532923368aeb058f62201489546d013df47710)</p>
+
+
+
 敬请期待🤪 (争取端午节放假结束之前完成)
 
 <h1 id="appendix A">Appendix A</h1>
