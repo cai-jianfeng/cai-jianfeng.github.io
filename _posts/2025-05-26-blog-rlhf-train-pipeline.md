@@ -125,7 +125,7 @@ tags:
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">至此，OpenRLHF 的逻辑和代码细节便已讲解完毕。可以发现，通过 ray 来编写整个代码框架非常的便捷，除了前述的资源管理和分配的优势外，在编写代码时只需要在需要调用 model 的分布式进程组的方法时执行 <code style="color: #B58900">func_handler=function.remote()</code> 得到执行结果的句柄 (注意，此时函数真正的结果可能还没执行完毕)，接着在需要得到执行结果时使用 <code style="color: #B58900">ray.get(func_handler)</code> 获得结果，即可实现异步的程序执行。同时，由于执行时只获得句柄，如果需要不同 model 的分布式进程组数据转移的逻辑编写，也只需要将在主进程执行 model_1 的 function_1 <code style="color: #B58900">func_handler=model_1.function_1.remote()</code> 获得句柄，并传递给 model_2 的 function_2 <code style="color: #B58900">model_2.function_2.remote(func_handler)</code>，并在 function_2 里执行 <code style="color: #B58900">ray.get(func_handler)</code> 即可直接实现由 model_1 向 model_2 传递结果，而不需要主进程作为中介 (主进程只起到一个传递句柄的作用，而不是传递真正的数据)。</p>
 
-<h1 id="verl pipeline">verl<h1>
+<h1 id="verl pipeline">verl</h1>
 
 <!-- 78532923368aeb058f62201489546d013df47710 -->
 敬请期待🤪 (争取端午节放假结束之前完成)
