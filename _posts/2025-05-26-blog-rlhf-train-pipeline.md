@@ -131,7 +131,7 @@ tags:
 
 敬请期待🤪
 
-<h1 id="appendix A">Appendix A</h1>
+<h1 id="appendix A">Appendix A: <code style="color: #B58900">broadcast_to_vllm()</code> 的实现细节</h1>
 
 <h1 id="appendix B">Appendix B: OpenRLHF 代码流程图</h1>
 
