@@ -134,3 +134,10 @@ tags:
 敬请期待🤪 (争取端午节放假结束之前完成)
 
 <h1 id="appendix A">Appendix A</h1>
+
+<h1 id="appendix B">Appendix B: OpenRLHF 代码流程图</h1>
+
+<figure id="fig-OpenRLHF-train_ppo_ray">
+  <img src="/images/OpenRLHF_train_ppo_ray.svg" alt="OpenRLHF train_ppo_ray" style="width:100%">
+  <figcaption>图 B-1: OpenRLHF 的 <code style="color: #B58900">train_ppo_ray.py</code> 的代码流程</figcaption>
+</figure>
