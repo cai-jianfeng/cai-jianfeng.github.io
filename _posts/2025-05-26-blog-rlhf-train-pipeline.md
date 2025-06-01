@@ -164,5 +164,11 @@ tags:
 
 <figure id="fig-OpenRLHF-PPOTrainer_fit_generate">
   <img src="/images/OpenRLHF_PPOTrainer_fit_generate.svg" alt="OpenRLHF PPOTrainer_fit_generate" style="width:100%">
-  <figcaption>图 B-5: OpenRLHF 的 <code style="color: #B58900">PPOTrainer.fit()</code> 的<b>预处理</b>和<b>PPO 生成阶段</b>的代码流程</figcaption>
+  <figcaption>图 B-6: OpenRLHF 的 <code style="color: #B58900">PPOTrainer.fit()</code> 的<b>预处理</b>和<b>PPO 生成阶段</b>的代码流程</figcaption>
+</figure>
+
+
+<figure id="fig-OpenRLHF-PPOTrainer_fit_train">
+  <img src="/images/OpenRLHF_PPOTrainer_fit_train.svg" alt="OpenRLHF PPOTrainer_fit_train" style="width:100%">
+  <figcaption>图 B-7: OpenRLHF 的 <code style="color: #B58900">PPOTrainer.fit()</code> 的<b>预处理</b>和<b>PPO 训练阶段</b>的代码流程</figcaption>
 </figure>
