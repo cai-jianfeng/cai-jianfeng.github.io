@@ -146,3 +146,8 @@ tags:
   <img src="/images/create_vllm_engines.svg" alt="OpenRLHF create_vllm_engines" style="width:100%">
   <figcaption>图 B-2: OpenRLHF 的 <code style="color: #B58900">create_vllm_engines()</code> 的代码流程</figcaption>
 </figure>
+
+<figure id="fig-OpenRLHF-PPORayActorGroup">
+  <img src="/images/OpenRLHF_PPORayActorGroup.svg" alt="OpenRLHF PPORayActorGroup" style="width:100%">
+  <figcaption>图 B-3: OpenRLHF 的 <code style="color: #B58900">PPORayActorGroup()</code> 的代码流程</figcaption>
+</figure>
