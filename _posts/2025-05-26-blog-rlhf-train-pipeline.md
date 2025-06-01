@@ -151,3 +151,8 @@ tags:
   <img src="/images/OpenRLHF_PPORayActorGroup.svg" alt="OpenRLHF PPORayActorGroup" style="width:100%">
   <figcaption>图 B-3: OpenRLHF 的 <code style="color: #B58900">PPORayActorGroup()</code> 的代码流程</figcaption>
 </figure>
+
+<figure id="fig-OpenRLHF-PPOTrainer">
+  <img src="/images/OpenRLHF_PPOTrainer.svg" alt="OpenRLHF PPOTrainer" style="width:100%">
+  <figcaption>图 B-4: OpenRLHF 的 <code style="color: #B58900">PPOTrainer()</code> 的代码流程</figcaption>
+</figure>
