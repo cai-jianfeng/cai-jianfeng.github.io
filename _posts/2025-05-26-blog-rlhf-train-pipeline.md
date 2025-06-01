@@ -176,7 +176,7 @@ tags:
 
 <figure id="fig-verl-main_ppo">
   <img src="/images/verl_main_ppo.svg" alt="verl main_ppo" style="width:100%">
-  <figcaption>图 B-7: verl 的 <code style="color: #B58900">main_ppo.py</code> 的<code style="color: #B58900">TaskRunner.run()</code>的代码流程</figcaption>
+  <figcaption>图 C-1: verl 的 <code style="color: #B58900">main_ppo.py</code> 的<code style="color: #B58900">TaskRunner.run()</code>的代码流程</figcaption>
 </figure>
 
 敬请期待🤪
