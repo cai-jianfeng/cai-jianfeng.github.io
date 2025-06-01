@@ -156,3 +156,8 @@ tags:
   <img src="/images/OpenRLHF_PPOTrainer.svg" alt="OpenRLHF PPOTrainer" style="width:100%">
   <figcaption>图 B-4: OpenRLHF 的 <code style="color: #B58900">PPOTrainer()</code> 的代码流程</figcaption>
 </figure>
+
+<figure id="fig-OpenRLHF-PPORayActorGroup_async_init_model_from_pretrained">
+  <img src="/images/OpenRLHF_PPORayActorGroup_async_init_model_from_pretrained.svg" alt="OpenRLHF PPORayActorGroup_async_init_model_from_pretrained" style="width:100%">
+  <figcaption>图 B-5: OpenRLHF 的 <code style="color: #B58900">PPORayActorGroup.async_init_model_from_pretrained()</code> 的代码流程</figcaption>
+</figure>
