@@ -161,3 +161,8 @@ tags:
   <img src="/images/OpenRLHF_PPORayActorGroup_async_init_model_from_pretrained.svg" alt="OpenRLHF PPORayActorGroup_async_init_model_from_pretrained" style="width:100%">
   <figcaption>图 B-5: OpenRLHF 的 <code style="color: #B58900">PPORayActorGroup.async_init_model_from_pretrained()</code> 的代码流程</figcaption>
 </figure>
+
+<figure id="fig-OpenRLHF-PPOTrainer_fit_generate">
+  <img src="/images/OpenRLHF_PPOTrainer_fit_generate.svg" alt="OpenRLHF PPOTrainer_fit_generate" style="width:100%">
+  <figcaption>图 B-5: OpenRLHF 的 <code style="color: #B58900">PPOTrainer.fit()</code> 的<b>预处理</b>和<b>PPO 生成阶段</b>的代码流程</figcaption>
+</figure>
