@@ -133,6 +133,8 @@ tags:
 
 <h1 id="appendix A">Appendix A: <code style="color: #B58900">broadcast_to_vllm()</code> 的实现细节</h1>
 
+敬请期待🤪
+
 <h1 id="appendix B">Appendix B: OpenRLHF 代码流程图</h1>
 
 <figure id="fig-OpenRLHF-train_ppo_ray">
@@ -165,8 +167,11 @@ tags:
   <figcaption>图 B-6: OpenRLHF 的 <code style="color: #B58900">PPOTrainer.fit()</code> 的<b>预处理</b>和<b>PPO 生成阶段</b>的代码流程</figcaption>
 </figure>
 
-
 <figure id="fig-OpenRLHF-PPOTrainer_fit_train">
   <img src="/images/OpenRLHF_PPOTrainer_fit_train.svg" alt="OpenRLHF PPOTrainer_fit_train" style="width:100%">
   <figcaption>图 B-7: OpenRLHF 的 <code style="color: #B58900">PPOTrainer.fit()</code> 的<b>预处理</b>和<b>PPO 训练阶段</b>的代码流程</figcaption>
 </figure>
+
+<h1 id="appendix C">Appendix C: verl 代码流程图</h1>
+
+敬请期待🤪
