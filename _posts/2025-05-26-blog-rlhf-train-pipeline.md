@@ -179,4 +179,9 @@ tags:
   <figcaption>图 C-1: verl 的 <code style="color: #B58900">main_ppo.py</code> 的<code style="color: #B58900">TaskRunner.run()</code>的代码流程</figcaption>
 </figure>
 
+<figure id="fig-verl-load_reward_manager">
+  <img src="/images/verl_load_reward_manager.svg" alt="verl load_reward_manager" style="width:100%">
+  <figcaption>图 C-2: verl 的 <code style="color: #B58900">load_reward_manager()</code> 的代码流程</figcaption>
+</figure>
+
 敬请期待🤪
