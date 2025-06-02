@@ -184,4 +184,9 @@ tags:
   <figcaption>图 C-2: verl 的 <code style="color: #B58900">load_reward_manager()</code> 的代码流程</figcaption>
 </figure>
 
+<figure id="fig-verl-RayPPOTrainer">
+  <img src="/images/verl_RayPPOTrainer.svg" alt="verl RayPPOTrainer" style="width:100%">
+  <figcaption>图 C-3: verl 的 <code style="color: #B58900">RayPPOTrainer()</code> 的代码流程</figcaption>
+</figure>
+
 敬请期待🤪
