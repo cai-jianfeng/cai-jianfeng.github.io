@@ -127,7 +127,7 @@ tags:
 
 <h1 id="verl pipeline">verl</h1>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">最后，我们讲解 verl 的每个模块的逻辑和代码细节：(下面讲解的 verl 的版本为 78532923368aeb058f62201489546d013df47710)</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">最后，我们讲解 verl，由于 verl 的逻辑细节和 OpenRLHF 的非常一致，因此我们侧重讲解其每个模块的代码细节 (下面讲解的 verl 的版本为 78532923368aeb058f62201489546d013df47710)。关于 verl 代码的完整流程图可以查看 Appendix <a href="#appendix C">C</a>。</p>
 
 敬请期待🤪
 
