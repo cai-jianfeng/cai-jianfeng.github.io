@@ -189,4 +189,9 @@ tags:
   <figcaption>图 C-3: verl 的 <code style="color: #B58900">RayPPOTrainer()</code> 的代码流程</figcaption>
 </figure>
 
+<figure id="fig-verl-init_workers">
+  <img src="/images/verl_init_workers.svg" alt="verl init_workers" style="width:100%">
+  <figcaption>图 C-4: verl 的 <code style="color: #B58900">init_workers()</code> 的代码流程</figcaption>
+</figure>
+
 敬请期待🤪
