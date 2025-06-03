@@ -129,7 +129,7 @@ tags:
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">最后，我们讲解 verl，由于 verl 的逻辑细节和 OpenRLHF 的非常一致，因此我们侧重讲解其每个模块的代码细节 (下面讲解的 verl 的版本为 78532923368aeb058f62201489546d013df47710)。关于 verl 代码的完整流程图可以查看 Appendix <a href="#appendix C">C</a>。</p>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">相比于 OpenRLHF，</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">相比于 OpenRLHF，verl 的整体架构更加地“工业味”，是一个标准的面向对象开发的 project。其也包括 $3$ 个阶段。<b>第一阶段：</b>首先实例化了一个 <code style="color: #B58900">TaskRunner</code> 用于作为 single controller，接着构建 <code style="color: #B58900">model</code> 到 <code style="color: #B58900">model_class</code>，<code style="color: #B58900">资源池名称</code> 到 <code style="color: #B58900">资源数量</code>，<code style="color: #B58900">model</code> 到 <code style="color: #B58900">资源池名称</code> 的映射 (Dict)，然后初始化 reward manager 用于计算 reward，最后初始化训练和测试数据集，以及 sampler。</p>
 
 敬请期待🤪
 
