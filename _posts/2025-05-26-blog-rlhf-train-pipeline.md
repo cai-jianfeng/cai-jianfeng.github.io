@@ -26,11 +26,11 @@ tags:
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><b>A. PPO 的生成阶段：</b>即通过给定的输入，生成一系列 PPO 所训练的必要的元素，在经典 RL 中也被称作环境交互。</p>
 
-1. <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">给定 SFT 后得到的 model，将其复制为 reference model $\pi_{SFT}$ 和需要进一步训练的 actor model $\pi_{RL}$；给定 Reward Modeling 后得到的 model，将其复制为 reward model $R$ 和 critic model $V$。</p>
+1. <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">给定 SFT 后得到的 model，将其复制为 ref model $\pi_{SFT}$ 和需要进一步训练的 actor model $\pi_{RL}$；给定 Reward Modeling 后得到的 model，将其复制为 reward model $R$ 和 critic model $V$。</p>
 
 2. <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">给定 prompt $x$，将其输入给 actor model $\pi_{RL}$ 生成对应的 response $y$，得到完整的 sequence $x + y$。(<span style="color: red;">$\pi_{RL}$ rollout</span>)</p>
 
-3. <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">给定 sequence $x + y$，将其输入给 actor model $\pi_{RL}$ 和 reference model $\pi_{SFT}$ 分别生成 action logits $p_{RL}$ 和 sft logits $p_{SFT}$，并进一步计算 KL divergence $KL$。(<span style="color: red;">$\pi_{RL}$ 和 $\pi_{SFT}$ infer</span>)</p>
+3. <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">给定 sequence $x + y$，将其输入给 actor model $\pi_{RL}$ 和 ref model $\pi_{SFT}$ 分别生成 action logits $p_{RL}$ 和 sft logits $p_{SFT}$，并进一步计算 KL divergence $KL$。(<span style="color: red;">$\pi_{RL}$ 和 $\pi_{SFT}$ infer</span>)</p>
 
 4. <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">给定 sequence $x + y$，将其输入给 reward model $R$ 和 critic model $V$ 分别生成 reward $r$ 和 value $v$。(<span style="color: red;">$R$ 和 $V$ infer</span>)</p>
 
