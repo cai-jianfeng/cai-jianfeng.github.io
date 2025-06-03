@@ -137,7 +137,7 @@ tags:
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: white;">TODO List: 1. update_critic 和 update_actor() 的代码流程图和讲解；2. Appendix A 的 OpenRLHF 和 verl 的 vllm 与 actor model 的参数同步。</p>
 
-<h1 id="appendix A">Appendix A: Actor Model 与 vllm 的参数同步的实现细节 (OpenRLHF 的 <code style="color: #B58900">broadcast_to_vllm()</code> 和 verl 的 <code style="color: #B58900">sync_model_weights()</code>)</h1>
+<h1 id="appendix A"><p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">Appendix A: Actor Model 与 vllm 的参数同步的实现细节 (OpenRLHF 的 <code style="color: #B58900">broadcast_to_vllm()</code> 和 verl 的 <code style="color: #B58900">sync_model_weights()</code>)</p></h1>
 
 敬请期待🤪
 
