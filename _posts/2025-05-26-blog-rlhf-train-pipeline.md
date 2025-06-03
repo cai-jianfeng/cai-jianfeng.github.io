@@ -135,11 +135,15 @@ tags:
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><b>第三阶段：</b>该阶段主要是 PPO 的生成和训练阶段。在 PPO 生成阶段，首先是给定被构造为 DataProto 的 prompt 并通过 generate_sequences() 生成 response。在 generate_sequences() 中，首先是通过 rollout_sharding_manager 上下文管理器获取 actor model 的参数并使用 sync_model_weights() (这个方法细节见 Appendix <a href="#appendix A-verl">A</a>) 将其同步给 vllm 封装的 actor model，接着使用 reprocess_data() 收集进程组的所有 prompt，并通过 generate_sequences() 生成 response，最后使用 postprocess_data() 将生成完的 response 进行分块，并退出 rollout_sharding_manager 上下文管理器。生成 response 后，接下来是使用 compute_rm_score() 生成 reward $R$，其主要包括通过 ulysses_sharding_manager 上下文管理器设置 sequence parallel；使用 preprocess_data() 收集进程组的所有 rm_data 和 data，并通过 split() 将其划分为 micro batch 大小；使用 reward_module 的 forward() 生成 $R$；最后使用 postprocess_data() 将生成完的 response 进行分块，并退出 ulysses_sharding_manager 上下文管理器。然后使用 compute_log_prob() 生成 action logtis $p_{RL}$，其主要包括通过 ulysses_sharding_manager 上下文管理器设置 sequence parallel；使用 preprocess_data() 收集进程组的所有 data，并使用 DataParallelPPOActor.compute_log_prob() 生成 $p_{RL}$；最后退出 ulysses_sharding_manager 上下文管理器。接着使用和生成 action logtis $p_{RL}$ 相同的步骤生成 sft logtis $p_{SFT}$。然后使用 compute_values() 生成 value $V$，其步骤与生成 action logtis $p_{RL}$ 相同，除了将中间的 使用 DataParallelPPOActor.compute_log_prob() 生成 $p_{RL}$ 替换为使用 DataParallelCritic.compute_values() 生成 $V$。最后是使用 apply_kl_penalty() 计算 KL divergence $KL$ 并将其融入到 $R$ 中，并通过 compute_advantage() 生成 advantage $A$ 和 return。在 PPO 训练阶段，其主要是调用 critic model 的 updata_critic() 方法和 actor model 的 update_actor() 来训练两个 model。在 updata_critic() 中，...。而在 update_actor() 中，...。</p>
 
+敬请期待🤪
+
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: white;">TODO List: 1. update_critic 和 update_actor() 的代码流程图和讲解；2. Appendix A 的 OpenRLHF 和 verl 的 vllm 与 actor model 的参数同步。</p>
 
 <h1 id="appendix A">Appendix A: Actor Model 与 vllm 的参数同步的实现细节</h1>
 
 <h2 id="appendix A-OpenRLHF">OpenRLHF 的 <code style="color: #B58900">broadcast_to_vllm()</code></h2>
+
+敬请期待🤪
 
 <h2 id="appendix A-verl">verl 的 <code style="color: #B58900">sync_model_weights()</code></h2>
 
