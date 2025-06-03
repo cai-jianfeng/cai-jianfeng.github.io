@@ -198,5 +198,3 @@ tags:
   <img src="/images/verl_RayPPOTrainer_fit.svg" alt="verl RayPPOTrainer_fit" style="width:100%">
   <figcaption>图 C-5: verl 的 <code style="color: #B58900">fit()</code> 的代码流程</figcaption>
 </figure>
-
-敬请期待🤪
