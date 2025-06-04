@@ -38,9 +38,11 @@ tags:
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><b>B. PPO 的训练阶段：</b>即通过 PPO 的生成阶段所得到的元素，进行 PPO 的训练，在经典 RL 中也被称作奖励学习。由于 PPO 的生成阶段的时间成本较高，因此通常对生成阶段得到的元素进行缓存，并进行多次训练。对于第 $t$ 次训练，其具体流程如下：</p>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">1. 给定 sequence $x + y$，将其输入给第 $t-1$ 次训练完的 actor model $\pi_{RL}$ 生成 new action logits $p^{t}_{RL}$，并和 action logits $p_{RL}$ 计算 ratio $r^{t}(\theta)$。接着和给定的 advantage $A$ 计算 Actor loss 用于 actor model 的训练。(<span style="color: red;">$\pi_{RL}$ train</span>)</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">1. 给定 sequence $x + y$，将其输入给第 $t-1$ 次训练完的 actor model $\pi^t_{RL}$ 生成 new action logits $p^{t}_{RL}$，并和 action logits $p_{RL}$ 计算 ratio $r^{t}(\theta)$。接着和给定的 advantage $A$ 计算 actor loss 用于 actor model 的训练。(<span style="color: red;">$\pi_{RL}$ train</span>)</p>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">2. 给定 sequence $x + y$，将其输入给第 $t-1$ 次训练完的 critic model $V$ 生成 new value $v^{t}$，并和 value $v$ 计算 clipped value $v_{clip}$。接着和给定的 return 计算 Critic loss 用于 critic model 的训练。(<span style="color: red;">$V$ train</span>)</p> 
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">2. 给定 sequence $x + y$，将其输入给第 $t-1$ 次训练完的 critic model $V^t$ 生成 new value $v^{t}$，并和 value $v$ 计算 clipped value $v_{clip}$。接着和给定的 return 计算 critic loss 用于 critic model 的训练。(<span style="color: red;">$V$ train</span>)</p>
+
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: gray;">题外话：通过上述的步骤不难发现需要在 PPO 生成阶段缓存的元素包括：生成的 sequence $x + y$，action logits $p_{RL}$，value $v$，advantage $A$ 以及 return；但是为了避免后续算法有额外的需求，一般会将 sft logits $p_{SFT}$，KL divergence $KL$ 以及 reward $r$ 一起缓存。</span></p>
 
 <h1 id="DeepSpeedChat pipeline">DeepSpeedChat</h1>
 
