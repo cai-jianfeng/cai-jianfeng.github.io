@@ -14,7 +14,7 @@ tags:
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">在<a href="https://cai-jianfeng.github.io/posts/2024/04/blog-rlhf/" target="_blank">之前的博客</a>中，我们讲解了 RLHF 的三个阶段：SFT (预训练 LLM 模型 $M_\theta$)，Reward Modeling (预训练奖励模型 $r_\theta$) 和最后的 RL 训练 (使用 PPO 微调 $M_\theta$)。对于前两个阶段而言，其只存在一个模型，因此可以使用 Deepspeed，FSDP，Megatron，甚至是 Transformers 的内置 Trainer 等<b>单模型</b>训练框架直接进行分布式训练 (关于单模型训练框架，可以参考我<a href="https://cai-jianfeng.github.io/posts/2025/06/blog-distributed-train-pipeline/" target="_blank">之后的博客</a>)。对于第三个阶段而言，其包含多个模型，同时不同模型的作用也不尽相同 (例如，reference model 和 reward model 只用于 infer，policy model 和 value model 用于 train，同时 policy model 还用于 rollout)。因此，需要在 Deepspeed/FSDP/Megatron 这种单模型的训练框架上再进行进一步的搭建以构建<b>多模型</b>训练框架。因此，本文的所有 RLHF 框架其实主要是聚焦于构建第三阶段的多模型训练框架。在下面的讲解中，我将按照目前主流的描述将 policy model 称为 actor model，将 value model 称为 critic model，将 reference model 简称为 ref model。</p>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: gray;">题外话：infer 指的是使用 model 进行一次的 forward，例如使用 reward model 输入 prompt + response 只用一次 forward 就能得到 reward；train 指的是 model 还需要进行训练；rollout 指的是 model 需要根据给定的 prompt 进行多次 forward 来生成 response，即 LLM generate。由于 train 和 rollout 的不同，目前大家分别为它们构建了不同的框架，如 train 有 Deepspeed/FSDP/Megatron 等<b>训练引擎</b>，其计算精度较高，但是由于增加额外通信等问题导致速度较慢，主打一个如何增加较少的额外计算/通信使得 model 可以训练，即以时间换空间 (flash attention 除外)；rollout 有 vllm/sglang 等<b>推理引擎</b>，其速度较快，但是计算损失较大。而对于 infer，由于训练引擎和推理引擎都可以胜任，一般为了保证计算精度会使用训练引擎 (可以参考<a href="https://github.com/zhaochenyang20/Awesome-ML-SYS-Tutorial/blob/927d54fbbbf84ae9e7109cf58c279ff959afcb46/rlhf/verl/readme.md?plain=1#L50">这篇博客</a>的分析)。</span></p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: gray;">题外话：infer 指的是使用 model 进行一次的 forward，例如使用 reward model 输入 prompt + response 只用一次 forward 就能得到 reward；train 指的是 model 还需要进行训练；rollout 指的是 model 需要根据给定的 prompt 进行多次 forward 来生成 response，即 LLM generate。由于 train 和 rollout 的不同，目前大家分别为它们构建了不同的框架，如 train 有 Deepspeed/FSDP/Megatron 等<b>训练引擎</b>，其计算精度较高，但是由于增加额外通信等问题导致速度较慢，主打一个如何增加较少的额外计算/通信使得 model 可以训练，即以时间换空间 (flash attention 除外)；rollout 有 vllm/sglang 等<b>推理引擎</b>，其速度较快，但是计算损失较大,主要通过 kv cache，融合算子等操作来减少计算时间，即以空间换时间。而对于 infer，由于训练引擎和推理引擎都可以胜任，一般为了保证计算精度会使用训练引擎 (可以参考<a href="https://github.com/zhaochenyang20/Awesome-ML-SYS-Tutorial/blob/927d54fbbbf84ae9e7109cf58c279ff959afcb46/rlhf/verl/readme.md?plain=1#L50">这篇博客</a>的分析)。</span></p>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">下面，我们以 PPO 为例来了解每个框架的整体架构和每个部分的具体模块 (其他的 RL 算法如 GRPO，REINFORCE++ 等基本上都是在 PPO 的基础上减少某些模块)。首先，如图 <a href="#fig-ppo-pipeline">1</a> 所示，我们先逻辑化整理一下 PPO 的算法流程：</p>
 
@@ -61,7 +61,7 @@ tags:
 
 <figure id="fig-deepspeedchat-pipeline">
   <img src="/images/deepspeedchat.svg" alt="deepspeedchat pipeline" style="width:100%">
-  <figcaption>图 2：DeepSpeedChat 的 PPO 训练框架 (其中<span style="color: red;">红色箭头</span>表示代码执行的顺序；<span style="color: black;">黑色箭头</span>表示模块的扩展描述；<span style="color: green;">绿色模块</span>表示 main.py 内的代码模块；<span style="color: yellow;">黄色模块</span>表示其他文件内的代码模块)</figcaption>
+  <figcaption>图 2：DeepSpeedChat 的 PPO 训练框架 (其中<span style="color: red;">红色箭头</span>表示代码执行的顺序；<span style="color: black;">黑色箭头</span>表示模块的扩展描述；<span style="color: green;">绿色模块</span>表示 main.py 内的代码模块；<span style="color: #CCCC00;">黄色模块</span>表示其他文件内的代码模块)</figcaption>
 </figure>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">接下来，我们讲解 DeepSpeedChat 的每个模块的逻辑和代码细节：</p>
@@ -92,14 +92,14 @@ tags:
 
 <figure id="fig-RLHF-parallel-pipeline">
   <img src="/images/RLHF-parallel-pipeline.svg" alt="RLHF parallel pipeline" style="width:100%">
-  <figcaption>图 5：理想情况下 RLHF 的逻辑流程 (其中<span style="color: red;">红色箭头</span>表示逻辑流；<span style="color: black;">黑色箭头</span>表示数据流。<span style="color: yellow;">黄色模块</span>表示计算模块；<span style="color: blue;">蓝色模块</span>表示由计算模块生成的数据模块，同一层内的计算模块表示其可以并行)</figcaption>
+  <figcaption>图 5：理想情况下 RLHF 的逻辑流程 (其中<span style="color: red;">红色箭头</span>表示逻辑流；<span style="color: black;">黑色箭头</span>表示数据流。<span style="color: #CCCC00;">黄色模块</span>表示计算模块；<span style="color: blue;">蓝色模块</span>表示由计算模块生成的数据模块，同一层内的计算模块表示其可以并行)</figcaption>
 </figure>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">与 DeepSpeedChat 一开始就使用 deepspeed 命令启动分布式，并在每个子进程中运行 main.py 不同。关于图 <a href="#fig-RLHF-parallel-pipeline">5</a> 所示的逻辑流程的代码编写，由于其需要模块并行，即每个 model 的分布式进程组执行的模块不同 (例如 actor model 的分布式进程组在生成 action logits 时，ref model 的分布式进程组在同时生成 sft logits)。因此最直观，也是最具扩展性的方式是使用一个<b>主进程</b>来编写 PPO 的整体计算逻辑 (这个主进程也被称为 single controller)，在遇到分布式初始化/计算时，则异步启动/调用各个 model 的分布式进程组，然后继续主进程的下一步计算逻辑，并在之后需要原先分布式进程组结果的时候获取它。因此，整体的代码训练框架如图 <a href="#fig-RLHF-parallel-pipeline">6</a> 所示 (由于篇幅限制，这里只展示一小部分代码逻辑)。
 
 <figure id="fig-RLHF-parallel-code-pipeline">
   <img src="/images/RLHF-parallel-code-pipeline.svg" alt="RLHF parallel code pipeline" style="width:100%">
-  <figcaption>图 6：理想情况下 RLHF 的训练框架 (其中<span style="color: black;">黑色箭头</span>表示初始化/调用不同 model 的分布式进程组。<span style="color: green;">绿色模块</span>表示 model 的分布式进程组；<span style="color: yellow;">黄色模块</span>表示 model 的分布式进程组的每个进程)</figcaption>
+  <figcaption>图 6：理想情况下 RLHF 的训练框架 (其中<span style="color: black;">黑色箭头</span>表示初始化/调用不同 model 的分布式进程组。<span style="color: green;">绿色模块</span>表示 model 的分布式进程组；<span style="color: #CCCC00;">黄色模块</span>表示 model 的分布式进程组的每个进程)</figcaption>
 </figure>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: gray;">题外话：原本的 OpenRLHF 的代码不是 single controller 的模式，而是将 PPO 的计算逻辑分散到各个 model 的分布式进程中，导致其很难扩展。不过好在现在已经重构为 single controller 的模式了。</span></p>
