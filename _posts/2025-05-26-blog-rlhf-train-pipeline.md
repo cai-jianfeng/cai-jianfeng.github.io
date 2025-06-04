@@ -42,10 +42,9 @@ tags:
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">2. 给定 sequence $x + y$，将其输入给第 $t-1$ 次训练完的 critic model $V^t$ 生成 new value $v^{t}$，并和 value $v$ 计算 clipped value $v_{clip}$。接着和给定的 return 计算 critic loss 用于 critic model 的训练。(<span style="color: red;">$V$ train</span>)</p>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: gray;">题外话：通过上述的步骤不难发现需要在 PPO 生成阶段缓存的元素包括：生成的 sequence $x + y$，action logits $p_{RL}$，value $v$，advantage $A$ 以及 return；但是为了避免后续算法有额外的需求，一般会将 sft logits $p_{SFT}$，KL divergence $KL$ 以及 reward $r$ 一起缓存。</span></p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: gray;">题外话：通过上述的步骤不难发现需要在 PPO 生成阶段缓存的元素 (用于 PPO 训练阶段的多次训练) 包括：生成的 sequence $x + y$，action logits $p_{RL}$，value $v$，advantage $A$ 以及 return；但是为了避免后续算法有额外的需求，一般会将 sft logits $p_{SFT}$，KL divergence $KL$ 以及 reward $r$ 一起缓存。</span></p>
 
 <h1 id="DeepSpeedChat pipeline">DeepSpeedChat</h1>
-
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">可以看到，上述的流程涉及到 actor model $\pi_{RL}$ 的 rollout，actor model $\pi_{RL}$ 和 $\pi_{SFT}$ 的 infer，reward model $R$ 和 critic model $V$ 的 infer，以及 actor model $\pi_{RL}$ 和 critic model $V$ 的 train。<b>最直接的实现方式是，按照上述流程的逻辑编写 PPO 训练的架构，通过简单扩展单模型训练框架得到多模型训练框架。</b>如图 <a href="#fig-deepspeedchat-pipeline">2</a> 所示，DeepSpeedChat 就是按照这种思路扩展 DeepSpeed 框架来实现 PPO 的训练的。(下面讲解的 DeepSpeedChat 的版本为 bd47e5bc38d292f44bf183e7bda992cde36a769b)</p>
 
