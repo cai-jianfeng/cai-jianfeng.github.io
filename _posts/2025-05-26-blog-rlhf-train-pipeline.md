@@ -107,7 +107,7 @@ tags:
   <figcaption>图 6：理想情况下 RLHF 的训练框架 (其中<span style="color: black;">黑色箭头</span>表示初始化/调用不同 model 的分布式进程组。<span style="color: green;">绿色模块</span>表示 model 的分布式进程组；<span style="color: #CCCC00;">黄色模块</span>表示 model 的分布式进程组的每个进程)</figcaption>
 </figure>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: gray;">题外话：原本的 OpenRLHF 的代码不是 single controller 的模式，而是将 PPO 的计算逻辑分散到各个 model 的分布式进程中，导致其很难扩展。不过好在现在已经重构为 single controller 的模式了。</span></p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: gray;">题外话：原本的 OpenRLHF 的代码不是 single controller 的模式，而是将 PPO 的计算逻辑分散到各个 model 的分布式进程组中，导致其很难扩展。不过好在现在已经<a href="https://github.com/OpenRLHF/OpenRLHF/pull/972" target="_blank">重构</a>为 single controller 的模式了。(有空可以补充 OpenRLHF 旧版本的 multi controller 的代码讲解🤔)</span></p>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">那么如何异步地启动/调用不同 model 的分布式进程组呢？目前 OpenRLHF 和 verl 都采用了 <a href="https://github.com/ray-project/ray" target="_blank"> ray </a>来实现这一目的。ray 有些类似于计算集群管理和调度的软件，通过 <code style="color: #B58900">ray start</code> 或者 <code style="color: #B58900">ray.init()</code> 来启动 ray，并指定集群所拥有的 CPU 数，GPU 数等计算资源。接着使用装饰符 <code style="color: #B58900">@ray.remote()</code> 将某个函数/类装饰为一个 Task/Actor (可以初略地理解为任务)，则在后续调用该任务时，ray 会自动将其异步地调度到目前可用的计算资源上，从而减轻我们编写异步代码的难度。</p>
 
