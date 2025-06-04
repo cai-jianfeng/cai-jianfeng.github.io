@@ -46,7 +46,7 @@ tags:
 
 <h1 id="DeepSpeedChat pipeline">DeepSpeedChat</h1>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">可以看到，上述的流程涉及到 actor model $\pi_{RL}$ 的 rollout，actor model $\pi_{RL}$ 和 $\pi_{SFT}$ 的 infer，reward model $R$ 和 critic model $V$ 的 infer，以及 actor model $\pi_{RL}$ 和 critic model $V$ 的 train。<b>最直接的实现方式是，按照上述流程的逻辑编写 PPO 训练的架构，通过简单扩展单模型训练框架得到多模型训练框架。</b>如图 <a href="#fig-deepspeedchat-pipeline">2</a> 所示，DeepSpeedChat 就是按照这种思路扩展 DeepSpeed 框架来实现 PPO 的训练的。(下面讲解的 DeepSpeedChat 的版本为 bd47e5bc38d292f44bf183e7bda992cde36a769b)</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">可以看到，上述的流程涉及到 actor model $\pi_{RL}$ 的 rollout，actor model $\pi_{RL}$ 和 ref model $\pi_{SFT}$ 的 infer，reward model $R$ 和 critic model $V$ 的 infer，以及 actor model $\pi_{RL}$ 和 critic model $V$ 的 train。<b>最直接的实现方式是，按照上述流程的逻辑编写 PPO 训练的架构，通过简单扩展单模型训练框架得到多模型训练框架。</b>如图 <a href="#fig-deepspeedchat-pipeline">2</a> 所示，DeepSpeedChat 就是按照这种思路扩展 DeepSpeed 框架来实现 PPO 的训练的。(下面讲解的 DeepSpeedChat 的版本为 bd47e5bc38d292f44bf183e7bda992cde36a769b)</p>
 
 <!-- <figure id="fig-deepspeedchat-pipeline">
   <embed src="/images/deepspeedchat.pdf" type="application/pdf" width="100%" height="600px">
