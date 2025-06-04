@@ -89,6 +89,8 @@ tags:
   <figcaption>图 4：理想情况下 RLHF 的各个 model 分布 (其中<span style="color: green;">绿色</span>表示每个 GPU 的内存；<span style="color: blue;">蓝色</span>表示每个 model)</figcaption>
 </figure>
 
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: gray;">题外话：要使得没有数据依赖关系的计算模块就可以并行并不一定需要将 model 分配到不同 GPU 资源上，其的关键是要实现每个计算模块的<b>异步调用</b>，而不是像 DeepSpeedChat 那样前一个计算模块完成后才会启动下一个计算模块；但是将每个 model 分配到不同的 GPU 资源上可以避免在一个 GPU 上开太多的进程导致神秘 bug 的等一系列新的问题🥲。</span></p>
+
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">在将每个 model 都分配到不同的 GPU 资源之后，RLHF 的整个流程就可以引入 model 并行推理，形成如图 <a href="#fig-RLHF-parallel-pipeline">5</a> 所示的逻辑流程。可以看到，大多数的计算模块都可以并行进行，与图 <a href="#fig-ppo-pipeline">1</a> 相比，其可以节省大量的时间开销。下面要讲的 OpenRLHF 和 verl 都是使用这种并行的逻辑流程来编写代码的。</p>
 
 <figure id="fig-RLHF-parallel-pipeline">
