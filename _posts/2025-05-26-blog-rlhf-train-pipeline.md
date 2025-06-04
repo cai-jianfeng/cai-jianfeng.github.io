@@ -12,7 +12,7 @@ tags:
 
 <h1 id="RLHF pipeline">RLHF 的算法流程</h1>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">在<a href="https://cai-jianfeng.github.io/posts/2024/04/blog-rlhf/" target="_blank">之前的博客</a>中，我们讲解了 RLHF 的三个阶段：SFT (预训练 LLM 模型 $M_\theta$)，Reward Modeling (预训练奖励模型 $r_\theta$) 和最后的 RL 训练 (使用 PPO 微调 $M_\theta$)。对于前两个阶段而言，其只存在一个模型，因此可以使用 Deepspeed，FSDP，Megatron，甚至是 Transformers 的内置 Trainer 等<b>单模型</b>训练框架直接进行分布式训练 (关于单模型训练框架，可以参考我<a href="https://cai-jianfeng.github.io/posts/2025/06/blog-distributed-train-pipeline/" target="_blank">之后的博客</a>)。对于第三个阶段而言，其包含多个模型，同时不同模型的作用也不尽相同 (例如，reference model 和 reward model 只用于 infer，policy model 和 value model 用于 train，同时 policy model 还用于 rollout)。因此，需要在 Deepspeed/FSDP/Megatron 这种单模型的训练框架上再进行进一步的搭建以构建<b>多模型</b>训练框架。因此，本文的所有 RLHF 框架其实主要是聚焦于构建第三阶段的多模型训练框架。在下面的讲解中，我将按照目前主流的描述将 policy model 成为 actor model，将 value model 称为 critic model，将 reference model 简称为 ref model。</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">在<a href="https://cai-jianfeng.github.io/posts/2024/04/blog-rlhf/" target="_blank">之前的博客</a>中，我们讲解了 RLHF 的三个阶段：SFT (预训练 LLM 模型 $M_\theta$)，Reward Modeling (预训练奖励模型 $r_\theta$) 和最后的 RL 训练 (使用 PPO 微调 $M_\theta$)。对于前两个阶段而言，其只存在一个模型，因此可以使用 Deepspeed，FSDP，Megatron，甚至是 Transformers 的内置 Trainer 等<b>单模型</b>训练框架直接进行分布式训练 (关于单模型训练框架，可以参考我<a href="https://cai-jianfeng.github.io/posts/2025/06/blog-distributed-train-pipeline/" target="_blank">之后的博客</a>)。对于第三个阶段而言，其包含多个模型，同时不同模型的作用也不尽相同 (例如，reference model 和 reward model 只用于 infer，policy model 和 value model 用于 train，同时 policy model 还用于 rollout)。因此，需要在 Deepspeed/FSDP/Megatron 这种单模型的训练框架上再进行进一步的搭建以构建<b>多模型</b>训练框架。因此，本文的所有 RLHF 框架其实主要是聚焦于构建第三阶段的多模型训练框架。在下面的讲解中，我将按照目前主流的描述将 policy model 称为 actor model，将 value model 称为 critic model，将 reference model 简称为 ref model。</p>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: gray;">题外话：infer 指的是使用 model 进行一次的 forward，例如使用 reward model 输入 prompt + response 只用一次 forward 就能得到 reward；train 指的是 model 还需要进行训练；rollout 指的是 model 需要根据给定的 prompt 进行多次 forward 来生成 response，即 LLM generate。由于 train 和 rollout 的不同，目前大家分别为它们构建了不同的框架，如 train 有 Deepspeed/FSDP/Megatron 等<b>训练引擎</b>，其计算精度较高，但是由于增加额外通信等问题导致速度较慢，主打一个如何增加较少的额外计算/通信使得 model 可以训练，即以时间换空间 (flash attention 除外)；rollout 有 vllm/sglang 等<b>推理引擎</b>，其速度较快，但是计算损失较大。而对于 infer，由于训练引擎和推理引擎都可以胜任，一般为了保证计算精度会使用训练引擎 (可以参考<a href="https://github.com/zhaochenyang20/Awesome-ML-SYS-Tutorial/blob/927d54fbbbf84ae9e7109cf58c279ff959afcb46/rlhf/verl/readme.md?plain=1#L50">这篇博客</a>的分析)。</span></p>
 
@@ -21,7 +21,7 @@ tags:
 <!-- ![ppo pipeline](/images/PPO_gen_and_learn.png) -->
 <figure id="fig-ppo-pipeline">
   <img src="/images/PPO_gen_and_learn.svg" alt="ppo pipeline" style="width:100%">
-  <figcaption>图 1：PPO 的生成与训练阶段 (其中<span style="color: red;">红色箭头</span>表示逻辑流；<span style="color: yellow;">黄色模块</span>表示计算模块，计算模块需按照红色箭头顺序执行)</figcaption>
+  <figcaption>图 1：PPO 的生成与训练阶段 (其中<span style="color: red;">红色箭头</span>表示逻辑流；<span style="color: #CCCC00;">黄色模块</span>表示计算模块，计算模块需按照红色箭头顺序执行)</figcaption>
 </figure>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><b>A. PPO 的生成阶段：</b>即通过给定的输入，生成一系列 PPO 所训练的必要的元素，在经典 RL 中也被称作环境交互。</p>
