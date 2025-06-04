@@ -24,23 +24,23 @@ tags:
   <figcaption>图 1：PPO 的生成与训练阶段 (其中<span style="color: red;">红色箭头</span>表示逻辑流；<span style="color: #CCCC00;">黄色模块</span>表示计算模块，计算模块需按照红色箭头顺序执行)</figcaption>
 </figure>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><b>A. PPO 的生成阶段：</b>即通过给定的输入，生成一系列 PPO 所训练的必要的元素，在经典 RL 中也被称作环境交互。</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><b>A. PPO 的生成阶段：</b>即通过给定的输入 prompt，生成一系列 PPO 所训练的必要的元素，在经典 RL 中也被称作环境交互。</p>
 
-1. <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">给定 SFT 后得到的 model，将其复制为 ref model $\pi_{SFT}$ 和需要进一步训练的 actor model $\pi_{RL}$；给定 Reward Modeling 后得到的 model，将其复制为 reward model $R$ 和 critic model $V$。</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">1. 给定 SFT 后得到的 model，将其复制为 ref model $\pi_{SFT}$ 和需要进一步训练的 actor model $\pi_{RL}$；给定 Reward Modeling 后得到的 model，将其复制为 reward model $R$ 和 critic model $V$。</p>
 
-2. <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">给定 prompt $x$，将其输入给 actor model $\pi_{RL}$ 生成对应的 response $y$，得到完整的 sequence $x + y$。(<span style="color: red;">$\pi_{RL}$ rollout</span>)</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">2. 给定 prompt $x$，将其输入给 actor model $\pi_{RL}$ 生成对应的 response $y$，得到完整的 sequence $x + y$。(<span style="color: red;">$\pi_{RL}$ rollout</span>)</p>
 
-3. <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">给定 sequence $x + y$，将其输入给 actor model $\pi_{RL}$ 和 ref model $\pi_{SFT}$ 分别生成 action logits $p_{RL}$ 和 sft logits $p_{SFT}$，并进一步计算 KL divergence $KL$。(<span style="color: red;">$\pi_{RL}$ 和 $\pi_{SFT}$ infer</span>)</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">3. 给定 sequence $x + y$，将其输入给 actor model $\pi_{RL}$ 和 ref model $\pi_{SFT}$ 分别生成 action logits $p_{RL}$ 和 sft logits $p_{SFT}$，并进一步计算 KL divergence $KL$。(<span style="color: red;">$\pi_{RL}$ 和 $\pi_{SFT}$ infer</span>)</p>
 
-4. <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">给定 sequence $x + y$，将其输入给 reward model $R$ 和 critic model $V$ 分别生成 reward $r$ 和 value $v$。(<span style="color: red;">$R$ 和 $V$ infer</span>)</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">4. 给定 sequence $x + y$，将其输入给 reward model $R$ 和 critic model $V$ 分别生成 reward $r$ 和 value $v$。(<span style="color: red;">$R$ 和 $V$ infer</span>)</p>
 
-5. <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">给定 $KL$ 和 $r$，计算得到 PPO 的 return；并通过给定 $v$，计算得到 PPO 的 advantage $A$。</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">5. 给定 $KL$ 和 $r$，计算得到 PPO 的 return；并通过给定 $v$，计算得到 PPO 的 advantage $A$。</p>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><b>B. PPO 的训练阶段：</b>即通过 PPO 的生成阶段所得到的元素，进行 PPO 的训练，在经典 RL 中也被称作奖励学习。由于 PPO 的生成阶段的时间成本较高，因此通常对生成阶段得到的元素进行缓存，并进行多次训练。对于第 $t$ 次训练，其具体流程如下：</p>
 
-1. <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">给定 sequence $x + y$，将其输入给第 $t-1$ 次训练完的 actor model $\pi_{RL}$ 生成 new action logits $p^{t}_{RL}$，并和 action logits $p_{RL}$ 计算 ratio $r^{t}(\theta)$。接着和给定的 advantage $A$ 计算 Actor loss 用于 actor model 的训练。(<span style="color: red;">$\pi_{RL}$ train</span>)</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">1. 给定 sequence $x + y$，将其输入给第 $t-1$ 次训练完的 actor model $\pi_{RL}$ 生成 new action logits $p^{t}_{RL}$，并和 action logits $p_{RL}$ 计算 ratio $r^{t}(\theta)$。接着和给定的 advantage $A$ 计算 Actor loss 用于 actor model 的训练。(<span style="color: red;">$\pi_{RL}$ train</span>)</p>
 
-2. <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">给定 sequence $x + y$，将其输入给第 $t-1$ 次训练完的 critic model $V$ 生成 new value $v^{t}$，并和 value $v$ 计算 clipped value $v_{clip}$。接着和给定的 return 计算 Critic loss 用于 critic model 的训练。(<span style="color: red;">$V$ train</span>)</p> 
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">2. 给定 sequence $x + y$，将其输入给第 $t-1$ 次训练完的 critic model $V$ 生成 new value $v^{t}$，并和 value $v$ 计算 clipped value $v_{clip}$。接着和给定的 return 计算 Critic loss 用于 critic model 的训练。(<span style="color: red;">$V$ train</span>)</p> 
 
 <h1 id="DeepSpeedChat pipeline">DeepSpeedChat</h1>
 
