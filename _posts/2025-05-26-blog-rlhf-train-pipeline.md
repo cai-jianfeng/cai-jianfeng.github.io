@@ -26,7 +26,7 @@ tags:
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><b>A. PPO 的生成阶段：</b>即通过给定的输入 prompt，生成一系列 PPO 所训练的必要的元素，在经典 RL 中也被称作环境交互。</p>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">1. 给定 SFT 后得到的 model，将其复制为 ref model $\pi_{SFT}$ 和需要进一步训练的 actor model $\pi_{RL}$；给定 Reward Modeling 后得到的 model，将其复制为 reward model $R$ 和 critic model $V$。</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">1. 给定 SFT 后的 model，将其复制为 ref model $\pi_{SFT}$ 和需要进一步训练的 actor model $\pi_{RL}$；给定 Reward Modeling 后的 model，将其复制为 reward model $R$ 和 critic model $V$。</p>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">2. 给定 prompt $x$，将其输入给 actor model $\pi_{RL}$ 生成对应的 response $y$，得到完整的 sequence $x + y$。(<span style="color: red;">$\pi_{RL}$ rollout</span>)</p>
 
