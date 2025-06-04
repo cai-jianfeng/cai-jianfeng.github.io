@@ -100,7 +100,7 @@ tags:
   <figcaption>图 5：理想情况下 RLHF 的逻辑流程 (其中<span style="color: red;">红色箭头</span>表示逻辑流；<span style="color: black;">黑色箭头</span>表示数据流。<span style="color: #CCCC00;">黄色模块</span>表示计算模块；<span style="color: blue;">蓝色模块</span>表示由计算模块生成的数据模块，同一层内的计算模块表示其可以并行)</figcaption>
 </figure>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">与 DeepSpeedChat 一开始就使用 deepspeed 命令启动分布式，并在每个子进程中运行 main.py 不同。关于图 <a href="#fig-RLHF-parallel-pipeline">5</a> 所示的逻辑流程的代码编写，由于其需要模块并行，即每个 model 的分布式进程组执行的模块不同 (例如 actor model 的分布式进程组在生成 action logits 时，ref model 的分布式进程组在同时生成 sft logits)。因此最直观，也是最具扩展性的方式是使用一个<b>主进程</b>来编写 PPO 的整体计算逻辑 (这个主进程也被称为 single controller)，在遇到分布式初始化/计算时，则异步启动/调用各个 model 的分布式进程组，然后继续主进程的下一步计算逻辑，并在之后需要原先分布式进程组结果的时候获取它。因此，整体的代码训练框架如图 <a href="#fig-RLHF-parallel-pipeline">6</a> 所示 (由于篇幅限制，这里只展示一小部分代码逻辑)。
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">与 DeepSpeedChat 一开始就使用 deepspeed 命令启动分布式，并在每个子进程中运行 main.py 不同。关于图 <a href="#fig-RLHF-parallel-pipeline">5</a> 所示的逻辑流程的代码编写，由于其需要模块并行，即每个 model 的分布式进程组执行的模块不同 (例如 actor model 的分布式进程组在生成 action logits 时，ref model 的分布式进程组在同时生成 sft logits)，因此最直观，也是最具扩展性的方式是使用一个<b>主进程</b>来编写 PPO 的整体计算逻辑 (这个主进程也被称为 single controller)，在遇到分布式初始化/计算时，则异步启动/调用各个 model 的分布式进程组，然后继续主进程的下一步计算逻辑，并在之后需要原先分布式进程组结果的时候获取它。因此，整体的代码训练框架如图 <a href="#fig-RLHF-parallel-pipeline">6</a> 所示 (由于篇幅限制，这里只展示一小部分代码逻辑)。
 
 <figure id="fig-RLHF-parallel-code-pipeline">
   <img src="/images/RLHF-parallel-code-pipeline.svg" alt="RLHF parallel code pipeline" style="width:100%">
