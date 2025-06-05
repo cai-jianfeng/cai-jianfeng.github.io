@@ -84,14 +84,14 @@ tags:
   <figcaption>图 3：DeepSpeedChat 的各个 model 分布 (其中<span style="color: green;">绿色</span>表示每个 GPU 的内存；<span style="color: blue;">蓝色</span>表示每个 model。其中，actor model 和 critic model 由于需要 train 一般使用 Zero $3$，而 ref model 和 reward model 由于只需要 infer 一般使用 Zero $0$)</figcaption>
 </figure>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">我们将 DeepSpeedChat 这种将所有 model 都分配到相同的 GPU 资源上的结构称为 <b>collocate all models</b>。而在理想的情况下，各个 model 在 GPU 资源上的结构应该如图 <a href="#fig-collocate-pipeline">4</a> 所示。首先，将 actor model 复制为 $2$ 份，一份用于 train，使用 TrainEngine (如 DeepSpeed, FSDP, Megatron) 进行优化，称为 $\pi_{train}$；而另一份用于 rollout，使用 InferEngine (如 vllm, sglang) 进行优化，称为 $\pi_{rollout}$，并在每次 PPO 训练阶段完成后，下一次 PPO 生成阶段开始前，将更新后的 $\pi_{train}$ 的参数同步给 $\pi_{rollout}$。这样做的目的是可以更好地利用目前开源的各个 train/infer engine，提升各个阶段的效率。其次，将每个 model 分配到不同的 GPU 资源上，使其独占给定的 GPU 资源，这样，图 <a href="#fig-ppo-pipeline">1</a> 中那些没有数据依赖关系的计算模块就可以并行，从而节省整体的时间开销。</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">我们将 DeepSpeedChat 这种将所有 model 都分配到相同的 GPU 资源上的结构称为 <b>collocate all models</b>。而在理想的情况下，各个 model 在 GPU 资源上的结构应该如图 <a href="#fig-collocate-pipeline">4</a> 所示，称为 distribute all models (这是我自己瞎起的😎)。首先，将 actor model 复制为 $2$ 份，一份用于 train，使用 TrainEngine (如 DeepSpeed, FSDP, Megatron) 进行优化，称为 $\pi_{train}$；而另一份用于 rollout，使用 InferEngine (如 vllm, sglang) 进行优化，称为 $\pi_{rollout}$，并在每次 PPO 训练阶段完成后，下一次 PPO 生成阶段开始前，将更新后的 $\pi_{train}$ 的参数同步给 $\pi_{rollout}$。这样做的目的是可以更好地利用目前开源的各个 train/infer engine，提升各个阶段的效率。其次，将每个 model 分配到不同的 GPU 资源上，使其独占给定的 GPU 资源，这样，图 <a href="#fig-ppo-pipeline">1</a> 中那些没有数据依赖关系的计算模块就可以并行，从而节省整体的时间开销。</p>
 
 <figure id="fig-scattered-pipeline">
   <img src="/images/scattered_pipeline.png" alt="scattered pipeline" style="width:100%">
   <figcaption>图 4：理想情况下 RLHF 的各个 model 分布 (其中<span style="color: green;">绿色</span>表示每个 GPU 的内存；<span style="color: blue;">蓝色</span>表示每个 model)</figcaption>
 </figure>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: gray;">题外话：要使得没有数据依赖关系的计算模块可以并行并不一定需要将 model 分配到不同 GPU 资源上，其关键是要实现每个计算模块的<b>异步调用</b>，而不是像 DeepSpeedChat 那样前一个计算模块完成后才会启动下一个计算模块；但是将每个 model 分配到不同的 GPU 资源上可以避免在一个 GPU 上开太多的进程导致神秘 bug 的等一系列新的问题🥲。</span></p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: gray;">题外话 ：要使得没有数据依赖关系的计算模块可以并行除了需要将 model 分配到不同 GPU 资源上，另一个关键是要实现每个计算模块的<b>异步调用</b>，而不是像 DeepSpeedChat 那样前一个计算模块完成后才会启动下一个计算模块；同时将每个 model 分配到不同的 GPU 资源上可以避免在一个 GPU 上开太多的进程导致神秘 bug 的等一系列新的问题🥲。</span></p>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">在将每个 model 都分配到不同的 GPU 资源之后，RLHF 的整个流程就可以引入计算模块并行推理，形成如图 <a href="#fig-RLHF-parallel-pipeline">5</a> 所示的逻辑流程。可以看到，大多数的计算模块都可以并行进行，与图 <a href="#fig-ppo-pipeline">1</a> 相比，其可以节省大量的时间开销。下面要讲的 OpenRLHF 和 verl 框架都是使用这种并行的逻辑流程来编写代码的。</p>
 
@@ -99,6 +99,8 @@ tags:
   <img src="/images/RLHF-parallel-pipeline.svg" alt="RLHF parallel pipeline" style="width:100%">
   <figcaption>图 5：理想情况下 RLHF 的逻辑流程 (其中<span style="color: red;">红色箭头</span>表示逻辑流；<span style="color: black;">黑色箭头</span>表示数据流。<span style="color: #CCCC00;">黄色模块</span>表示计算模块；<span style="color: blue;">蓝色模块</span>表示由计算模块生成的数据模块，同一层内的计算模块表示其可以并行)</figcaption>
 </figure>
+
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: gray;">题外话：虽然上面说了那么多 distribute all models 的好处，但是理论上，在不考虑通信的情况下，collocate all models 才是最优解。在给定 GPU 资源的情况下 (假设给定的 GPU 算力为 $N$)，首先，由图 <a href="#fig-RLHF-parallel-pipeline">5</a> 可知，每个 model 的计算模块不是每时每刻都可以并行 (如 actor model (rollout) 在 rollout 时，其余 model 只能等待)，这必然会导致 GPU 资源的浪费，因此 distribute all models 框架所利用的 GPU 算力的上限 $<N$；而 collocate all models 将每个 model 都分布在所有的 GPU 资源上，无论是哪个 model 的计算模块在执行都可以利用所有的 GPU 算力，因此其所利用的 GPU 算力的上限为 $N$，即 <b>collocate all models 所能利用的 GPU 资源上限高</b>。其次，假设 distribute all models 给 $M$ ($M < N$) 个 model 均分 GPU 资源，那么每个 model 所能得到的最大的 GPU 显存为 $M * 单个 GPU 显存$；而 collocate all models 通过 offload 技术，可以实现每个 model 所能得到的最大的 GPU 显存为 $N * 单个 GPU 显存$，因此 <b>collocate all models 加载 model 的上限高</b>。</span></p>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">与 DeepSpeedChat 一开始就使用 deepspeed 命令启动分布式，并在每个子进程中运行 main.py 不同。关于图 <a href="#fig-RLHF-parallel-pipeline">5</a> 所示的逻辑流程的代码编写，由于其需要模块并行，即每个 model 的分布式进程组执行的模块不同 (例如 actor model 的分布式进程组在生成 action logits 时，ref model 的分布式进程组在同时生成 sft logits)，因此最直观，也是最具扩展性的方式是使用一个<b>主进程</b>来编写 PPO 的整体计算逻辑 (这个主进程也被称为 single controller)，在遇到分布式初始化/计算时，则异步启动/调用各个 model 的分布式进程组，然后继续主进程的下一步计算逻辑，并在之后需要原先分布式进程组结果的时候获取它。因此，整体的代码训练框架如图 <a href="#fig-RLHF-parallel-pipeline">6</a> 所示 (由于篇幅限制，这里只展示一小部分代码逻辑)。
 
