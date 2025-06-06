@@ -104,9 +104,17 @@ tags:
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: gray;">因此，collocate all models 架构在 GPU 资源较少的情况下会比 distribute all models 架构更快，<a href="https://arxiv.org/abs/2409.19256" target="_blank">HybridFlow</a> 论文中的实验也证明了这一点。这也是为什么 OpenRLHF 和 verl 都实现了 collocate all models 架构的主要原因，而 distribute all models 架构发挥作用的场景在 GPU 资源较多的情况下。举个极端的例子，假设你有 $5$ 台 $8$ 卡 A$100$ 准备训练 $1.5$B 的 model，这时候如果将 $1.5$B model 使用 Megatron/FSDP 等单模型分布式框架分布到 $5 * 8$ 张卡上，由于机间通信等问题，导致大部分时间都在传数据，而不是计算，其时间不一定会比使用 $1$ 台 $8$ 卡 A$100$ 进行训练要短。此时使用 distribute all models 架构，将 5 个 model 各自分配在 $1$ 台 $8$ 卡 A$100$ 上，每个 model 基本上只在机内通信，大大降低了通信时间，增加了计算效率。因此，distribute all models 架构属于是追求极致时间性能的最优解，即给定如下任务：训练一个 $xx$B 的 model，给你无限的卡，只要求训练时间尽可能短。这时候使用 distribute all models 架构比 collocate all models 架构好。图 <a href="#fig-collocate_distribute_performance" target="_blank">题外话-1</a> 是我猜测的两个架构随着给定 GPU 资源增加的情况下的训练时间的变化。所以对于我这种“穷人家的孩子”，没有什么计算资源，还是老老实实用 collocate all models 架构才是最佳的选择😅。</span></p>
 
-<figure id="fig-collocate_distribute_performance">
+<!-- <figure id="fig-collocate_distribute_performance">
   <img src="/images/collocate_distribute_performance.svg" alt="collocate_distribute_performance" style="width:50%">
   <figcaption>图 题外话-1：(猜测的) collocate all models 架构和 distribute all models 架构的训练时间与 GPU 资源的关系</figcaption>
+</figure> -->
+<figure id="fig-collocate_distribute_performance" style="text-align: center;">
+  <img src="/images/collocate_distribute_performance.svg"
+       alt="collocate_distribute_performance"
+       style="width: 50%; display: block; margin: 0 auto;">
+  <figcaption>
+    图 题外话-1：(猜测的) collocate all models 架构和 distribute all models 架构的训练时间与 GPU 资源的关系
+  </figcaption>
 </figure>
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">与 DeepSpeedChat 一开始就使用 deepspeed 命令启动分布式，并在每个子进程中运行 main.py 不同。关于图 <a href="#fig-RLHF-parallel-pipeline">5</a> 所示的逻辑流程的代码编写，由于其需要模块并行，即每个 model 的分布式进程组执行的模块不同 (例如 actor model 的分布式进程组在生成 action logits 时，ref model 的分布式进程组在同时生成 sft logits)，因此最直观，也是最具扩展性的方式是使用一个<b>主进程</b>来编写 PPO 的整体计算逻辑 (这个主进程也被称为 single controller)，在遇到分布式初始化/计算时，则异步启动/调用各个 model 的分布式进程组，然后继续主进程的下一步计算逻辑，并在之后需要原先分布式进程组结果的时候获取它。因此，整体的代码训练框架如图 <a href="#fig-RLHF-parallel-pipeline">6</a> 所示 (由于篇幅限制，这里只展示一小部分代码逻辑)。
