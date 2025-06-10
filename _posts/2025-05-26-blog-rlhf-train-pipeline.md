@@ -1,7 +1,7 @@
 ---
 title: 'The Basic Knowledge of RLHF Training Pipeline'
 date: 25-05-26
-update: 25-06-07
+update: 25-06-10
 permalink: /posts/2025/05/blog-rlhf-train-pipeline/
 star: superior
 tags:
