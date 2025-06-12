@@ -82,7 +82,7 @@ analytics:
 author:
   name             : "Cai-Jianfeng"
   avatar           : "profile_cartoon.png"
-  bio              : <p style="text-align:justify; text-justify:inter-ideograph;">First-year graduate student, School of Information Science and Technology, USTC</p>
+  bio              : <p style="text-align:justify; text-justify:inter-ideograph; word-break:break-all;">First-year graduate student, School of Information Science and Technology, USTC</p>
   location         : "Location"
   employer         :
   pubmed           : "https://www.ncbi.nlm.nih.gov/pubmed/?term=jianfeng+cai"
