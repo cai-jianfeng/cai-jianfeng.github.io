@@ -185,11 +185,13 @@ tags:
 
 <h1 id="appendix A">Appendix A: Actor Model 与 vllm 的参数同步的实现细节</h1>
 
-敬请期待🤪
-
 <h2 id="appendix A-OpenRLHF">OpenRLHF 的 <code style="color: #B58900">broadcast_to_vllm()</code></h2>
 
+敬请期待🤪
+
 <h2 id="appendix A-verl">verl 的 <code style="color: #B58900">sync_model_weights()</code></h2>
+
+敬请期待🤪
 
 <h1 id="appendix B">Appendix B: OpenRLHF 代码流程图</h1>
 
@@ -257,4 +259,10 @@ tags:
 
 <h1 id="appendix D">Appendix D: verl 代码额外细节</h1>
 
+<h2 id="appendix D-verl-register_center_actor">verl 的 <code style="color: #B58900">register_center_actor</code> 的实现</h2>
+
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">1. 在 <code style="color: #B58900">Worker</code> 的 <code style="color: #B58900">__new__</code> 方法中，<code style="color: #B58900">*_register_center</code> 的实例化需要满足 <code style="color: #B58900">int(os.environ.get("DISABLE_WORKER_INIT", 0)) == 0</code>，<code style="color: #B58900">None not in [rank, worker_group_prefix]</code> 和 <code style="color: #B58900">"ActorClass(" not in cls.__name__</code>，而在 <code style="color: #B58900">WorkerDict</code> 的 <code style="color: #B58900">__init__</code> 中，使用 <code style="color: #B58900">with patch.dict(os.environ, {"DISABLE_WORKER_INIT": "1"})</code> 的上下文环境避免实例化各个 model 时生成 <code style="color: #B58900">*_register_center</code>；而在 <code style="color: #B58900">remote_cls = ray.remote(WorkerDict)</code> 时，会调用 <code style="color: #B58900">WorkDict</code> 的 <code style="color: #B58900">__new__</code> 方法，此时 <code style="color: #B58900">"ActorClass(" not in cls.__name__</code> 条件避免生成 <code style="color: #B58900">*_register_center</code>；最后在 <code style="color: #B58900">RayWorkerGroup._init_with_resource_pool()</code> 时，<code style="color: #B58900">worker = ray_cls_with_init(...)</code> 会调用 <code style="color: #B58900">self.cls.options(**options).remote(...)</code>，这个 <code style="color: #B58900">self.cls</code> 就是 <code style="color: #B58900">WorkDict</code>，此时将其实例化会再次调用 <code style="color: #B58900">Worker</code> 的 <code style="color: #B58900">__new__</code>，且其的 <code style="color: #B58900">cls.__name__</code> 为 <code style="color: #B58900">WorkDict</code>，没有外套 <code style="color: #B58900">ActorClass</code>，因此会成功调用 <code style="color: #B58900">Worker._configure_before_init()</code> 实例化 <code style="color: #B58900">*_register_center</code>。因此 <code style="color: #B58900">int(os.environ.get("DISABLE_WORKER_INIT", 0)) == 0</code>，<code style="color: #B58900">None not in [rank, worker_group_prefix]</code> 和 <code style="color: #B58900">"ActorClass(" not in cls.__name__</code> 这三个条件都是为了防止其他位置不合时宜地实例化 <code style="color: #B58900">*_register_center</code> (<del>感觉应该是在写代码的过程中发现了这些漏洞一个个加上的 (bushi)</del>)。(所以我比较疑惑 <code style="color: #B58900">ray.remote()</code> 封装时调用了类的 <code style="color: #B58900">__new__</code> 的作用是什么？🤔)</p>
+
+<h2 id="appendix D-verl-3D-HybridEngine">verl 的 <code style="color: #B58900">ActorRolloutRefWorker</code> 的实现</h2>
+
+敬请期待🤪
