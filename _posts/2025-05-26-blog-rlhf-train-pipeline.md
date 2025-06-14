@@ -176,7 +176,7 @@ tags:
 
 <p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;">至此，verl 的代码细节便已讲解完毕。可以发现，verl 的代码非常擅于利用装饰器和上下文管理器来实现预处理步骤以及逻辑的封装，甚至能够利用 <code style="color: #B58900">__new__</code> 的初始化来编写自身的代码 (例如 <code style="color: #B58900">register_center_actor</code> 的实例化便是在 <code style="color: #B58900">Worker</code> 类的 <code style="color: #B58900">__new__</code> 中)。这种方式的优点是可以实现很强的代码复用，以及很容易进行模块化扩展，但是缺点就是代码的逻辑阅读性可能不是很好。不过感觉公司的项目应该很喜欢这种风格的代码，更符合多人协作的范式，大家还是要多多熟悉 (我也要多多熟悉😉)。</p>
 
-<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: white;">TODO List: 1. verl 的 url 引用；2. Appendix A 的 OpenRLHF 和 verl 的 vllm 与 actor model 的参数同步；3. R 和 V 表示的是 model，后续却将其表示为 值，需要统一。</p>
+<p style="text-align: justify; text-justify: inter-ideograph; word-break: break-all;"><span style="color: white;">TODO List: 1. verl 的总结；2. Appendix A 的 OpenRLHF 和 verl 的 vllm 与 actor model 的参数同步。</p>
 
 <h1 id="appendix A">Appendix A: Actor Model 与 vllm 的参数同步的实现细节</h1>
 
