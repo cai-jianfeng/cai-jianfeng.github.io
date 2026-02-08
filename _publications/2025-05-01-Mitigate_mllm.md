@@ -13,4 +13,17 @@ citation: 'Cai Jianfeng. (2025). &quot;Mitigating Hallucination in VideoLLMs via
 
 [Download paper from here](https://openreview.net/forum?id=7mTECPRtll)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">Cai Jianfeng. (2025). &quot;Mitigating Hallucination in VideoLLMs via Temporal-Aware Activation Engineering.&quot; <i>arXiv preprint arXiv: 2505.12826, 2025</i>.</p>
+<!-- <p style="text-align:justify; text-justify:inter-ideograph;">Cai Jianfeng. (2025). &quot;Mitigating Hallucination in VideoLLMs via Temporal-Aware Activation Engineering.&quot; <i>arXiv preprint arXiv: 2505.12826, 2025</i>.</p> -->
+
+<p style="text-align:justify; text-justify:inter-ideograph;">BibTeX formatted citation: </p>
+
+<pre>
+@inproceedings{
+cai2025mitigating,
+title={Mitigating Hallucination in Video{LLM}s via Temporal-Aware Activation Engineering},
+author={Jianfeng Cai and Jiale Hong and Zongmeng Zhang and Wengang Zhou and zhannianji and Houqiang Li},
+booktitle={The Thirty-ninth Annual Conference on Neural Information Processing Systems},
+year={2025},
+url={https://openreview.net/forum?id=7mTECPRtll}
+}
+</pre>

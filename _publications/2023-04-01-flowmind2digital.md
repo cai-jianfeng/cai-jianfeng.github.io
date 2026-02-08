@@ -1,11 +1,11 @@
 ---
 title: "Flowmind2Digital: The First Comprehensive Flowmind Recognition and Conversion Approach"
 collection: publications
-state: reviewed
+# state: reviewed
 permalink: /publication/2023-04-01-flowmind2digital
 excerpt: 'This paper proposes the Flowmind2digital method and hdFlowmind dataset to address the convertion of hand-drawn flowchart/mindmap.'
 date: 2023-04-01
-venue: 'Multidisciplinary Digital Publishing Institute Electronics'
+venue: 'Arxiv'
 paperurl: 'http://arxiv.org/abs/2401.03742'
 citation: 'Liu Huanyu<sup>*</sup>, Cai Jianfeng<sup>*</sup>. (2024). &quot;Flowmind2Digital: The First Comprehensive Flowmind Recognition and Conversion Approach.&quot; <i>arXiv preprint arXiv: 2401.03742, 2024</i>.'
 ---
@@ -18,7 +18,7 @@ We also highlight the importance of simple graphics for sketch recognition, whic
 
 [Download paper here](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4423352) or [here](http://arxiv.org/abs/2401.03742)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">Recommended citation: Cai Jianfeng. (2024). &quot;Flowmind2Digital: The First Comprehensive Flowmind Recognition and Conversion Approach.&quot; <i>arXiv preprint arXiv: 2401.03742, 2024</i>.</p>
+<!-- <p style="text-align:justify; text-justify:inter-ideograph;">Recommended citation: Cai Jianfeng. (2024). &quot;Flowmind2Digital: The First Comprehensive Flowmind Recognition and Conversion Approach.&quot; <i>arXiv preprint arXiv: 2401.03742, 2024</i>.</p> -->
 
 <p style="text-align:justify; text-justify:inter-ideograph;">BibTeX formatted citation: </p>
 
