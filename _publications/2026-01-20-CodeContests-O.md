@@ -1,7 +1,7 @@
 ---
 title: "CodeContests-O: Powering LLMs via Feedback-Driven Iterative Test Case Generation"
 collection: publications
-state: under review
+# state: under review
 permalink: /publication/2026-01-20-CodeContests-O
 excerpt: "The rise of reasoning models necessitates large-scale verifiable data, for which programming tasks serve as an ideal source. To address this, we propose a Feedback-Driven Iterative Framework for comprehensive test case construction and release CodeContests-O."
 date: 2026-01-20
@@ -16,12 +16,12 @@ paperurl: 'https://arxiv.org/abs/2601.13682'
 <p style="text-align:justify; text-justify:inter-ideograph;">BibTeX formatted citation: </p>
 
 <pre>
-@misc{cai2026codecontestso,
-      title={CodeContests-O: Powering LLMs via Feedback-Driven Iterative Test Case Generation}, 
-      author={Jianfeng Cai and Jinhua Zhu and Ruopei Sun and Kangwen Zhao and Dongyun Xue and Mingxiao Feng and Wengang Zhou and Houqiang Li},
-      year={2026},
-      eprint={2601.13682},
-      archivePrefix={arXiv},
-      primaryClass={cs.SE}
+@inproceedings{
+cai2026codecontestso,
+title={CodeContests-O: Powering {LLM}s via Feedback-Driven Iterative Test Case Generation},
+author={Jianfeng Cai and Jinhua Zhu and Ruopei Sun and Kangwen Zhao and Dongyun Xue and Mingxiao Feng and Wengang Zhou and Houqiang Li},
+booktitle={The 64th Annual Meeting of the Association for Computational Linguistics},
+year={2026},
+url={https://openreview.net/forum?id=PxCGqCstGy}
 }
 </pre>
