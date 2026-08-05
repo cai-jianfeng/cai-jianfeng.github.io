@@ -1,5 +1,5 @@
 ---
-title: 'The Basic Knowledge of Scored-based Generative Model'
+title: 'The Basic Knowledge of Score-based Generative Models'
 date: 23-11-16
 permalink: /posts/2023/11/blog-score-based-generative-model/
 star: superior

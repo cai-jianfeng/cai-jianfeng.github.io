@@ -11,12 +11,18 @@ A list of all the posts and pages found on the site. For you robots out there is
 
 <h2>Pages</h2>
 {% for post in site.pages %}
-  {% include archive-single.html %}
+  {% assign sitemap_item_title = post.title | default: "" | strip %}
+  {% unless sitemap_item_title == "" %}
+    {% include archive-single.html heading_level=3 %}
+  {% endunless %}
 {% endfor %}
 
 <h2>Posts</h2>
 {% for post in site.posts %}
-  {% include archive-single.html %}
+  {% assign sitemap_item_title = post.title | default: "" | strip %}
+  {% unless sitemap_item_title == "" or post.star == "draft" %}
+    {% include archive-single.html heading_level=3 %}
+  {% endunless %}
 {% endfor %}
 
 {% capture written_label %}'None'{% endcapture %}
@@ -31,7 +37,10 @@ A list of all the posts and pages found on the site. For you robots out there is
 {% endunless %}
 {% for post in collection.docs %}
   {% unless collection.output == false or collection.label == "posts" %}
-  {% include archive-single.html %}
+    {% assign sitemap_item_title = post.title | default: "" | strip %}
+    {% unless sitemap_item_title == "" %}
+      {% include archive-single.html heading_level=3 %}
+    {% endunless %}
   {% endunless %}
 {% endfor %}
 {% endfor %}

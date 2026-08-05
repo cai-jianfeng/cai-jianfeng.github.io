@@ -6,17 +6,18 @@
 # `jekyll serve`. If you change this file, please restart the server process.
 
 # Site Settings
-locale                   : "en-CN"
-title                    : "Cai Jianfeng"
+locale                   : "en"
+title                    : "Jianfeng Cai"
 title_separator          : "-"
-name                     : &name "cai jianfeng"
-description              : &description "personal description"
+name                     : &name "Jianfeng Cai"
+description              : &description "Jianfeng Cai's academic website: publications, internships, study experience, and technical notes."
 url                      : https://cai-jianfeng.github.io # the base hostname & protocol for your site e.g. "https://mmistakes.github.io"
 baseurl                  : "" # the subpath of your site, e.g. "/blog"
 repository               : "cai-jianfeng/cai-jianfeng.github.io"
 teaser                   :  # filename of teaser fallback teaser image placed in /images/, .e.g. "500x300.png"
 breadcrumbs              : false # true, false (default)
-words_per_minute         : 20
+words_per_minute         : 200
+cjk_chars_per_minute     : 300 # CJK reading speed used by read-time.html to convert CJK characters into word equivalents
 future                   : true
 read_more                : "disabled" # if enabled, adds "Read more" links to excerpts
 talkmap_link             : false #change to true to add link to talkmap on talks page
@@ -80,13 +81,13 @@ analytics:
 
 # Site Author
 author:
-  name             : "Cai-Jianfeng"
+  name             : "Jianfeng Cai"
   avatar           : "profile_cartoon.png"
-  bio              : <p style="text-align:justify; text-justify:inter-ideograph; word-break:break-all;">Second-Year Master Student, School of Information Science and Technology, USTC</p>
-  location         : "Location"
+  bio              : "Master's student at the School of Information Science and Technology, USTC."
+  location         :
   employer         :
   pubmed           : "https://www.ncbi.nlm.nih.gov/pubmed/?term=jianfeng+cai"
-  googlescholar    : "http://googlescholar.com"
+  googlescholar    :
   email            : "cjf1622613693@gmail.com"
   researchgate     :  # example: "https://www.researchgate.net/profile/yourprofile"
   uri              :
@@ -109,7 +110,7 @@ author:
   stackoverflow    : "20639898/jianfeng-cai"
   steam            :
   tumblr           :
-  twitter          : "@jianfengcai4"
+  twitter          : "jianfengcai4"
   vine             :
   weibo            :
   xing             :
@@ -130,11 +131,17 @@ exclude:
   - .jekyll-assets-cache
   - .sass-cache
   - CHANGELOG
+  - CONTRIBUTING.md
   - Capfile
   - Gemfile
+  - Gemfile.lock
   - Gruntfile.js
+  - Makefile
   - LICENSE
   - README
+  - README.md
+  - AGENTS.md
+  - ARCHITECTURE.md
   - Rakefile
   - assets/js/_main.js
   - assets/js/plugins
@@ -144,8 +151,33 @@ exclude:
   - log
   - node_modules
   - package.json
+  - package-lock.json
+  - markdown_generator
+  - serve-local.cmd
+  - serve-local.ps1
+  - talkmap
+  - _pages/talkmap.html
+  # Minimal Mistakes / Academic Pages demo content retained only as source reference.
+  - _pages/archive-layout-with-content.md
+  - _pages/collection-archive.html
+  - _pages/cv.md
+  - _pages/markdown.md
+  - _pages/non-menu-page.md
+  - _pages/page-archive.html
+  - _pages/portfolio.html
+  - _pages/talks.html
+  - _pages/terms.md
+  # Unlinked legacy Markdown notes; their maintained equivalents live in `_posts/`.
+  - files/DDPM.md
+  - files/LLM.md
+  - files/NLP.md
+  - files/Score-based generative model.md
+  - talkmap.ipynb
+  - talkmap.py
   - tmp
   - vendor
+  - 绘图.drawio
+  - 绘图.pptx
 keep_files:
   - .git
   - .svn
@@ -181,9 +213,10 @@ collections:
   publications:
     output: true
     permalink: /:collection/:path/
+  internships:
+    output: false
   portfolio:
-    output: true
-    permalink: /:collection/:path/
+    output: false
   # talks:
   #   output: true
   #   permalink: /:collection/:path/

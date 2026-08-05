@@ -1,45 +1,33 @@
 {% include base_path %}
 
-{% if post.header.teaser %}
-  {% capture teaser %}{{ post.header.teaser }}{% endcapture %}
-{% else %}
-  {% assign teaser = site.teaser %}
-{% endif %}
-
 {% if post.id %}
   {% assign title = post.title | markdownify | remove: "<p>" | remove: "</p>" %}
 {% else %}
   {% assign title = post.title %}
 {% endif %}
+{% assign plain_title = title | strip_html | strip %}
 
-<div class="{{ include.type | default: "list" }}__item">
-  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
-    <li>
-    {% if include.type == "grid" and teaser %}
-      <div class="archive__item-teaser">
-        <img src=
-          {% if teaser contains "://" %}
-            "{{ teaser }}"
-          {% else %}
-            "{{ teaser | prepend: "/images/" | prepend: base_path }}"
-          {% endif %}
-          alt="">
-      </div>
-    {% endif %}
-    <h3 class="archive__item-title" itemprop="headline">
+<li class="cv-list__item">
+  <article itemscope itemtype="https://schema.org/CreativeWork">
+    <h3 class="cv-list__title" itemprop="headline">
       {% if post.link %}
-        <a href="{{ post.link }}">{{ title }}</a> <a href="{{ base_path }}{{ post.url }}" rel="permalink"><i class="fa fa-link" aria-hidden="true" title="permalink"></i><span class="sr-only">Permalink</span></a>
+        <a href="{{ post.link | escape }}">{{ title }}</a>
+        <a href="{{ base_path }}{{ post.url }}" rel="permalink" aria-label="Permalink to {{ plain_title | escape }}"><i class="fas fa-link" aria-hidden="true"></i></a>
       {% else %}
         <a href="{{ base_path }}{{ post.url }}" rel="permalink">{{ title }}</a>
       {% endif %}
     </h3>
-    {% if post.read_time %}
-      <p class="page__meta"><i class="fa fa-clock-o" aria-hidden="true"></i> {% include read-time.html %}</p>
+
+    {% if post.collection == "publications" %}
+      <p class="cv-list__meta">
+        {% if post.state %}{{ post.state | escape }} &middot; {% endif %}{{ post.venue | escape }}{% if post.date %} &middot; <time datetime="{{ post.date | date: '%Y' }}">{{ post.date | date: "%Y" }}</time>{% endif %}
+      </p>
+    {% elsif post.collection == "teaching" %}
+      <p class="cv-list__meta">
+        {% if post.degree %}{{ post.degree | escape }}{% elsif post.type %}{{ post.type | escape }}{% endif %}{% if post.venue %} &middot; {{ post.venue | escape }}{% endif %}{% if post.date %} &middot; <time datetime="{{ post.date | date: '%Y-%m' }}">{{ post.date | date: "%Y" }}</time>{% if post.current %}&nbsp;&ndash;&nbsp;Present{% elsif post.end_date %}&nbsp;&ndash;&nbsp;<time datetime="{{ post.end_date | date: '%Y-%m' }}">{{ post.end_date | date: "%Y" }}</time>{% endif %}{% endif %}
+      </p>
+    {% elsif post.date %}
+      <p class="cv-list__meta"><time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %d, %Y" }}</time></p>
     {% endif %}
-    <!-- {% if post.venue%}<p class="archive__item-excerpt" itemprop="description">{{ post.citation }}</p> {% endif %} -->
-    {% if post.collection == 'publications' %}
-    <p><i>{{ post.state }}</i> in <i>{{ post.venue }}</i>, {{ post.date | default: "1900-01-01" | date: "%Y" }} </p>
-    {% endif %}
-    </li>
- </article>
-</div>
+  </article>
+</li>

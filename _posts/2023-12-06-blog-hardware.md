@@ -1,6 +1,6 @@
 ---
 title: 'The Basic Knowledge of Computer Hardware'
-data: 23-12-06
+date: 23-12-06
 permalink: '/post/2023/12/blog-hardware'
 # star: superior
 tags:
@@ -79,7 +79,7 @@ PMR 中又包括 CMR (Conventional Magnetic Recording) 传统记录和 SMR (Shin
 对于读取数据，可以在源级和漏级之间施加电压：如果电路导通，则说明当前浮栅中存在大量电子，该状态表示为 $0$；如果没有导通，则说明当前浮栅中存在少量电子，该状态表示为 $1$。
 而对于写入数据，向 $P$ 级施加电压可以从浮栅中析出电子，表示写入 $1$；向控制级可以令浮栅吸回电子，表示写入 $0$。</p>
 
-<img src="https://cai-jianfeng.github.io/images/hardware_SSD.png">
+<img src="/images/hardware_SSD.png" alt="SSD NAND storage structure">
 
 <p style="text-align:justify; text-justify:inter-ideograph;">因此，由浮栅晶体管堆叠而成的区域称为 <b>NAND</b>。除此之外，SSD 一般还包括一个主控和一个缓存，其中主控主要控制数据的读写以及区域分配调度；缓存主要暂存需要写入 NAND 的数据/需要读入内存的数据。
 一般主控先使用缓存进行交互，当缓存写入已满/读取的数据不在缓存，才与 NAND 进行交互(缓存的读写速度 $\gg$ NAND)。</p>

@@ -7,6 +7,11 @@ author_profile: true
 
 {% include base_path %}
 
-{% for post in site.teaching reversed %}
-  {% include archive-single.html %}
-{% endfor %}
+<p class="archive-intro">Academic study and education experience.</p>
+
+{% assign teaching_items = site.teaching | sort: "date" | reverse %}
+<div class="archive-list">
+  {% for post in teaching_items %}
+    {% include archive-single.html %}
+  {% endfor %}
+</div>

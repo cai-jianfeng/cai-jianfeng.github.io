@@ -1,0 +1,71 @@
+{% include base_path %}
+{% assign internship = include.internship %}
+
+<article class="internship-card{% if include.compact %} internship-card--compact{% endif %}" id="internship-{{ internship.slug | default: internship.title | slugify }}" role="listitem">
+  <div class="internship-card__period">
+    <span class="internship-card__dates">
+      <time datetime="{{ internship.start_date | date: '%Y-%m' }}">{{ internship.start_date | date: "%b %Y" }}</time>
+      {% if internship.current %}
+        <span aria-hidden="true">&nbsp;&ndash;&nbsp;</span>
+        <span class="screen-reader-text">to</span>
+        <span>Present</span>
+      {% elsif internship.end_date %}
+        <span aria-hidden="true">&nbsp;&ndash;&nbsp;</span>
+        <span class="screen-reader-text">to</span>
+        <time datetime="{{ internship.end_date | date: '%Y-%m' }}">{{ internship.end_date | date: "%b %Y" }}</time>
+      {% endif %}
+    </span>
+    {% if internship.current %}<span class="internship-card__status" aria-hidden="true">Current</span>{% endif %}
+  </div>
+
+  <div class="internship-card__body">
+    <header class="internship-card__header">
+      {% if include.compact %}
+        <h3 class="internship-card__title">{{ internship.organization | escape }}</h3>
+      {% else %}
+        <h2 class="internship-card__title">{{ internship.organization | escape }}</h2>
+      {% endif %}
+
+      {% if internship.role or internship.team %}
+        <p class="internship-card__identity">
+          {% if internship.role %}<strong>{{ internship.role | escape }}</strong>{% endif %}
+          {% if internship.role and internship.team %}<span aria-hidden="true">&middot;</span>{% endif %}
+          {% if internship.team %}<span>{{ internship.team | escape }}</span>{% endif %}
+        </p>
+      {% endif %}
+
+      {% if internship.focus %}<p class="internship-card__focus">{{ internship.focus | escape }}</p>{% endif %}
+    </header>
+
+    {% unless include.compact %}
+      {% if internship.excerpt %}<p class="internship-card__summary">{{ internship.excerpt | escape }}</p>{% endif %}
+
+      {% if internship.highlights %}
+        <ul class="internship-card__highlights">
+          {% for highlight in internship.highlights %}
+            <li><strong>{{ highlight.label | escape }}:</strong> {{ highlight.text | escape }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+
+      {% if internship.technologies %}
+        <ul class="internship-card__tags" aria-label="Technologies used at {{ internship.organization | escape }}">
+          {% for technology in internship.technologies %}<li>{{ technology | escape }}</li>{% endfor %}
+        </ul>
+      {% endif %}
+
+      {% if internship.links %}
+        <nav class="internship-card__links" aria-label="Related work from {{ internship.organization | escape }}">
+          {% for link in internship.links %}
+            {% if link.url contains "://" %}
+              {% assign link_url = link.url %}
+            {% else %}
+              {% assign link_url = link.url | prepend: base_path %}
+            {% endif %}
+            <a href="{{ link_url | escape }}">{{ link.label | escape }} <span aria-hidden="true">&rarr;</span></a>
+          {% endfor %}
+        </nav>
+      {% endif %}
+    {% endunless %}
+  </div>
+</article>

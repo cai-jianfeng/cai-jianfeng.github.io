@@ -1,6 +1,6 @@
 ---
 title: 'PyTorch 随笔'
-data: 23-12-11
+date: 23-12-11
 permalink: '/post/2023/12/blog-pytorch'
 tags:
   - 深度学习基础知识

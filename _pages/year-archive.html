@@ -1,19 +1,30 @@
 ---
 layout: archive
 permalink: /year-archive/
-title: "Blog posts"
+title: "Blog Posts"
 author_profile: true
 redirect_from:
   - /wordpress/blog-posts/
 ---
 
 {% include base_path %}
-{% capture written_year %}'None'{% endcapture %}
-{% for post in site.posts %}
-  {% capture year %}{{ post.date | date: '%Y' }}{% endcapture %}
-  {% if year != written_year %}
-    <h2 id="{{ year | slugify }}" class="archive__subtitle">{{ year }}</h2>
-    {% capture written_year %}{{ year }}{% endcapture %}
-  {% endif %}
-  {% include archive-single.html %}
-{% endfor %}
+
+<p class="archive-intro">Technical notes, paper reading, and practical explorations.</p>
+
+{% assign archive_posts = site.posts | where_exp: "post", "post.star != 'draft'" %}
+{% assign posts_by_year = archive_posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+<nav class="archive-years" aria-label="Blog post years">
+  {% for year in posts_by_year %}<a href="#{{ year.name | slugify }}">{{ year.name }}</a>{% endfor %}
+</nav>
+
+<div class="archive-list archive-list--compact">
+  {% capture written_year %}'None'{% endcapture %}
+  {% for post in archive_posts %}
+    {% capture year %}{{ post.date | date: "%Y" }}{% endcapture %}
+    {% if year != written_year %}
+      <h2 id="{{ year | slugify }}" class="archive__subtitle">{{ year }}</h2>
+      {% capture written_year %}{{ year }}{% endcapture %}
+    {% endif %}
+    {% include archive-single.html heading_level=3 show_excerpt=false %}
+  {% endfor %}
+</div>

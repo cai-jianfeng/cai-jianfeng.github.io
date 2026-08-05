@@ -1,5 +1,5 @@
 ---
-title: 'PaclMap'
+title: 'PaCMAP'
 date: 23-10-12
 permalink: /posts/2023/10/blog-paper-paclmap/
 tags:

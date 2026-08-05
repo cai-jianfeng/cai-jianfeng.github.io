@@ -11,57 +11,75 @@
 {% else %}
   {% assign title = post.title %}
 {% endif %}
+{% assign plain_title = title | strip_html | strip %}
+{% assign heading_tag = "h2" %}
+{% if include.heading_level == 3 %}{% assign heading_tag = "h3" %}{% endif %}
 
 <div class="{{ include.type | default: "list" }}__item">
-  <article class="archive__item" itemscope itemtype="http://schema.org/CreativeWork">
+  <article class="archive__item" itemscope itemtype="https://schema.org/CreativeWork">
     {% if include.type == "grid" and teaser %}
       <div class="archive__item-teaser">
-        <img src=
-          {% if teaser contains "://" %}
-            "{{ teaser }}"
-          {% else %}
-            "{{ teaser | prepend: "/images/" | prepend: base_path }}"
-          {% endif %}
-          alt="">
+        <img src="{% if teaser contains "://" %}{{ teaser }}{% else %}{{ teaser | prepend: "/images/" | prepend: base_path }}{% endif %}" alt="">
       </div>
     {% endif %}
 
-    <h2 class="archive__item-title" itemprop="headline">
+    <{{ heading_tag }} class="archive__item-title" itemprop="headline">
       {% if post.link %}
-        <a href="{{ post.link }}">{{ title }}</a> <a href="{{ base_path }}{{ post.url }}" rel="permalink"><i class="fa fa-link" aria-hidden="true" title="permalink"></i><span class="sr-only">Permalink</span></a>
+        <a href="{{ post.link | escape }}">{{ title }}</a>
+        <a class="archive__item-permalink" href="{{ base_path }}{{ post.url }}" rel="permalink" aria-label="Permalink to {{ plain_title | escape }}"><i class="fas fa-link" aria-hidden="true"></i></a>
       {% else %}
         <a href="{{ base_path }}{{ post.url }}" rel="permalink">{{ title }}</a>
       {% endif %}
-    </h2>
-    
-    {% if post.read_time %}
-      <p class="page__meta"><i class="fa fa-clock-o" aria-hidden="true"></i> {% include read-time.html %}</p>
-    {% endif %}
+    </{{ heading_tag }}>
 
-        {% if post.collection == 'teaching' %}
-          <p> {{ post.type }}, <i>{{ post.venue }}</i>, {{ post.date | default: "1900-01-01" | date: "%Y" }} </p>
-        {% elsif post.collection == 'publications' %}
-          <p><i>{{ post.state }}</i> in <i>{{ post.venue }}</i>, {{ post.date | default: "1900-01-01" | date: "%Y" }} </p>
-        {% elsif post.date %}
-         <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].date_label | default: "Published:" }}</strong> <time datetime="{{ post.date | default: "1900-01-01" | date_to_xmlschema }}">{{ post.date | default: "1900-01-01" | date: "%B %d, %Y" }}</time></p>
-          {% if post.update %}
-            <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].date_label | default: "Update:" }}</strong> <time datetime="{{ post.update | default: "1900-01-01" | date_to_xmlschema }}">{{ post.update | default: "1900-01-01" | date: "%B %d, %Y" }}</time></p>
-          {% endif %}
+    {% if post.collection == "teaching" %}
+      <p class="archive__item-meta">
+        {% if post.degree %}<span>{{ post.degree | escape }}</span>{% elsif post.type %}<span>{{ post.type | escape }}</span>{% endif %}
+        {% if post.degree or post.type %}{% if post.venue %}<span class="archive__item-meta-separator" aria-hidden="true">&middot;</span>{% endif %}{% endif %}
+        {% if post.venue %}<span>{{ post.venue | escape }}</span>{% endif %}
+        {% if post.venue and post.date %}<span class="archive__item-meta-separator" aria-hidden="true">&middot;</span>{% endif %}
+        {% if post.date %}
+          <span><time datetime="{{ post.date | date: '%Y-%m' }}">{{ post.date | date: "%Y" }}</time>{% if post.current %}&nbsp;&ndash;&nbsp;Present{% elsif post.end_date %}&nbsp;&ndash;&nbsp;<time datetime="{{ post.end_date | date: '%Y-%m' }}">{{ post.end_date | date: "%Y" }}</time>{% endif %}</span>
         {% endif %}
-
-    {% if post.excerpt and site.read_more != 'enabled' %}
-    <p style="text-align:justify; text-justify:inter-ideograph;" class="archive__item-excerpt" itemprop="description">{{ post.excerpt | markdownify }}</p>
-    {% elsif post.excerpt and site.read_more == 'enabled' %}
-    <p style="text-align:justify; text-justify:inter-ideograph;" class="archive__item-excerpt" itemprop="description"><p style="text-align:justify; text-justify:inter-ideograph;">{{ post.excerpt | markdownify | remove: '<p style="text-align:justify; text-justify:inter-ideograph;">' | remove: '</p>' }}<strong><a href="{{ base_path }}{{ post.url }}" rel="permalink"> Read more</a></strong></p></p>
+      </p>
+    {% elsif post.collection == "publications" %}
+      <p class="archive__item-meta">
+        {% if post.state %}<span>{{ post.state | escape }}</span>{% endif %}
+        {% if post.state and post.venue %}<span class="archive__item-meta-separator" aria-hidden="true">&middot;</span>{% endif %}
+        {% if post.venue %}<span>{{ post.venue | escape }}</span>{% endif %}
+        {% if post.venue and post.date %}<span class="archive__item-meta-separator" aria-hidden="true">&middot;</span>{% endif %}
+        {% if post.date %}<time datetime="{{ post.date | date: '%Y' }}">{{ post.date | date: "%Y" }}</time>{% endif %}
+      </p>
+    {% elsif post.date %}
+      <p class="archive__item-date">
+        <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%b %d, %Y" }}</time>
+        {% if post.update %}
+          <span class="archive__item-meta-separator" aria-hidden="true">&middot;</span>
+          <span>Updated <time datetime="{{ post.update | date_to_xmlschema }}">{{ post.update | date: "%b %d, %Y" }}</time></span>
+        {% endif %}
+        {% if post.read_time %}
+          <span class="archive__item-meta-separator" aria-hidden="true">&middot;</span>
+          <span>{% include read-time.html %}</span>
+        {% endif %}
+      </p>
     {% endif %}
-    
-    {% if post.citation and post.paperurl %}
-      <p style="text-align:justify; text-justify:inter-ideograph;">Recommended citation: {{ post.citation }} <a href="{{ post.paperurl }}"><u>{{ post.paperurl }}</u></a></p>
-    {% elsif post.citation %}
-      <p style="text-align:justify; text-justify:inter-ideograph;">Recommended citation: {{ post.citation }} </p>
-    {% elsif post.paperurl %}
-      <p style="text-align:justify; text-justify:inter-ideograph;">Download <a href=" {{ post.paperurl }} "><u>here</u></a></p>
+
+    {% unless include.show_excerpt == false %}
+      {% if post.excerpt %}
+        {% assign excerpt_text = post.excerpt | strip_html | strip_newlines | normalize_whitespace | truncate: 240 %}
+        {% assign excerpt_size = excerpt_text | size %}
+        {% if excerpt_size > 24 %}<p class="archive__item-excerpt" itemprop="description">{{ excerpt_text }}</p>{% endif %}
+      {% endif %}
+    {% endunless %}
+
+    {% if post.citation %}
+      <p class="archive__item-citation">Recommended citation: {{ post.citation }}</p>
     {% endif %}
 
+    {% if post.paperurl %}
+      <div class="archive__item-actions">
+        <a href="{{ post.paperurl | escape }}">View paper <span aria-hidden="true">&nearr;</span></a>
+      </div>
+    {% endif %}
   </article>
 </div>

@@ -1,17 +1,40 @@
 {% if post.read_time %}
-  {% assign words = post.content | strip_html | number_of_words %}
+  {% assign read_time_text = post.content | strip_html %}
 {% elsif page.read_time %}
-  {% assign words = page.content | strip_html | number_of_words %}
+  {% assign read_time_text = page.content | strip_html %}
 {% endif %}
 
+{% comment %}
+  Mixed CJK/Latin word counting. Jekyll 3.x's number_of_words treats a run of
+  CJK characters as a single word, which badly underestimates Chinese posts.
+  Instead, split on spaces: tokens starting with a CJK character contribute
+  their character count; other tokens count as one Latin word each. CJK
+  characters are converted to equivalent Latin words via
+  site.cjk_chars_per_minute so a single words_per_minute rate can be reused.
+{% endcomment %}
+{% assign latin_words = 0 %}
+{% assign cjk_chars = 0 %}
+{% assign read_time_tokens = read_time_text | strip_newlines | split: " " %}
+{% for read_time_token in read_time_tokens %}
+  {% unless read_time_token == "" %}
+    {% if read_time_token >= "一" %}
+      {% assign cjk_chars = cjk_chars | plus: read_time_token.size %}
+    {% else %}
+      {% assign latin_words = latin_words | plus: 1 %}
+    {% endif %}
+  {% endunless %}
+{% endfor %}
+
 {% if site.words_per_minute %}
+  {% assign cjk_chars_per_minute = site.cjk_chars_per_minute | default: 300 %}
+  {% assign cjk_equivalent_words = cjk_chars | times: site.words_per_minute | divided_by: cjk_chars_per_minute %}
+  {% assign words = latin_words | plus: cjk_equivalent_words %}
   {% if words < 30 %}
-	  {{ site.data.ui-text[site.locale].less_than | default: "less than" }} 1 {{ site.data.ui-text[site.locale].minute_read | default: "minute read" }}
-	{% elsif words < 60 %}
-	  1 {{ site.data.ui-text[site.locale].minute_read | default: "minute read" }}
-	{% else %}
-	  {{ words | divided_by:site.words_per_minute }} {{ site.data.ui-text[site.locale].minute_read | default: "minute read" }}
-	{% endif %}
+    {{ site.data.ui-text[site.locale].less_than | default: "less than" }} 1 {{ site.data.ui-text[site.locale].minute_read | default: "minute read" }}
+  {% else %}
+    {% assign reading_time = words | plus: site.words_per_minute | minus: 1 | divided_by: site.words_per_minute %}
+    {{ reading_time }} {{ site.data.ui-text[site.locale].minute_read | default: "minute read" }}
+  {% endif %}
 {% else %}
   {{ site.data.ui-text[site.locale].undefined_wpm | "Undefined parameter words_per_minute at _config.yml" }}
 {% endif %}

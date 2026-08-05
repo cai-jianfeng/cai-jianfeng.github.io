@@ -107,8 +107,8 @@ $x$ 表示编辑好的输出图像，$i$ 表示任务的编号($1 \sim 16$)。
 与 GLIP 不同，本文并没有通过将这 $16$ 任务的原有数据集进行转化来获得一个统一的数据集，而是使用各个任务的 SOTA 模型生成伪数据构成数据集。
 其基本思路包括多个方面，对应三个方向的任务数据生成。
 对于 Region-Based Editing + Global + Text Editing，给定一个输入图像的标题 $T_I$，输出图像的标题 $T_O$，以及需要编辑的物体(通常存在在标题中) $O_e$，先使用模型根据 $T_I$ 生成输入图像 $C_I$，
-然后根据 $C_I$ 和 $O_e$ 生成编辑好的输出图像 $C_O$，可以通过 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-prompt-to-prompt/" target="_blank">P2P</a> 模型实现。
-对于 Style，先使用模型根据 $T_I$ 生成输入图像 $C_I$，再使用 <a href="https://cai-jianfeng.github.io/posts/2023/10/blog-paper-plug-and-play/" target="_blank">PNP</a> 模型来实现风格转化。
+然后根据 $C_I$ 和 $O_e$ 生成编辑好的输出图像 $C_O$，可以通过 <a href="https://cai-jianfeng.github.io/posts/2023/11/blog-paper-prompt-to-prompt/" target="_blank">P2P</a> 模型实现。
+对于 Style，先使用模型根据 $T_I$ 生成输入图像 $C_I$，再使用 PNP 模型来实现风格转化。
 对于 Detect & Segment，先使用模型根据 $T_I$ 生成输入图像 $C_I$，再使用 DINO/SAM 模型生成检测/分割的区域，并直接对 $C_I$ 进行标记来获得输出图像 $C_O$。
 对于 Color，先使用模型根据 $T_I$ 生成输入图像 $C_I$，再使用 color fliters & blurring & sharpening and defocusing 来获得输出图像 $C_O$。
 对于 Image-to-Image Translation，先使用模型根据 $T_I$ 生成输入图像 $C_I$，
@@ -205,4 +205,4 @@ $\mathcal{I}$ 的模型架构和 $\mathcal{F}$ 一样，因此它只能输入输
 然后使用 $\mathcal{F}$ (经过 temporal convolution 和 temporal attention) 输入 $I$ 和 $T$ 以及随机噪声 $V_\epsilon$ 输出生成的视频 $V$，
 最后使用 interpolation model $\mathcal{I}$ 输入低帧率视频 $V$ 和随机噪声 $V_\epsilon'$ 输出生成的高帧率视频 $V'$。</p>
 
-<img src="https://cai-jianfeng.github.io/images/paper_EMU-VIDEO_architecture.png">
+<img src="/images/paper_EMU-VIDEO_architecture.png" alt="Emu Video architecture">

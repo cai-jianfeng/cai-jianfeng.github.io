@@ -21,26 +21,48 @@ layout: default
     {% if page.title %}<meta itemprop="headline" content="{{ page.title | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
     {% if page.excerpt %}<meta itemprop="description" content="{{ page.excerpt | markdownify | strip_html | strip_newlines | escape_once }}">{% endif %}
     {% if page.date %}<meta itemprop="datePublished" content="{{ page.date | date: "%B %d, %Y" }}">{% endif %}
-    {% if page.update %}<meta itemprop="datePublished" content="{{ page.update | date: "%B %d, %Y" }}">{% endif %}
+    {% if page.update %}<meta itemprop="dateModified" content="{{ page.update | date: "%B %d, %Y" }}">{% endif %}
 
     <div class="page__inner-wrap">
       {% unless page.header.overlay_color or page.header.overlay_image %}
         <header>
           {% if page.title %}<h1 class="page__title" itemprop="headline">{{ page.title | markdownify | remove: "<p>" | remove: "</p>" }}</h1>{% endif %}
-          {% if page.read_time %}
-            <p class="page__meta"><i class="fa fa-clock-o" aria-hidden="true"></i> {% include read-time.html %}</p>
+          {% if page.collection == "teaching" %}
+            <p class="archive__item-meta page__header-meta">
+              {% if page.degree %}<span>{{ page.degree | escape }}</span>{% elsif page.type %}<span>{{ page.type | escape }}</span>{% endif %}
+              {% if page.degree or page.type %}{% if page.venue %}<span class="archive__item-meta-separator" aria-hidden="true">&middot;</span>{% endif %}{% endif %}
+              {% if page.venue %}<span>{{ page.venue | escape }}</span>{% endif %}
+              {% if page.venue and page.date %}<span class="archive__item-meta-separator" aria-hidden="true">&middot;</span>{% endif %}
+              {% if page.date %}<span><time datetime="{{ page.date | date: '%Y-%m' }}">{{ page.date | date: "%Y" }}</time>{% if page.current %}&nbsp;&ndash;&nbsp;Present{% elsif page.end_date %}&nbsp;&ndash;&nbsp;<time datetime="{{ page.end_date | date: '%Y-%m' }}">{{ page.end_date | date: "%Y" }}</time>{% endif %}</span>{% endif %}
+            </p>
+          {% elsif page.collection == "publications" %}
+            <p class="archive__item-meta page__header-meta">
+              {% if page.state %}<span>{{ page.state | escape }}</span>{% endif %}
+              {% if page.state and page.venue %}<span class="archive__item-meta-separator" aria-hidden="true">&middot;</span>{% endif %}
+              {% if page.venue %}<span>{{ page.venue | escape }}</span>{% endif %}
+              {% if page.venue and page.date %}<span class="archive__item-meta-separator" aria-hidden="true">&middot;</span>{% endif %}
+              {% if page.date %}<time datetime="{{ page.date | date: '%Y' }}">{{ page.date | date: "%Y" }}</time>{% endif %}
+            </p>
+          {% elsif page.venue and page.date %}
+            <p class="archive__item-meta page__header-meta">
+              {% if page.state %}<span>{{ page.state | escape }}</span><span class="archive__item-meta-separator" aria-hidden="true">&middot;</span>{% endif %}
+              <span>{{ page.venue | escape }}</span>
+              <span class="archive__item-meta-separator" aria-hidden="true">&middot;</span>
+              <time datetime="{{ page.date | date: '%Y' }}">{{ page.date | date: "%Y" }}</time>
+            </p>
+          {% elsif page.date %}
+            <p class="archive__item-meta page__header-meta">
+              <span>Published <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%b %d, %Y" }}</time></span>
+              {% if page.update %}
+                <span class="archive__item-meta-separator" aria-hidden="true">&middot;</span>
+                <span>Updated <time datetime="{{ page.update | date_to_xmlschema }}">{{ page.update | date: "%b %d, %Y" }}</time></span>
+              {% endif %}
+              {% if page.read_time %}
+                <span class="archive__item-meta-separator" aria-hidden="true">&middot;</span>
+                <span>{% include read-time.html %}</span>
+              {% endif %}
+            </p>
           {% endif %}
-        {% if page.update %}
-          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].date_label | default: "Update:" }}</strong> <time datetime="{{ page.update | date: "%Y-%m-%d" }}">{{ page.update | date: "%B %d, %Y" }}</time></p>
-        {% endif %}
-        
-        {% if page.collection == 'teaching' %}
-          <p> {{ page.type }}, <i>{{ page.venue }}</i>, {{ page.date | default: "1900-01-01" | date: "%Y" }} </p>
-        {% elsif page.venue and page.date %}
-          <p><i>{{ page.state }}</i> in <i>{{ page.venue }}</i>, {{ page.date | default: "1900-01-01" | date: "%Y" }} </p>
-        {% elsif page.date %}
-          <p class="page__date"><strong><i class="fa fa-fw fa-calendar" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].date_label | default: "Published:" }}</strong> <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | default: "1900-01-01" | date: "%B %d, %Y" }}</time></p>
-        {% endif %}
         
              
         {% if page.citation and page.paperurl %}
@@ -53,13 +75,31 @@ layout: default
       {% endunless %}
 
       <section class="page__content" itemprop="text">
-        {{ content }}
+        {% if page.star == "draft" %}
+          <p class="page-status page-status--draft" role="status"><strong>Work in progress.</strong> This note is still being refined and may be incomplete.</p>
+        {% endif %}
+        {% assign rendered_content = content | replace: '<img src=', '<img loading="lazy" decoding="async" src=' %}
+        {% assign rendered_content = rendered_content | replace: ' target="_blank"', ' target="_blank" rel="noopener noreferrer"' %}
+        {% if page.collection == "posts" %}
+          {% assign rendered_content = rendered_content
+          | replace: '<h5', '<h6'
+          | replace: '</h5>', '</h6>'
+          | replace: '<h4', '<h5'
+          | replace: '</h4>', '</h5>'
+          | replace: '<h3', '<h4'
+          | replace: '</h3>', '</h4>'
+          | replace: '<h2', '<h3'
+          | replace: '</h2>', '</h3>'
+          | replace: '<h1', '<h2'
+          | replace: '</h1>', '</h2>' %}
+        {% endif %}
+        {{ rendered_content }}
         {% if page.link %}<div><a href="{{ page.link }}" class="btn">{{ site.data.ui-text[site.locale].ext_link_label | default: "Direct Link" }}</a></div>{% endif %}
       </section>
 
       <footer class="page__meta">
         {% if site.data.ui-text[site.locale].meta_label %}
-          <h4 class="page__meta-title">{{ site.data.ui-text[site.locale].meta_label }}</h4>
+          <p class="page__meta-title">{{ site.data.ui-text[site.locale].meta_label }}</p>
         {% endif %}
         {% include page__taxonomy.html %}
       </footer>
@@ -76,15 +116,15 @@ layout: default
 
   {% comment %}<!-- only show related on a post page when not disabled -->{% endcomment %}
   {% if page.id and page.related and site.related_posts.size > 0 %}
-    <div class="page__related">
+    <section class="page__related" aria-labelledby="related-content-title">
       {% if site.data.ui-text[site.locale].related_label %}
-        <h4 class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h4>
+        <h2 id="related-content-title" class="page__related-title">{{ site.data.ui-text[site.locale].related_label | default: "You May Also Enjoy" }}</h2>
       {% endif %}
       <div class="grid__wrapper">
         {% for post in site.related_posts limit:4 %}
-          {% include archive-single.html type="grid" %}
+          {% include archive-single.html type="grid" heading_level=3 %}
         {% endfor %}
       </div>
-    </div>
+    </section>
   {% endif %}
 </div>

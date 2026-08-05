@@ -148,4 +148,4 @@ $$\begin{aligned} q(x_{t-1}\vert x_t,x_0) & \Rightarrow \dfrac{\dfrac{1}{\sqrt{2
 接着使用公式 $\hat{x}_{t-1} = \dfrac{1}{\sqrt{\alpha_t}}(x_t - \dfrac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}}\hat{\varepsilon}_0) + \dfrac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t} \beta_t \times z_t$
 生成预测的 $\hat{x}_{T-1}$，循环迭代，直到 $t = 0$ 时结束，最终的 $\hat{x}_0$ 即为模型生成的图像。下图展示了模型的训练的推理过程：</p>
 
-<img src="/images/DDPM_algorithms.png" />
+<img src="/images/DDPM_algorithms.png" alt="DDPM training and sampling algorithms">

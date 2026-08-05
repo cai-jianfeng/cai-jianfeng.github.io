@@ -1,6 +1,6 @@
 ---
 title: 'The Basic Knowledge of NLP'
-data: 23-11-27
+date: 23-11-27
 permalink: '/posts/2023/11/blog-NLP-basic-knowledge'
 star: superior
 tags:
@@ -73,7 +73,7 @@ $\beta$ 表示权重，和一对一的 Translation 任务的计算公式相似�
 最终的符号词汇表内的符号数量等于初始词汇量($26$ 个字母)加上合并操作生成的符号数量(超参数)。
 注意，特殊词尾符号 “·” 也进行合成步骤。伪代码算法如下图(其中 '<\w>' 表示词尾符号 ”.“)：</p>
 
-<img src="https://cai-jianfeng.github.io/images/BPE.png">
+<img src="/images/BPE.png" alt="Byte pair encoding algorithm">
 
 <p style="text-align:justify; text-justify:inter-ideograph;">在使用阶段，首先将给定的单词表示为字符序列，然后遍历符号词汇表内的符号(从长到短)，
 不断尝试将单词字符序列与符号进行匹配(即将字符序列进行合成)，直到字符序列内的所有字符都已合成为符号词汇表内的符号。

@@ -109,7 +109,7 @@ $$\begin{align}x_{\tau_{i-1}} & \sqrt{\bar{\alpha}_{t-1}}(\dfrac{x_t - \sqrt{1 -
 
 <p style="text-align:justify; text-justify:inter-ideograph;">具体而言，它们分别称为消融扩散模型(<b>ADM</b>)和附加分类器指导的模型(<b>ADM-G</b>)：</p>
 
-<img src="https://cai-jianfeng.github.io/images/classifier_guidance.png">
+<img src="/images/classifier_guidance.png" alt="Classifier guidance architecture">
 
 B. Classifier-Guidance 代码框架：由上述推导可知，最后需要将 classifier 的梯度加入到预测的噪声中：
 
@@ -119,5 +119,5 @@ $$\bar{\epsilon}_\theta(x,t) = \epsilon_\theta(x_t,t) - \sqrt{1 - \bar{\alpha}_t
 因此，我们可以利用 <b>torch</b> 的自动求导机制对 $x_t$ 进行求导，而由于 $x_t$ 的梯度和 $\epsilon_\theta(x_t,t)$ 形状相同(都是原始图像的形状)，
 因此我们可以直接将它们进行相加，具体代码框架如下：</p>
 
-<img src="https://cai-jianfeng.github.io/images/classifier_guidance_code.png">
+<img src="/images/classifier_guidance_code.png" alt="Classifier guidance code workflow">
 

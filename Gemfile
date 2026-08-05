@@ -16,7 +16,15 @@ gem "github-pages", group: :jekyll_plugins
 
 # gem "jekyll"
 
-gem "wdm", "~> 0.1.0" if Gem.win_platform?
+# Ruby 3 no longer bundles WEBrick, which Jekyll uses for local serving.
+gem "webrick"
+
+# Windows file watching and IANA timezone data for local development.
+gem "wdm", "~> 0.2.0", install_if: Gem.win_platform?
+platforms :mingw, :x64_mingw, :mswin do
+  gem "tzinfo", ">= 1", "< 3"
+  gem "tzinfo-data"
+end
 
 # If you have any plugins, put them here!
 group :jekyll_plugins do

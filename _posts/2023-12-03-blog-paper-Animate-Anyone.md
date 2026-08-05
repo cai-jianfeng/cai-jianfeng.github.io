@@ -1,6 +1,6 @@
 ---
 title: 'Animate Anyone'
-data: 23-12-03
+date: 23-12-03
 permalink: '/post/2023/12/blog-animate-anyone'
 tags:
   - 论文阅读

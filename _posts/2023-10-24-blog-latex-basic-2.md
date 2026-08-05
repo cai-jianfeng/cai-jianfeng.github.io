@@ -1,5 +1,5 @@
 ---
-title: 'The Basic Knowledge Of Latex 2'
+title: 'The Basic Knowledge of LaTeX 2'
 date: 23-10-24
 permalink: /posts/2023/10/blog-latex-basic-2/
 # star: superior

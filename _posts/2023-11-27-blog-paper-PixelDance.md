@@ -1,6 +1,6 @@
 ---
 title: 'PixelDance'
-data: 23-11-27
+date: 23-11-27
 permalink: '/post/2023/11/blog-pixeldance'
 tags:
   - 论文阅读

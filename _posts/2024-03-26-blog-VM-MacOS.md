@@ -1,5 +1,5 @@
 ---
-title: 'VMware Workstation Pro 安装 MacOS 虚拟机'
+title: 'VMware Workstation Pro 安装 macOS 虚拟机'
 date: 24-03-26
 update: 24-03-30
 permalink: /posts/2024/03/blog-vm-macos/

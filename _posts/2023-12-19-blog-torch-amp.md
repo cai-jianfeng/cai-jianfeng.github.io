@@ -69,7 +69,7 @@ PyTorch Code Implementation
 
 ![torch AMP + grad_penalty](/images/torch_AMP_grad_penalty.png)
 
-<p style="text-align:justify; text-justify:inter-ideograph;">此外，在 DDP 的<a href="https://cai-jianfeng.github.io/posts/2023/12/blog-code-pytorch-distributed/#Data%20Parallelism%20(DP)%20%E2%86%92%20Distributed%20Data%20Parallelism%20(DDP)" target="_blank">梯度聚合</a>中，
+<p style="text-align:justify; text-justify:inter-ideograph;">此外，在 DDP 的<a href="/posts/2023/12/blog-code-pytorch-distributed/#data-parallelism-dp-rightarrow-distributed-data-parallelism-ddp">梯度聚合</a>中，
 由于其是多个 batch 后才收集梯度并更新参数，因此需要保证在同一个梯度聚合步骤中的梯度缩放系数<b>一致</b>，且梯度逆缩放必须在梯度聚合完成<b>以后</b>。下面是在 AMP 的基础上添加梯度聚合的代码：</p>
 
 ![torch AMP + grad_accum](/images/torch_AMP_grad_accum.png)
