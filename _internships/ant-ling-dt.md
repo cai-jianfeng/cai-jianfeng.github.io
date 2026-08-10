@@ -2,7 +2,7 @@
 title: "Ant Group — Agentic LLM"
 collection: internships
 organization: "Ant Group"
-team: "百灵与数字科技"
+team: "百灵&数字科技"
 role: "Machine Learning Algorithm Intern"
 focus: "Agentic LLM"
 start_date: 2026-01-01
