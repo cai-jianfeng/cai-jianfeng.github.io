@@ -905,3 +905,46 @@ button:focus-visible {
     box-shadow: none;
   }
 }
+
+// One-click copy button injected by assets/js/bibtex-copy.js on publication pages.
+.page__content pre.bibtex-pre {
+  position: relative;
+}
+
+.bibtex-copy-btn {
+  position: absolute;
+  top: 0.35em;
+  right: 0.35em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9em;
+  height: 1.9em;
+  padding: 0;
+  font-size: $type-size-6;
+  color: $gray;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: $border-radius;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease, opacity 0.15s ease;
+
+  &:hover {
+    color: $primary-color;
+    background: #fff;
+    border-color: $border-color;
+    opacity: 1;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $primary-color;
+    outline-offset: 1px;
+    opacity: 1;
+  }
+
+  &.is-copied {
+    color: $success-color;
+    opacity: 1;
+  }
+}

@@ -13,6 +13,7 @@ redirect_from:
 <section class="home-intro" aria-label="Introduction">
   <p class="home-intro__lead">I am a master's student at the <a href="https://eeis.ustc.edu.cn/main.htm">University of Science and Technology of China</a>, advised by Prof. <a href="http://staff.ustc.edu.cn/~lihq/">Houqiang Li</a> and Prof. <a href="http://staff.ustc.edu.cn/~zhwg/index.html">Wengang Zhou</a> in the Microsoft Key Laboratory of Multimedia Computing and Communication.</p>
   <p class="home-intro__research">My research interests focus on large language models and agents. I am always happy to discuss research questions and potential collaborations.</p>
+  <p class="home-intro__seeking">I will graduate in Fall 2027 and am currently seeking job opportunities in LLM post-training and coding agents. If you have a suitable opening, please feel free to reach out.</p>
   <nav class="home-contact" aria-label="Direct contact links">
     <a href="{{ base_path }}/images/wechat.jpg">WeChat</a>
     <a href="{{ base_path }}/images/qq.jpg">QQ</a>
