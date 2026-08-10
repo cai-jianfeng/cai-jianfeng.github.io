@@ -18,12 +18,12 @@ paperurl: 'https://openreview.net/forum?id=7mTECPRtll'
 <p style="text-align:justify; text-justify:inter-ideograph;">BibTeX formatted citation: </p>
 
 <pre>
-@inproceedings{
-cai2025mitigating,
-title={Mitigating Hallucination in Video{LLM}s via Temporal-Aware Activation Engineering},
-author={Jianfeng Cai and Jiale Hong and Zongmeng Zhang and Wengang Zhou and zhannianji and Houqiang Li},
-booktitle={The Thirty-ninth Annual Conference on Neural Information Processing Systems},
-year={2025},
-url={https://openreview.net/forum?id=7mTECPRtll}
+@inproceedings{CaiHZZZL25,
+  author       = {Jianfeng Cai and Jiale Hong and Zongmeng Zhang and Wengang Zhou and Nianji Zhan and Houqiang Li},
+  editor       = {Danielle Belgrave and Cheng Zhang and Laura N. Montoya and Hsuan{-}Tien Lin and Razvan Pascanu and Piotr Koniusz and Marzyeh Ghassemi and Nancy Chen and Iv{\'{a}}n Vladimir Meza Ru{\'{\i}}z and Arturo Loaiza{-}Bonilla},
+  title        = {Mitigating Hallucination in VideoLLMs via Temporal-Aware Activation Engineering},
+  booktitle    = {Advances in Neural Information Processing Systems 38: Annual Conference on Neural Information Processing Systems 2025, NeurIPS 2025, San Diego, CA, USA, December 2-7, 2025 / Mexico City, Mexico, November 30 - December 5, 2025},
+  year         = {2025},
+  url          = {http://papers.nips.cc/paper_files/paper/2025/hash/5683583b88da51c79d2eb263f295286e-Abstract-Conference.html}
 }
 </pre>

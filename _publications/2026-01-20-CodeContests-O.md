@@ -16,12 +16,18 @@ paperurl: 'https://aclanthology.org/2026.findings-acl.53.pdf'
 <p style="text-align:justify; text-justify:inter-ideograph;">BibTeX formatted citation: </p>
 
 <pre>
-@inproceedings{
-cai2026codecontestso,
-title={CodeContests-O: Powering {LLM}s via Feedback-Driven Iterative Test Case Generation},
-author={Jianfeng Cai and Jinhua Zhu and Ruopei Sun and Kangwen Zhao and Dongyun Xue and Mingxiao Feng and Wengang Zhou and Houqiang Li},
-booktitle={The 64th Annual Meeting of the Association for Computational Linguistics},
-year={2026},
-url={https://aclanthology.org/2026.findings-acl.53.pdf}
+@inproceedings{cai-etal-2026-codecontests,
+    title = "{C}ode{C}ontests-{O}: Powering {LLM}s via Feedback-Driven Iterative Test Case Generation",
+    author = "Cai, Jianfeng and Zhu, Jinhua and Sun, Ruopei and Zhao, Kangwen and Xue, Dongyun and Feng, Mingxiao and Zhou, Wengang and Li, Houqiang",
+    editor = "Liakata, Maria and Moreira, Viviane P. and Zhang, Jiajun and Jurgens, David",
+    booktitle = "Findings of the Association for Computational Linguistics: ACL 2026",
+    month = jul,
+    year = "2026",
+    address = "San Diego, California, United States",
+    publisher = "Association for Computational Linguistics",
+    url = "https://aclanthology.org/2026.findings-acl.53/",
+    doi = "10.18653/v1/2026.findings-acl.53",
+    pages = "1054--1072",
+    ISBN = "979-8-89176-395-1"
 }
 </pre>

@@ -23,12 +23,13 @@ We also highlight the importance of simple graphics for sketch recognition, whic
 <p style="text-align:justify; text-justify:inter-ideograph;">BibTeX formatted citation: </p>
 
 <pre>
-@misc{liu2024flowmind2digital,
+@misc{liu2024flowmind2digitalcomprehensiveflowmindrecognition,
       title={Flowmind2Digital: The First Comprehensive Flowmind Recognition and Conversion Approach}, 
       author={Huanyu Liu and Jianfeng Cai and Tingjia Zhang and Hongsheng Li and Siyuan Wang and Guangming Zhu and Syed Afaq Ali Shah and Mohammed Bennamoun and Liang Zhang},
       year={2024},
       eprint={2401.03742},
       archivePrefix={arXiv},
-      primaryClass={cs.CV}
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2401.03742}
 }
 </pre>
