@@ -86,8 +86,8 @@ author:
   bio              : "Master's student at the School of Information Science and Technology, USTC."
   location         :
   employer         :
-  pubmed           : "https://www.ncbi.nlm.nih.gov/pubmed/?term=jianfeng+cai"
-  googlescholar    :
+  pubmed           :
+  googlescholar    : "https://scholar.google.com/citations?user=1gqJAgcAAAAJ&hl=zh-CN"
   email            : "cjf1622613693@gmail.com"
   researchgate     :  # example: "https://www.researchgate.net/profile/yourprofile"
   uri              :
