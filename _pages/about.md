@@ -1,7 +1,7 @@
 ---
 permalink: /
 title: "Jianfeng Cai (蔡建峰)"
-excerpt: "About me"
+excerpt: "Research, publications, experience, and technical notes."
 author_profile: true
 redirect_from:
   - /about/
@@ -11,13 +11,13 @@ redirect_from:
 {% include base_path %}
 
 <section class="home-intro" aria-label="Introduction">
-  <p class="home-intro__lead">I am a master's student at the <a href="https://eeis.ustc.edu.cn/main.htm">University of Science and Technology of China</a>, advised by Prof. <a href="http://staff.ustc.edu.cn/~lihq/">Houqiang Li</a> and Prof. <a href="http://staff.ustc.edu.cn/~zhwg/index.html">Wengang Zhou</a> in the Microsoft Key Laboratory of Multimedia Computing and Communication.</p>
-  <p class="home-intro__research">My research interests focus on large language models and agents. I am always happy to discuss research questions and potential collaborations.</p>
-  <p class="home-intro__seeking">I will graduate in Fall 2027 and am currently seeking job opportunities in LLM post-training and coding agents. If you have a suitable opening, please feel free to reach out.</p>
+  <p class="home-intro__lead">I am pursuing a master's degree in Information and Communication Engineering at the <a href="https://eeis.ustc.edu.cn/main.htm">University of Science and Technology of China (USTC)</a>, where I work under the supervision of Prof. <a href="http://staff.ustc.edu.cn/~lihq/">Houqiang Li</a> and Prof. <a href="http://staff.ustc.edu.cn/~zhwg/index.html">Wengang Zhou</a> at the Microsoft Key Laboratory of Multimedia Computing and Communication.</p>
+  <p class="home-intro__research">My research focuses on the post-training of large language models, with a particular interest in reinforcement learning and coding agents. I welcome conversations about related research and potential collaborations.</p>
+  <p class="home-intro__seeking">I expect to graduate in fall 2027 and am seeking full-time roles focused on LLM post-training and coding agents. Please feel free to get in touch about relevant opportunities.</p>
   <nav class="home-contact" aria-label="Direct contact links">
     <a href="{{ base_path }}/images/wechat.jpg">WeChat</a>
     <a href="{{ base_path }}/images/qq.jpg">QQ</a>
-    <a href="mailto:xiaobaicai@mail.ustc.edu.cn">School email</a>
+    <a href="mailto:xiaobaicai@mail.ustc.edu.cn">USTC Email</a>
     <a href="mailto:cjf1622613693@gmail.com">Gmail</a>
   </nav>
 </section>
@@ -44,8 +44,8 @@ redirect_from:
   <p class="home-section__more"><a href="{{ base_path }}/internships/">View all internships <span aria-hidden="true">&rarr;</span></a></p>
 </section>
 
-<section class="home-section" aria-labelledby="home-studying">
-  <h2 class="home-section__title" id="home-studying">Studying</h2>
+<section class="home-section" aria-labelledby="home-education">
+  <h2 class="home-section__title" id="home-education">Education</h2>
   {% assign teaching_items = site.teaching | sort: "date" | reverse %}
   <ul class="cv-list">
     {% for post in teaching_items %}

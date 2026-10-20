@@ -3,7 +3,7 @@ title: "Moonshot AI — RL Team"
 collection: internships
 organization: "Moonshot AI (月之暗面)"
 team: "RL Team"
-role: "Intern"
+role: "Research Intern"
 focus: "Kimi Model — Coding Agent Track"
 start_date: 2026-05-01
 end_date:

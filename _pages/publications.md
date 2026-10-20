@@ -7,7 +7,7 @@ author_profile: true
 
 {% include base_path %}
 
-<p class="archive-intro">Research publications and technical reports, listed in reverse chronological order.</p>
+<p class="archive-intro">Selected research papers and technical reports, listed in reverse chronological order.</p>
 
 {% assign publications = site.publications | sort: "date" | reverse %}
 <div class="archive-list">

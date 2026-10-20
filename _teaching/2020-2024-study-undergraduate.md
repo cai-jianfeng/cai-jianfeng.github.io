@@ -1,5 +1,5 @@
 ---
-title: "Bachelor's Studies at Xidian University"
+title: "Xidian University"
 collection: teaching
 type: "Undergraduate"
 degree: "B.Eng. in Artificial Intelligence (Turing Class)"
@@ -10,8 +10,8 @@ venue: "School of Artificial Intelligence, Xidian University"
 date: 2020-09-01
 end_date: 2024-07-01
 current: false
-location: "Xian, China"
-excerpt: "Completed undergraduate studies in the Artificial Intelligence Turing Class at Xidian University."
+location: "Xi'an, China"
+excerpt: "Completed a B.Eng. in Artificial Intelligence as a member of the Turing Class at Xidian University."
 ---
 <!-- https://github-readme-stats.vercel.app/api?username=cai-jianfeng&show_icons=true -->
-I completed my undergraduate studies at Xidian University from 2020 to 2024.
+I earned a B.Eng. in Artificial Intelligence from Xidian University as a member of the Turing Class.

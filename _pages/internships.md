@@ -3,12 +3,12 @@ layout: archive
 title: "Internships"
 permalink: /internships/
 author_profile: true
-excerpt: "Research and engineering internships spanning LLM post-training, agents, RAG, and 3D vision."
+excerpt: "Research and engineering experience in LLM post-training, agents, retrieval-augmented generation, and 3D vision."
 ---
 
 {% include base_path %}
 
-<p class="internship-list__intro">Research and engineering internships spanning LLM post-training, agents, retrieval-augmented generation, and 3D vision.</p>
+<p class="internship-list__intro">My research and engineering internships span LLM post-training, agents, retrieval-augmented generation, and 3D vision.</p>
 
 {% assign internships = site.internships | sort: "start_date" | reverse %}
 

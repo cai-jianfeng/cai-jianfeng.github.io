@@ -9,7 +9,7 @@ redirect_from:
 
 {% include base_path %}
 
-<p class="archive-intro">Technical notes, paper reading, and practical explorations.</p>
+<p class="archive-intro">Technical notes, paper reviews, and hands-on explorations in machine learning and systems.</p>
 
 {% assign archive_posts = site.posts | where_exp: "post", "post.star != 'draft'" %}
 {% assign posts_by_year = archive_posts | group_by_exp: "post", "post.date | date: '%Y'" %}

@@ -3,7 +3,7 @@ title: "Ant Group — Ling-DT"
 collection: internships
 organization: "Ant Group"
 team: "百灵&数字科技"
-role: "Machine Learning Algorithm Intern"
+role: "Machine Learning Intern"
 focus: "Ling-DT Agent Model"
 start_date: 2026-01-01
 end_date: 2026-05-01
