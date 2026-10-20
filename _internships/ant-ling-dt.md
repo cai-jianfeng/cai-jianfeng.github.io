@@ -1,14 +1,14 @@
 ---
-title: "Ant Group — Agentic LLM"
+title: "Ant Group — Ling-DT"
 collection: internships
 organization: "Ant Group"
 team: "百灵&数字科技"
 role: "Machine Learning Algorithm Intern"
-focus: "Agentic LLM"
+focus: "Ling-DT Agent Model"
 start_date: 2026-01-01
 end_date: 2026-05-01
 current: false
-excerpt: "Worked on an agentic LLM training pipeline spanning synthetic trajectory generation, data validation, and training and evaluation environment engineering."
+excerpt: "Contributed to the Ling-DT agent model's training-data and infrastructure pipelines, spanning synthetic trajectory generation, data validation, and training and evaluation environment engineering."
 highlights:
   - label: "Trajectory synthesis"
     text: "Designed task-synthesis workflows for multi-step tool use and decision-making trajectories."
