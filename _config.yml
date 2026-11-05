@@ -83,7 +83,7 @@ analytics:
 author:
   name             : "Jianfeng Cai"
   avatar           : "profile_cartoon.png"
-  bio              : "M.S. candidate in Information and Communication Engineering at USTC."
+  bio              : "Third-year master's student at USTC."
   location         :
   employer         :
   pubmed           :
@@ -104,10 +104,10 @@ author:
   impactstory      : #"https://profiles.impactstory.org/u/xxxx-xxxx-xxxx-xxxx"
   lastfm           :
   linkedin         :
-  orcid            : "https://orcid.org/0009-0001-1815-2403"
+  orcid            :  # "https://orcid.org/0009-0001-1815-2403"
   pinterest        :
   soundcloud       :
-  stackoverflow    : "20639898/jianfeng-cai"
+  stackoverflow    :  # "20639898/jianfeng-cai"
   steam            :
   tumblr           :
   twitter          : "jianfengcai4"
@@ -153,6 +153,7 @@ exclude:
   - package.json
   - package-lock.json
   - markdown_generator
+  - scripts
   - serve-local.cmd
   - serve-local.ps1
   - talkmap

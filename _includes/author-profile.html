@@ -32,7 +32,11 @@
         <li><a href="{{ author.uri }}"><i class="fas fa-fw fa-link" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].website_label | default: "Website" }}</a></li>
       {% endif %}
       {% if author.email %}
-        <li><a href="mailto:{{ author.email }}"><i class="fas fa-fw fa-envelope" aria-hidden="true"></i> {{ site.data.ui-text[site.locale].email_label | default: "Email" }}</a></li>
+        <li>
+          <a class="author__profile-badge" href="mailto:{{ author.email }}">
+            {% include profile-shield.html id="email" title="Email: Contact" label="Email" value="Contact" width="111" label_width="60" value_width="51" label_x="37.5" value_x="85.5" color="#e05d44" %}
+          </a>
+        </li>
       {% endif %}
       {% if author.keybase %}
         <li><a href="https://keybase.io/{{ author.keybase }}"><i class="fas fa-fw fa-key" aria-hidden="true"></i> Keybase</a></li>
@@ -41,7 +45,13 @@
         <li><a href="{{ author.researchgate }}"><i class="fab fa-fw fa-researchgate" aria-hidden="true"></i> ResearchGate</a></li>
       {% endif %}
       {% if author.twitter %}
-        <li><a href="https://twitter.com/{{ author.twitter }}"><i class="fab fa-fw fa-twitter-square" aria-hidden="true"></i> Twitter</a></li>
+        <li>
+          <a class="author__profile-badge" href="https://twitter.com/{{ author.twitter }}">
+            {% capture twitter_title %}Twitter: @{{ author.twitter }}{% endcapture %}
+            {% capture twitter_value %}@{{ author.twitter }}{% endcapture %}
+            {% include profile-shield.html id="twitter" title=twitter_title label="Twitter" value=twitter_value width="147" label_width="65" value_width="82" label_x="40" value_x="106" color="#1da1f2" %}
+          </a>
+        </li>
       {% endif %}
       {% if author.facebook %}
         <li><a href="https://www.facebook.com/{{ author.facebook }}"><i class="fab fa-fw fa-facebook-square" aria-hidden="true"></i> Facebook</a></li>
@@ -65,7 +75,12 @@
         <li><a href="https://bitbucket.org/{{ author.bitbucket }}"><i class="fab fa-fw fa-bitbucket" aria-hidden="true"></i> Bitbucket</a></li>
       {% endif %}
       {% if author.github %}
-        <li><a href="https://github.com/{{ author.github }}"><i class="fab fa-fw fa-github" aria-hidden="true"></i> Github</a></li>
+        <li>
+          <a class="author__profile-badge" href="https://github.com/{{ author.github }}">
+            {% capture github_title %}GitHub: {{ author.github }}{% endcapture %}
+            {% include profile-shield.html id="github" title=github_title label="GitHub" value=author.github width="140" label_width="65" value_width="75" label_x="40" value_x="102.5" color="#181717" %}
+          </a>
+        </li>
       {% endif %}
       {% if author.stackoverflow %}
         <li><a href="https://www.stackoverflow.com/users/{{ author.stackoverflow }}"><i class="fab fa-fw fa-stack-overflow" aria-hidden="true"></i> Stackoverflow</a></li>
@@ -104,7 +119,18 @@
         <li><a href="https://vine.co/u/{{ author.vine }}"><i class="fab fa-fw fa-vine" aria-hidden="true"></i> Vine</a></li>
       {% endif %}
       {% if author.googlescholar %}
-        <li><a href="{{ author.googlescholar }}"><i class="ai ai-google-scholar-square ai-fw" aria-hidden="true"></i> Google Scholar</a></li>
+        {% assign scholar = site.data.scholar %}
+        <li>
+          <a class="author__profile-badge" href="{{ author.googlescholar }}"{% if scholar.updated_at %} title="Updated {{ scholar.updated_at | date: '%b %d, %Y' }}"{% endif %}>
+            {% if scholar and scholar.citations %}
+                {% capture scholar_title %}Google Scholar: {{ scholar.citations }} citations{% endcapture %}
+                {% capture scholar_value %}{{ scholar.citations }} citations{% endcapture %}
+                {% include profile-shield.html id="scholar" title=scholar_title label="Google Scholar" value=scholar_value width="184" label_width="108" value_width="76" label_x="64" value_x="146" color="#4285f4" %}
+            {% else %}
+              <i class="ai ai-google-scholar-square ai-fw" aria-hidden="true"></i> Google Scholar
+            {% endif %}
+          </a>
+        </li>
       {% endif %}
       {% if author.pubmed %}
         <li><a href="{{ author.pubmed }}"><i class="ai ai-pubmed-square ai-fw"></i> PubMed</a></li>

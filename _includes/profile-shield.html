@@ -1,0 +1,30 @@
+<svg class="author__profile-shield" xmlns="http://www.w3.org/2000/svg" width="{{ include.width }}" height="20" viewBox="0 0 {{ include.width }} 20" role="img" aria-label="{{ include.title }}">
+  <title>{{ include.title }}</title>
+  <clipPath id="profile-shield-{{ include.id }}">
+    <rect width="{{ include.width }}" height="20" rx="3"></rect>
+  </clipPath>
+  <g clip-path="url(#profile-shield-{{ include.id }})">
+    <rect width="{{ include.label_width }}" height="20" fill="#555"></rect>
+    <rect x="{{ include.label_width }}" width="{{ include.value_width }}" height="20" fill="{{ include.color }}"></rect>
+  </g>
+  <g fill="#fff" text-rendering="geometricPrecision">
+    <g aria-hidden="true">
+      {% case include.id %}
+        {% when "email" %}
+          <path d="M5.5 6.5h9v7h-9zM6 7l4 3 4-3" fill="none" stroke="#fff" stroke-width="1.15" stroke-linejoin="round"></path>
+        {% when "twitter" %}
+          <path d="M5.5 5h2.1l7 10h-2.1zM13.1 5H15L6.9 15H5z" fill="#fff"></path>
+        {% when "github" %}
+          <path d="M10 4.4a5.5 5.5 0 0 0-1.74 10.72c.28.05.38-.12.38-.27v-1.06c-1.56.34-1.89-.67-1.89-.67-.25-.66-.63-.83-.63-.83-.51-.36.04-.35.04-.35.57.04.87.59.87.59.5.87 1.32.62 1.64.47.05-.37.2-.62.36-.76-1.24-.14-2.55-.63-2.55-2.8 0-.62.22-1.12.58-1.52-.06-.14-.25-.72.06-1.5 0 0 .48-.16 1.56.58A5.3 5.3 0 0 1 10 6.34c.48 0 .96.07 1.42.2 1.08-.74 1.56-.59 1.56-.59.31.79.12 1.37.06 1.51.36.4.58.9.58 1.52 0 2.18-1.31 2.66-2.56 2.8.2.18.38.53.38 1.07v2c0 .15.1.32.39.27A5.5 5.5 0 0 0 10 4.4z" fill="#fff"></path>
+        {% when "scholar" %}
+          <path d="M4 8.3 10 5l6 3.3-6 3.3zM6.3 10.4v2c1.9 1.4 5.5 1.4 7.4 0v-2L10 12.5zM15 9v4" fill="#fff" stroke="#fff" stroke-width=".6" stroke-linecap="round" stroke-linejoin="round"></path>
+      {% endcase %}
+    </g>
+    <g font-family="Verdana, Geneva, DejaVu Sans, sans-serif" font-size="10" font-weight="400" text-anchor="middle">
+      <text x="{{ include.label_x }}" y="15" fill="#010101" fill-opacity=".3">{{ include.label }}</text>
+      <text x="{{ include.label_x }}" y="14">{{ include.label }}</text>
+      <text x="{{ include.value_x }}" y="15" fill="#010101" fill-opacity=".3">{{ include.value }}</text>
+      <text x="{{ include.value_x }}" y="14">{{ include.value }}</text>
+    </g>
+  </g>
+</svg>
