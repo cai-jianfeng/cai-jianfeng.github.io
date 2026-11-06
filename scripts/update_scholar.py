@@ -71,7 +71,14 @@ def load_fallback() -> dict:
         return {}
 
 
-def write_data(citations: int, source: str) -> None:
+def write_data(citations: int, source: str) -> bool:
+    current = load_fallback()
+    if (
+        current.get("profile_id") == PROFILE_ID
+        and current.get("citations") == citations
+    ):
+        return False
+
     payload = {
         "profile_id": PROFILE_ID,
         "citations": citations,
@@ -88,6 +95,11 @@ def write_data(citations: int, source: str) -> None:
         encoding="utf-8",
     )
     temporary_path.replace(DATA_PATH)
+    return True
+
+
+def env_flag(name: str) -> bool:
+    return os.environ.get(name, "").strip().lower() in {"1", "true", "yes", "on"}
 
 
 def main() -> int:
@@ -101,15 +113,23 @@ def main() -> int:
     for source, fetcher in fetchers:
         try:
             citations = fetcher()
-            write_data(citations, source)
-            print(f"Updated Google Scholar citations: {citations} ({source})")
+            changed = write_data(citations, source)
+            status = "Updated" if changed else "Confirmed"
+            print(f"{status} Google Scholar citations: {citations} ({source})")
             return 0
-        except Exception:
+        except Exception as error:
+            print(
+                f"::warning::{source} refresh failed: "
+                f"{type(error).__name__}: {error}"
+            )
             continue
 
     if fallback:
-        print("::warning::Scholar refresh failed; using the checked-in citation count.")
-        return 0
+        if not env_flag("SCHOLAR_STRICT"):
+            print("::warning::Scholar refresh failed; using the checked-in citation count.")
+            return 0
+        print("::error::Scholar refresh failed; strict mode requires current data.")
+        return 1
 
     print("::error::Scholar refresh failed and no valid fallback data is available.")
     return 1
